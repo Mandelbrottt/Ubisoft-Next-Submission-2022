@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "type_Matrix.h"
-
 #include "common_Matrix.h"
+#include "type_Matrix.h"
+#include "type_Vector4.h"
 
 #pragma warning( push )
 #pragma warning( disable : 26495 ) // Possibly uninitialized member
@@ -19,15 +19,15 @@ namespace NextCore::Math
 		using value_type = TUnderlying;
 		using type = Matrix<MATRIX_SIZE, MATRIX_SIZE, TUnderlying>;
 
-		constexpr static Vector<2, int> size = { MATRIX_SIZE, MATRIX_SIZE };
+		constexpr static int size_x = MATRIX_SIZE;
+		constexpr static int size_y = MATRIX_SIZE;
 
-		explicit Matrix(TUnderlying a_value = 0)
-			: cols {
-				Vector<MATRIX_SIZE, TUnderlying>(a_value), 
-				Vector<MATRIX_SIZE, TUnderlying>(a_value),
-				Vector<MATRIX_SIZE, TUnderlying>(a_value),
-				Vector<MATRIX_SIZE, TUnderlying>(a_value)
-			} { }
+		Matrix()
+			: data { 0 } {}
+
+		explicit
+		Matrix(TUnderlying a_value)
+			: data { a_value } { }
 
 		Matrix(
 			Vector<MATRIX_SIZE, TUnderlying> a_x,
@@ -35,7 +35,7 @@ namespace NextCore::Math
 			Vector<MATRIX_SIZE, TUnderlying> a_z,
 			Vector<MATRIX_SIZE, TUnderlying> a_w
 		) : cols { a_x, a_y, a_z, a_w } {}
-		
+
 	#pragma warning( push )
 	#pragma warning( push )
 	#pragma warning( disable : 4615 ) // Unknown user type
@@ -49,15 +49,12 @@ namespace NextCore::Math
 				TUnderlying m30, m31, m32, m33;
 			};
 
-			struct
-			{
-				Vector<MATRIX_SIZE, TUnderlying> cols[MATRIX_SIZE];
-			};
+			Vector<MATRIX_SIZE, TUnderlying> cols[MATRIX_SIZE];
 
 			TUnderlying data[MATRIX_SIZE * MATRIX_SIZE];
 		};
 	#pragma warning( pop )
-		
+
 		_MATRIX_GENERATE_MEMBER_FUNCTIONS();
 	};
 }

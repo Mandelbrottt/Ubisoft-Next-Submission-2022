@@ -63,11 +63,6 @@ namespace NextCore::Math
 		for (int x = 0; x < rhsX; x++)
 		for (int z = 0; z < shared; z++)
 		{
-			//TUnderlying left  = a_lhs.operator[](y).operator[](z);
-			//TUnderlying right = a_rhs.operator[](z).operator[](x);
-			//TUnderlying product = left * right;
-			//result.operator[](y).operator[](x) += product;
-
 			TUnderlying left  = a_lhs.data[y * shared + z];
 			TUnderlying right = a_rhs.data[z * rhsX   + x];
 			TUnderlying product = left * right;
@@ -94,6 +89,52 @@ namespace NextCore::Math
 
 		return result;
 	}
+
+	template<typename TMatrix>
+	constexpr
+	TMatrix
+	Identity(typename TMatrix::value_type a_diagonal = 1)
+	{
+		constexpr int size_x = TMatrix::size_x;
+		constexpr int size_y = TMatrix::size_y;
+		
+		constexpr int min_size = size_x < size_y ? size_x : size_y;
+			
+		TMatrix result { 0 };
+		for (int i = 0; i < min_size; i++) 
+		{ 
+			result.data[i * TMatrix::size_x + i] = a_diagonal; 
+		} 
+		return result; 
+	}
+	
+	template<int SizeX, int SizeY = SizeX, typename TUnderlying = float>
+	constexpr
+	Matrix<SizeX, SizeY, TUnderlying>
+	Identity(TUnderlying a_diagonal = 1)
+	{
+		using TMatrix = Matrix<SizeX, SizeY, TUnderlying>;
+		return Identity<TMatrix>(a_diagonal);
+	}
+
+	template<int SizeX, int SizeY, typename TUnderlying>
+	constexpr
+	Matrix<SizeY, SizeX, TUnderlying>
+	Transpose(Matrix<SizeX, SizeY, TUnderlying> const& a_value)
+	{
+		//constexpr int min_size = SizeX < SizeY ? SizeX : SizeY;
+
+		Matrix<SizeY, SizeX, TUnderlying> result;
+		
+		for (int y = 0; y < SizeY; y++)
+			for (int x = 0; x < SizeX; x++)
+			{
+				//result[x][y] = a_value[y][x];
+				result.data[x * SizeY + y] = a_value.data[y * SizeX + x];
+			}
+
+		return result;
+	}
 		
 	#define _MATRIX_GENERATE_MEMBER_FUNCTIONS() \
       /*_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_SAME_TYPE(+) \
@@ -104,10 +145,10 @@ namespace NextCore::Math
 		_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_UNDERLYING_TYPE(/) \
 	  */\
 		constexpr \
-		Vector<size.x, TUnderlying>& \
+		Vector<size_x, TUnderlying>& \
 		operator [](int a_index)\
 		{ \
-			if (a_index >= size.y) \
+			if (a_index >= size_y) \
 			{ \
 				throw "Index out of range!";\
 			} \
@@ -119,14 +160,14 @@ namespace NextCore::Math
 		type \
 		Identity(TUnderlying a_diagonal = 1) \
 		{ \
-			int min = type::size.x < type::size.y ? type::size.x : type::size.y; \
-			\
-			type result { 0 };\
-			for (int i = 0; i < min; i++) \
-			{ \
-				result.data[i] = a_diagonal; \
-			} \
-			return result; \
+			return ::NextCore::Math::Identity<type>(a_diagonal);\
+		} \
+		\
+		constexpr \
+		Matrix<size_y, size_x, value_type> \
+		Transpose() \
+		{ \
+			return ::NextCore::Math::Transpose(*this);\
 		} \
 		static_assert(true) // Require caller to end line with a semicolon
 }

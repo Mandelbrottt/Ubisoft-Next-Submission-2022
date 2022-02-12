@@ -16,7 +16,8 @@ namespace NextCore::Math
 		using value_type = TUnderlying;
 		using type = Matrix<SizeX, SizeY, TUnderlying>;
 
-		constexpr static Vector<2, int> size { SizeX, SizeY };
+		constexpr static int size_x = SizeX;
+		constexpr static int size_y = SizeY;
 		
 		TUnderlying data[SizeX * SizeY];
 	};
