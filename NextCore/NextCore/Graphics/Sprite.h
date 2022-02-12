@@ -36,7 +36,7 @@ namespace NextCore
 		Destroy(Sprite* a_sprite);
 		
 		void
-		Update(float a_deltaTime);
+		Update();
 		
 		void
 		Render();
