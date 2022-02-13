@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NextCore/Common.h"
+#include "Common.h"
 
 namespace NextCore::Time
 {

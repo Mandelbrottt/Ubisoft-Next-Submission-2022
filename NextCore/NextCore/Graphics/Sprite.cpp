@@ -2,7 +2,7 @@
 
 #include "Sprite.h"
 
-#include "NextCore/Util/Time.h"
+#include "Application/Time.h"
 
 namespace NextCore
 {

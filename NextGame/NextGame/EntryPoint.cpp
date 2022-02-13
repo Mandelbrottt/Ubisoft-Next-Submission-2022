@@ -4,10 +4,10 @@
 
 #include <NextAPI/app.h>
 
-#include <NextCore/Graphics/Sprite.h>
-#include <NextCore/Application/Time.h>
-#include <NextCore/Application/Application.h>
-#include <NextCore/Math/Matrix.h>
+#include <Graphics/Sprite.h>
+#include <Application/Time.h>
+#include <Application/Application.h>
+#include <Math/Matrix.h>
 
 int APIENTRY wWinMain(
 	_In_     HINSTANCE hInstance,

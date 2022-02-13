@@ -25,7 +25,11 @@ project "NextAPI"
         "%{prj.location}/*.h",
     }
 
-    removefiles { "*GameTest.cpp", "**/DirectSound.*", "**/mydirectsound.h" }
+    removefiles { 
+        "*GameTest.cpp", 
+        "**/DirectSound.*", 
+        "**/mydirectsound.h" 
+    }
 
     includedirs {
         "%{prj.location}/",

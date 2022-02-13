@@ -26,6 +26,7 @@ project "NextCore"
 
     includedirs {
         "%{prj.location}/",
+        "%{prj.location}/NextCore/",
         "%{wks.location}/NextAPI/",
     }
 

@@ -3,8 +3,8 @@
 // Keep to avoid errors when including Sprite.h
 #include <string_view>
 
-#include "NextCore/Common.h"
-#include "NextCore/Math/Vector.h"
+#include "Common.h"
+#include "Math/Vector.h"
 
 class CSimpleSprite;
 

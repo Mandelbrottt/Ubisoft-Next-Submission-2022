@@ -28,6 +28,7 @@ project "NextGame"
         "%{prj.location}/NextGame/",
         "%{wks.location}/NextAPI/",
         "%{wks.location}/NextCore/",
+        "%{wks.location}/NextCore/NextCore/",
     }
 
     links {

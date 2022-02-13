@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "NextCore/Common.h"
+#include "Common.h"
 
 namespace NextCore::Application
 {
