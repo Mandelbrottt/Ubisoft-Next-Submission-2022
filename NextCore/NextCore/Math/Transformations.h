@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Matrix.h"
-#include "Vector.h"
+#include "Matrix4.h"
 
-#include "NextCore/Common.h"
+#include "Common.h"
 
 namespace NextCore::Math
 {
 	NEXT_CORE_EXPORT
 	extern
-	Matrix4x4
+	Matrix4
 	Perspective(float a_fieldOfView, float a_aspectRatio, float a_nearPlane, float a_farPlane);
 }
