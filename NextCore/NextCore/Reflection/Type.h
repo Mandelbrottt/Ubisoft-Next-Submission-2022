@@ -36,11 +36,17 @@ namespace NextCore::Reflection
 		const char* c_str;
 	};
 
+	using static_id_t = uint32_t;
+
 	class Type
 	{
-		static uint32_t s_staticIdCounter;
-
 		using types_container_t = std::unordered_map<int, class Type>;
+
+		static static_id_t& StaticIdCounter()
+		{
+			static static_id_t staticIdCounter { 0 };
+			return staticIdCounter;
+		}
 
 		static types_container_t& Types()
 		{
@@ -48,7 +54,7 @@ namespace NextCore::Reflection
 			return container;
 		}
 
-		template<typename T/*, std::enable_if_t<std::is_default_constructible_v<T>, bool>*/>
+		template<typename T>
 		friend uint32_t GetStaticId() noexcept;
 
 		explicit
@@ -133,7 +139,7 @@ namespace NextCore::Reflection
 		 */
 		static
 		Type*
-		TryGet(decltype(s_staticIdCounter) a_id) noexcept
+		TryGet(static_id_t a_id) noexcept
 		{
 			Type* result = nullptr;
 			if (auto iter = Types().find(a_id); iter != Types().end())
@@ -198,11 +204,11 @@ namespace NextCore::Reflection
 		}
 	};
 
-	template<typename T/*, std::enable_if_t<std::is_default_constructible_v<T>, bool> = true*/>
-	uint32_t
+	template<typename T>
+	static_id_t
 	GetStaticId() noexcept
 	{
-		static uint32_t staticId = Type::s_staticIdCounter++;
+		static static_id_t staticId = Type::StaticIdCounter()++;
 		return staticId;
 	}
 }
