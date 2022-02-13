@@ -41,8 +41,9 @@ ExampleRender();
 void
 ExampleShutdown();
 
-struct B
+class B
 {
+public:
 	int a;
 	
 	std::string b;
@@ -60,8 +61,11 @@ struct B
 	)
 };
 
-struct D : B
+REFLECT_REGISTER(B)
+
+class D : public B
 {
+public:
 	bool c;
 
 	B d;
@@ -79,6 +83,24 @@ struct D : B
 	)
 };
 
+REFLECT_REGISTER(D)
+
+void
+Foo(uint32_t a_id)
+{
+	auto* type = NextCore::Reflection::Type::TryGet(a_id);
+	if (!type)
+	{
+		return;
+	}
+	printf("Name: %s\n", type->name.c_str());
+	for (auto& [name, field] : type->instanceFields)
+	{
+		printf("\tField: %s\n", name.c_str());
+	}
+
+}
+
 extern
 void
 Init()
@@ -86,9 +108,12 @@ Init()
 	ExampleInit();
 
 	namespace Reflection = NextCore::Reflection;
-
-	auto& baseType    = Reflection::Type::Get<B>();
-	auto& derivedType = Reflection::Type::Get<D>();
+	
+	uint32_t b_id = Reflection::GetStaticId<B>();
+	Foo(b_id);
+	
+	uint32_t d_id = Reflection::GetStaticId<D>();
+	Foo(d_id);
 }
 
 // Declare Time::Update manually so as to not expose it unnecessarily

@@ -47,8 +47,15 @@ namespace NextCore::Reflection
 
 	class Type
 	{
-		static uint32_t                            s_staticIdCounter;
-		static std::unordered_map<int, class Type> s_types;
+		static uint32_t s_staticIdCounter;
+
+		using types_container_t = std::unordered_map<int, class Type>;
+
+		static types_container_t& Types()
+		{
+			static types_container_t container;
+			return container;
+		}
 
 		template<typename T/*, std::enable_if_t<std::is_default_constructible_v<T>, bool>*/>
 		friend uint32_t GetStaticId() noexcept;
@@ -76,11 +83,11 @@ namespace NextCore::Reflection
 		 */
 		template<class T>
 		static
-		decltype(s_types)::iterator
+		types_container_t::iterator
 		Register() noexcept
 		{
 			int  id   = GetStaticId<T>();
-			auto iter = s_types.emplace(id, Type::Reflect<T>()).first;
+			auto iter = Types().emplace(id, Type::Reflect<T>()).first;
 			return iter;
 		}
 		
@@ -99,8 +106,8 @@ namespace NextCore::Reflection
 		{
 			int id = GetStaticId<T>();
 
-			auto iter = s_types.find(id);
-			if (iter == s_types.end())
+			auto iter = Types().find(id);
+			if (iter == Types().end())
 			{
 				iter = Register<T>();
 			}
@@ -138,7 +145,7 @@ namespace NextCore::Reflection
 		TryGet(decltype(s_staticIdCounter) a_id) noexcept
 		{
 			Type* result = nullptr;
-			if (auto iter = s_types.find(a_id); iter != s_types.end())
+			if (auto iter = Types().find(a_id); iter != Types().end())
 			{
 				result = &iter->second;
 			}
@@ -147,27 +154,16 @@ namespace NextCore::Reflection
 		}
 		
 		static
-		decltype(s_types)&
+		types_container_t&
 		Enumerate()
 		{
-			return s_types;
+			return Types();
 		}
 
 		inline
 		Type&
-		operator()(
-			//const char*      debugName,
-			//Name             name,
-			//Description      description,
-			//uint32_t         offset,
-			//uint32_t         size,
-			//const type_info& fieldType,
-			//const type_info& containingType,
-			//FieldFlags       flags
-			Field&& a_field
-		) noexcept
+		operator()(Field&& a_field) noexcept
 		{
-			//ReflectInternal(debugName, name, description, offset, size, fieldType, containingType, flags);
 			ReflectInternal(std::move(a_field));
 
 			return *this;
@@ -208,19 +204,6 @@ namespace NextCore::Reflection
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{
 			instanceFields.emplace(a_fieldInfo.fieldName, a_fieldInfo);
-		}
-
-		template<typename TBase, typename TLambda>
-		static
-		void
-		call_if_supported(Type& a_source)
-		{
-			if constexpr (is_complete_type_v<TBase>)
-			{
-				a_source.operator()<TBase>();
-				//if (t)
-				//	a_lambda(std::move(t));
-			}
 		}
 	};
 
