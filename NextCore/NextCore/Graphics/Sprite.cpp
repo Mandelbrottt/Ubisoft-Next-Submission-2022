@@ -14,6 +14,13 @@ namespace NextCore
 	Sprite::Sprite(std::string_view a_fileName, unsigned int a_nColumns, unsigned int a_nRows)
 	{
 		m_sprite = App::CreateSprite(a_fileName.data(), a_nColumns, a_nRows);
+
+		if (!m_sprite)
+		{
+			return;
+		}
+
+		SetFrame(0);
 	}
 
 	void Sprite::Cleanup()

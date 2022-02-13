@@ -78,7 +78,7 @@ public:
 	REFLECT_DECLARE(D, B)
 		
 	REFLECT_MEMBERS(
-		REFLECT_FIELD(c)
+		REFLECT_FIELD(c, r_name = "c's get degrees")
 		REFLECT_FIELD(d)
 	)
 };
@@ -96,9 +96,8 @@ Foo(uint32_t a_id)
 	printf("Name: %s\n", type->name.c_str());
 	for (auto& [name, field] : type->instanceFields)
 	{
-		printf("\tField: %s\n", name.c_str());
+		printf("\tField: \"%s\" (%s)\n\t\tContaining Type: %s\n", name.c_str(), field.debugName.c_str(), field.containingType.name());
 	}
-
 }
 
 extern

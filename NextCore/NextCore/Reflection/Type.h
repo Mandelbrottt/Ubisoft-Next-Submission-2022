@@ -20,7 +20,7 @@ namespace NextCore::Reflection
 		Name(const char* a_value)
 			: c_str(a_value) {}
 
-		const char* const c_str;
+		const char* c_str;
 	};
 
 	struct Description
@@ -33,17 +33,8 @@ namespace NextCore::Reflection
 		Description(const char* a_value)
 			: c_str(a_value) {}
 
-		const char* const c_str;
+		const char* c_str;
 	};
-
-	// Write-Only
-	static Name r_name;
-
-	// Write-Only
-	static Description r_description;
-
-	// Write-Only
-	static FieldFlags r_flags;
 
 	class Type
 	{
@@ -216,4 +207,11 @@ namespace NextCore::Reflection
 	}
 }
 
+// Write-Only
+static NextCore::Reflection::Name r_name;
 
+// Write-Only
+static NextCore::Reflection::Description r_description;
+
+// Write-Only
+static NextCore::Reflection::FieldFlags r_flags;
