@@ -53,21 +53,19 @@ namespace NextCore::Math
 	Matrix<SizeRhsX, SizeShared, TUnderlying>
 	operator *(Matrix<SizeShared, SizeLhsY, TUnderlying> a_lhs, Matrix<SizeRhsX, SizeShared, TUnderlying> a_rhs)
 	{
-		auto shared = SizeShared;
-		auto lhsY   = SizeLhsY;
-		auto rhsX   = SizeRhsX;
-		
 		Matrix<SizeRhsX, SizeShared, TUnderlying> result { 0 };
 		
-		for (int y = 0; y < lhsY; y++)
-		for (int x = 0; x < rhsX; x++)
-		for (int z = 0; z < shared; z++)
+		// ReSharper disable CppBadChildStatementIndent
+		for (int y = 0; y < SizeLhsY;   y++)
+		for (int x = 0; x < SizeRhsX;   x++)
+		for (int z = 0; z < SizeShared; z++)
 		{
-			TUnderlying left  = a_lhs.data[y * shared + z];
-			TUnderlying right = a_rhs.data[z * rhsX   + x];
+			TUnderlying left  = a_lhs.data[y * SizeShared + z];
+			TUnderlying right = a_rhs.data[z * SizeRhsX   + x];
 			TUnderlying product = left * right;
-			result.data[y * rhsX + x] += product;
+			result.data[y * SizeRhsX + x] += product;
 		}
+		// ReSharper restore CppBadChildStatementIndent
 
 		return result;
 	}
@@ -103,7 +101,7 @@ namespace NextCore::Math
 		TMatrix result { 0 };
 		for (int i = 0; i < min_size; i++) 
 		{ 
-			result.data[i * TMatrix::size_x + i] = a_diagonal; 
+			result.data[i * size_x + i] = a_diagonal; 
 		} 
 		return result; 
 	}
@@ -126,12 +124,14 @@ namespace NextCore::Math
 
 		Matrix<SizeY, SizeX, TUnderlying> result;
 		
+		// ReSharper disable CppBadChildStatementIndent
 		for (int y = 0; y < SizeY; y++)
-			for (int x = 0; x < SizeX; x++)
-			{
-				//result[x][y] = a_value[y][x];
-				result.data[x * SizeY + y] = a_value.data[y * SizeX + x];
-			}
+		for (int x = 0; x < SizeX; x++)
+		{
+			//result[x][y] = a_value[y][x];
+			result.data[x * SizeY + y] = a_value.data[y * SizeX + x];
+		}
+		// ReSharper restore CppBadChildStatementIndent
 
 		return result;
 	}
@@ -164,7 +164,7 @@ namespace NextCore::Math
 		} \
 		\
 		constexpr \
-		Matrix<size_y, size_x, value_type> \
+		type \
 		Transpose() \
 		{ \
 			return ::NextCore::Math::Transpose(*this);\

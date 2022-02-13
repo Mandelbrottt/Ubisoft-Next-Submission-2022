@@ -23,7 +23,7 @@ namespace NextCore::Math
 		constexpr static int size_y = MATRIX_SIZE;
 
 		Matrix()
-			: data { 0 } {}
+			: Matrix(0) {}
 
 		explicit
 		Matrix(TUnderlying a_value)
@@ -44,9 +44,9 @@ namespace NextCore::Math
 				TUnderlying m10, m11;
 			};
 
-			Vector<MATRIX_SIZE, TUnderlying> cols[MATRIX_SIZE];
+			Vector<size_x, TUnderlying> cols[size_y];
 
-			TUnderlying data[MATRIX_SIZE * MATRIX_SIZE];
+			TUnderlying data[size_x * size_y];
 		};
 	#pragma warning( pop )
 
