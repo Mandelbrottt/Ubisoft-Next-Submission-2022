@@ -96,9 +96,29 @@ Foo(uint32_t a_id)
 	printf("Name: %s\n", type->name.c_str());
 	for (auto& [name, field] : type->instanceFields)
 	{
-		printf("\tField: \"%s\" (%s)\n\t\tContaining Type: %s\n", name.c_str(), field.debugName.c_str(), field.containingType.name());
+		printf(
+			"\tField: \"%s\" (%s)\n\t\tField Type: %s\n\t\tContaining Type: %s\n",
+			name.c_str(),
+			field.debugName.c_str(),
+			field.fieldType.name(),
+			field.containingType.name()
+		);
 	}
 }
+
+template<typename T>
+struct Template
+{
+	T a;
+	T b;
+
+	REFLECT_DECLARE(Template)
+
+	REFLECT_MEMBERS(
+		REFLECT_FIELD(a)
+		REFLECT_FIELD(b)
+	)
+};
 
 extern
 void
@@ -108,11 +128,21 @@ Init()
 
 	namespace Reflection = NextCore::Reflection;
 	
-	uint32_t b_id = Reflection::GetStaticId<B>();
+	Reflection::static_id_t b_id = Reflection::GetStaticId<B>();
 	Foo(b_id);
 	
-	uint32_t d_id = Reflection::GetStaticId<D>();
+	Reflection::static_id_t d_id = Reflection::GetStaticId<D>();
 	Foo(d_id);
+
+	using I = Template<int>;
+	Reflection::Type::Register<I>();
+	Reflection::static_id_t t_id = Reflection::GetStaticId<I>();
+	Foo(t_id);
+
+	using F = Template<float>;
+	Reflection::Type::Register<F>();
+	Reflection::static_id_t f_id = Reflection::GetStaticId<F>();
+	Foo(f_id);
 }
 
 // Declare Time::Update manually so as to not expose it unnecessarily
