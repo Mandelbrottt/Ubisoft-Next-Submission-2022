@@ -15,9 +15,13 @@ project "NextGame"
     targetdir(output_dir .. "/%{prj.name}/")
     objdir   (obj_dir    .. "/%{prj.name}/")
 
+    pchheader "pch.h"
+    pchsource "pch.cpp"
+
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
         "%{prj.location}/%{prj.name}/**.h",
+        "%{prj.location}/pch.*",
     }
 
     includedirs {
