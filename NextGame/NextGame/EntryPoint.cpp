@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include <Windows.h>
 
 #include <NextAPI/app.h>
@@ -6,6 +8,8 @@
 #include <NextCore/Util/Time.h>
 #include <NextCore/Application/Application.h>
 #include <NextCore/Math/Matrix.h>
+
+#include <NextCore/Reflection/Reflection.h>
 
 int APIENTRY wWinMain(
 	_In_     HINSTANCE hInstance,
@@ -37,11 +41,54 @@ ExampleRender();
 void
 ExampleShutdown();
 
+struct B
+{
+	int a;
+	
+	std::string b;
+
+	void Foo()
+	{
+		puts("Base");
+	}
+
+	REFLECT_DECLARE(B)
+
+	REFLECT_MEMBERS(
+		REFLECT_FIELD(a)
+		REFLECT_FIELD(b)
+	)
+};
+
+struct D : B
+{
+	bool c;
+
+	B d;
+
+	void Foo()
+	{
+		Base::Foo();
+	}
+	
+	REFLECT_DECLARE(D, B)
+		
+	REFLECT_MEMBERS(
+		REFLECT_FIELD(c)
+		REFLECT_FIELD(d)
+	)
+};
+
 extern
 void
 Init()
 {
 	ExampleInit();
+
+	namespace Reflection = NextCore::Reflection;
+
+	auto& baseType    = Reflection::Type::Get<B>();
+	auto& derivedType = Reflection::Type::Get<D>();
 }
 
 // Declare Time::Update manually so as to not expose it unnecessarily
