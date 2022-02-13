@@ -5,11 +5,9 @@
 #include <NextAPI/app.h>
 
 #include <NextCore/Graphics/Sprite.h>
-#include <NextCore/Util/Time.h>
+#include <NextCore/Application/Time.h>
 #include <NextCore/Application/Application.h>
 #include <NextCore/Math/Matrix.h>
-
-#include <NextCore/Reflection/Reflection.h>
 
 int APIENTRY wWinMain(
 	_In_     HINSTANCE hInstance,
@@ -41,108 +39,11 @@ ExampleRender();
 void
 ExampleShutdown();
 
-class B
-{
-public:
-	int a;
-	
-	std::string b;
-
-	void Foo()
-	{
-		puts("Base");
-	}
-
-	REFLECT_DECLARE(B)
-
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(a)
-		REFLECT_FIELD(b)
-	)
-};
-
-REFLECT_REGISTER(B)
-
-class D : public B
-{
-public:
-	bool c;
-
-	B d;
-
-	void Foo()
-	{
-		Base::Foo();
-	}
-	
-	REFLECT_DECLARE(D, B)
-		
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(c, r_name = "c's get degrees")
-		REFLECT_FIELD(d)
-	)
-};
-
-REFLECT_REGISTER(D)
-
-void
-Foo(uint32_t a_id)
-{
-	auto* type = NextCore::Reflection::Type::TryGet(a_id);
-	if (!type)
-	{
-		return;
-	}
-	printf("Name: %s\n", type->name.c_str());
-	for (auto& [name, field] : type->instanceFields)
-	{
-		printf(
-			"\tField: \"%s\" (%s)\n\t\tField Type: %s\n\t\tContaining Type: %s\n",
-			name.c_str(),
-			field.debugName.c_str(),
-			field.fieldType.name(),
-			field.containingType.name()
-		);
-	}
-}
-
-template<typename T>
-struct Template
-{
-	T a;
-	T b;
-
-	REFLECT_DECLARE(Template)
-
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(a)
-		REFLECT_FIELD(b)
-	)
-};
-
 extern
 void
 Init()
 {
 	ExampleInit();
-
-	namespace Reflection = NextCore::Reflection;
-	
-	Reflection::static_id_t b_id = Reflection::GetStaticId<B>();
-	Foo(b_id);
-	
-	Reflection::static_id_t d_id = Reflection::GetStaticId<D>();
-	Foo(d_id);
-
-	using I = Template<int>;
-	Reflection::Type::Register<I>();
-	Reflection::static_id_t t_id = Reflection::GetStaticId<I>();
-	Foo(t_id);
-
-	using F = Template<float>;
-	Reflection::Type::Register<F>();
-	Reflection::static_id_t f_id = Reflection::GetStaticId<F>();
-	Foo(f_id);
 }
 
 // Declare Time::Update manually so as to not expose it unnecessarily
