@@ -2,6 +2,8 @@
 
 #include "Type.h"
 
+#include "Common.h"
+
 #pragma region Macro Argument Overloading
     #define _EXPAND(x) x
     #define _CAT(a, b) a##b
@@ -16,9 +18,6 @@
 #pragma region Reflection Macros
 	#define _REFLECT_OFFSET_OF(_type_, _field_) ((size_t) &((_type_*) 0)->_field_)
 
-	#define _REFLECT_TYPE_ALIAS This
-	#define _REFLECT_BASE_ALIAS Base
-
 	#define _REFLECT_NAMESPACE ::NextCore::Reflection::
 
 	#define _REFLECT_DECLARE_COMMON(_class_) \
@@ -26,6 +25,7 @@
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
 		public: \
+			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
 			static _REFLECT_NAMESPACE Type& GetType() \
 			{ \
 				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\

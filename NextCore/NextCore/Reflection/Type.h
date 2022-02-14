@@ -8,6 +8,8 @@
 #include "Field.h"
 #include "TypeTraits.h"
 
+#include "Common.h"
+
 namespace NextCore::Reflection
 {
 	struct Name
@@ -36,15 +38,22 @@ namespace NextCore::Reflection
 		const char* c_str;
 	};
 
-	using static_id_t = uint32_t;
+	using static_type_id_t = uint32_t;
 
+	constexpr static_type_id_t INVALID_TYPE_ID     = 0;
+	constexpr static_type_id_t FIRST_VALID_TYPE_ID = 1;
+
+	template<typename T>
+	static_type_id_t
+	GetStaticId() noexcept;
+	
 	class Type
 	{
 		using types_container_t = std::unordered_map<int, class Type>;
 
-		static static_id_t& StaticIdCounter()
+		static static_type_id_t& StaticIdCounter()
 		{
-			static static_id_t staticIdCounter { 0 };
+			static static_type_id_t staticIdCounter { FIRST_VALID_TYPE_ID };
 			return staticIdCounter;
 		}
 
@@ -53,9 +62,6 @@ namespace NextCore::Reflection
 			static types_container_t container;
 			return container;
 		}
-
-		template<typename T>
-		friend uint32_t GetStaticId() noexcept;
 
 		explicit
 		Type(std::string a_name) noexcept
@@ -73,6 +79,16 @@ namespace NextCore::Reflection
 		Type(Type&& a_other) noexcept = default;
 
 		/**
+		 * \brief Retrieve the statically assigned type id for the class represented by the current \link Type \endlink
+		 * \return The non-zero static type id if the current type is valid, zero otherwise
+		 */
+		static_type_id_t
+		GetStaticId() const
+		{
+			return m_typeId;
+		}
+
+		/**
 		 * \brief Register a type for reflection
 		 * \tparam T The type to register for reflection.
 		 *           Must contain reflection macros, see REFLECT_PREPARE and #REFLECT_MEMBERS
@@ -83,8 +99,9 @@ namespace NextCore::Reflection
 		types_container_t::iterator
 		Register() noexcept
 		{
-			int  id   = GetStaticId<T>();
+			int  id = Reflection::GetStaticId<T>();
 			auto iter = Types().emplace(id, Type::Reflect<T>()).first;
+			iter->second.m_typeId = id;
 			return iter;
 		}
 		
@@ -101,7 +118,7 @@ namespace NextCore::Reflection
 		Type&
 		Get() noexcept
 		{
-			int id = GetStaticId<T>();
+			int id = Reflection::GetStaticId<T>();
 
 			auto iter = Types().find(id);
 			if (iter == Types().end())
@@ -124,7 +141,7 @@ namespace NextCore::Reflection
 		Type*
 		TryGet() noexcept
 		{
-			int id = GetStaticId<T>();
+			int id = Reflection::GetStaticId<T>();
 			
 			return TryGet(id);
 		}
@@ -139,7 +156,7 @@ namespace NextCore::Reflection
 		 */
 		static
 		Type*
-		TryGet(static_id_t a_id) noexcept
+		TryGet(static_type_id_t a_id) noexcept
 		{
 			Type* result = nullptr;
 			if (auto iter = Types().find(a_id); iter != Types().end())
@@ -202,14 +219,51 @@ namespace NextCore::Reflection
 		{
 			instanceFields.emplace(a_fieldInfo.fieldName, a_fieldInfo);
 		}
+
+	private:
+		static_type_id_t m_typeId = INVALID_TYPE_ID;
+
+	private:
+		template<typename T>
+		friend
+		static_type_id_t
+		GetStaticId() noexcept;
 	};
 
+	namespace Detail
+	{
+		// We need this helper because you can't partially specialize functions to make sfinae work in
+		// the way we want it to here, so pass in a reference to the static type id and increment it here
+		template<typename T, typename = void>
+		struct static_id_helper
+		{
+			static static_type_id_t Increment(static_type_id_t& a_id)
+			{
+				return 0;
+			}
+		};
+		
+		template<typename T>
+		struct static_id_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
+		{
+			static static_type_id_t Increment(static_type_id_t& a_id)
+			{
+				return a_id++;
+			}
+		};
+	}
+	
+	/**
+	 * \brief  Retrieve the statically assigned type id for the given type
+	 * \tparam T The type who's Id to retrieve
+	 * \return A non-zero type id for a valid reflection type, zero otherwise
+	 */
 	template<typename T>
-	static_id_t
+	static_type_id_t
 	GetStaticId() noexcept
 	{
-		static static_id_t staticId = Type::StaticIdCounter()++;
-		return staticId;
+		auto& static_id_counter = Type::StaticIdCounter();
+		return Detail::static_id_helper<T>::Increment(static_id_counter);
 	}
 }
 

@@ -30,3 +30,8 @@
 #else
 	#define NEXT_CORE_EXPORT
 #endif
+
+// Reflection typedefs
+#define _REFLECT_TYPE_ALIAS This
+#define _REFLECT_BASE_ALIAS Base
+#define _REFLECT_VALID_REFLECTION_TYPE_ALIAS _ConfirmValidReflectionType
