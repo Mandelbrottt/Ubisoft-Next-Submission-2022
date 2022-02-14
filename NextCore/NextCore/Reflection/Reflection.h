@@ -24,6 +24,21 @@
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
+			typedef _REFLECT_NAMESPACE Constructor<_REFLECT_TYPE_ALIAS> ThisConstructor;\
+			static_assert(sizeof(ThisConstructor) == sizeof(_REFLECT_NAMESPACE GenericConstructor)); \
+			static\
+			_REFLECT_NAMESPACE GenericConstructor* \
+			_GetGenericConstructor() \
+			{ \
+				return new ThisConstructor; \
+			} \
+			static \
+			void \
+			_GetGenericConstructor(_REFLECT_NAMESPACE GenericConstructor* a_location) \
+			{ \
+				new(a_location) ThisConstructor; \
+			}\
+			\
 		public: \
 			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
 			static _REFLECT_NAMESPACE Type& GetType() \
@@ -61,7 +76,7 @@
 			friend class _REFLECT_NAMESPACE Type; \
 			static \
 			void \
-			Reflect(_REFLECT_NAMESPACE Type& r) \
+			_Reflect(_REFLECT_NAMESPACE Type& r) \
 			{ \
 				r _list_; \
 				\

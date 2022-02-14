@@ -7,8 +7,11 @@
 
 #include "Field.h"
 #include "TypeTraits.h"
+#include "Constructor.h"
 
 #include "Common.h"
+
+#define DEPRECATED_WARNING_NUMBER 4996
 
 namespace NextCore::Reflection
 {
@@ -90,19 +93,42 @@ namespace NextCore::Reflection
 
 		Type&
 		operator =(Type&&) = delete;
-
+	
 	public:
+		// Warning because move constructor is public?
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) noexcept = default;
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
-		 * \brief Retrieve the statically assigned type id for the class represented by the current \link Type \endlink
-		 * \return The non-zero static type id if the current type is valid, zero otherwise
+		 * \brief Retrieve the statically assigned type id for the type represented by the current \link Type \endlink.
+		 * \return The non-zero static type id if the current type is valid, zero otherwise.
 		 */
 		StaticTypeId
 		GetStaticId() const
 		{
 			return m_typeId;
 		}
+		
+		/**
+		 * \brief Retrieve the value returned by sizeof for the type class represented by
+		 *        the current \link Type \endlink.
+		 * \return The size of the type.
+		 */
+		int
+		GetSize() const
+		{
+			return m_size;
+		}
+		
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+		// ReSharper disable once CppDeprecatedEntity
+		/**
+		 * \brief Get the instance of the \link GenericConstructor \endlink associated with this type.
+		 * \return A pointer to the \link GenericConstructor \endlink associated with this type.
+		 */
+		const GenericConstructor* GetConstructor() const { return &m_constructor; }
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
 		 * \brief Register a type for reflection
@@ -227,7 +253,13 @@ namespace NextCore::Reflection
 		Reflect() noexcept
 		{
 			Type reflector(typeid(T).name());
-			T::Reflect(reflector);
+			T::_Reflect(reflector);
+
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+			// ReSharper disable once CppDeprecatedEntity
+			T::_GetGenericConstructor(&reflector.m_constructor);
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
 			return reflector;
 		}
 
@@ -240,6 +272,11 @@ namespace NextCore::Reflection
 	private:
 		StaticTypeId m_typeId = StaticTypeId::Null;
 
+		[[deprecated("Access using GetConstructor() instead")]]
+		GenericConstructor m_constructor;
+
+		int m_size;
+		
 	private:
 		template<typename T>
 		friend
@@ -306,3 +343,5 @@ static NextCore::Reflection::Description r_description;
 
 // Write-Only
 static NextCore::Reflection::FieldFlags r_flags;
+
+#undef DEPRECATED_WARNING_NUMBER
