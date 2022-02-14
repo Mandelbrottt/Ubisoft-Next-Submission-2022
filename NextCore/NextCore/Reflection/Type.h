@@ -288,8 +288,13 @@ namespace NextCore::Reflection
 	StaticTypeId
 	GetStaticId() noexcept
 	{
-		auto& static_id_counter = Type::StaticIdCounter();
-		return Detail::static_id_helper<T>::Increment(static_id_counter);
+		static StaticTypeId result = [&]()
+		{
+			auto& static_id_counter = Type::StaticIdCounter();
+			return Detail::static_id_helper<T>::Increment(static_id_counter);
+		}();
+
+		return result;
 	}
 }
 
