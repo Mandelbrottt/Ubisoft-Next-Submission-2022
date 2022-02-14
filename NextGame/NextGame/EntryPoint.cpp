@@ -9,14 +9,20 @@
 #include <Application/Application.h>
 #include <Math/Matrix.h>
 
+#include <Reflection/Reflection.h>
+
+#include <Scripting/Behaviour.h>
+#include <Scripting/Entity.h>
+
 int APIENTRY wWinMain(
-	_In_     HINSTANCE hInstance,
+	_In_ HINSTANCE     hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
-	_In_     LPWSTR    lpCmdLine,
-	_In_     int       nCmdShow
+	_In_ LPWSTR        lpCmdLine,
+	_In_ int           nCmdShow
 );
 
-int main()
+int
+main()
 {
 	HINSTANCE hInstance     = GetModuleHandleW(NULL);
 	HINSTANCE hPrevInstance = 0;
@@ -62,7 +68,7 @@ Update(float a_deltaTime)
 	// Convert deltaTime into seconds because NextAPI uses milliseconds
 	float timeInSeconds = a_deltaTime / 1000.f;
 	NextCore::Time::Update(timeInSeconds);
-	
+
 	ExampleUpdate();
 }
 
@@ -101,7 +107,41 @@ enum
 
 //------------------------------------------------------------------------
 
+struct ValidReflection : public NextCore::Scripting::Component
+{
+	int a = 0;
+
+	ValidReflection()
+	{
+		puts("ValidReflection Constructed");
+	}
+	
+	~ValidReflection() override
+	{
+		puts("ValidReflection Destructed");
+	}
+
+	void
+	Foo()
+	{
+		puts("Valid Reflection");
+	}
+
+	REFLECT_DECLARE(ValidReflection)
+
+	REFLECT_MEMBERS(
+		REFLECT_FIELD(a)
+	)
+};
+
+struct InvalidReflection
+{
+	int a;
+};
+
 using namespace NextCore;
+
+void Foo();
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
@@ -115,7 +155,7 @@ ExampleInit()
 		//testSprite = App::CreateSprite(".\\Resources\\Test.bmp", 8, 4);
 		g_testSprite = Sprite::Create(Application::ResourcePath() + "Test.bmp", 8, 4);
 		g_testSprite->SetPosition(400.0f, 400.0f);
-	
+
 		float speed = 1.0f / 15.0f;
 		g_testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0, 1, 2, 3, 4, 5, 6, 7 });
 		g_testSprite->CreateAnimation(ANIM_LEFT, speed, { 8, 9, 10, 11, 12, 13, 14, 15 });
@@ -132,6 +172,22 @@ ExampleInit()
 		g_testSprite2->SetScale(1.0f);
 	}
 	//------------------------------------------------------------------------
+
+	Scripting::Entity entity;
+
+	Reflection::Type::Register<ValidReflection>();
+
+	auto& valid_type = Reflection::Type::Get<ValidReflection>();
+	auto* valid_component = static_cast<ValidReflection*>(entity.AddComponent(valid_type));
+
+	valid_component->Foo();
+
+	entity.RemoveComponent(valid_component);
+	
+	auto invalid_id = Reflection::GetStaticId<InvalidReflection>();
+	Scripting::Component* invalid_component = entity.AddComponent(invalid_id);
+	//static_cast<ValidReflection*>(invalid_component)->Foo(); // runtime error, returns nullptr
+	entity.RemoveComponent(valid_component);	
 }
 
 //------------------------------------------------------------------------
@@ -145,7 +201,7 @@ ExampleUpdate()
 	// Example Sprite Code....
 	g_testSprite->Update();
 	g_testSprite2->Update();
-	
+
 	Vector2 position = g_testSprite->GetPosition();
 
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
@@ -168,7 +224,7 @@ ExampleUpdate()
 		g_testSprite->SetAnimation(ANIM_BACKWARDS);
 		position.y -= 1.0f;
 	}
-	
+
 	g_testSprite->SetPosition(position);
 
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
@@ -253,4 +309,131 @@ ExampleShutdown()
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	//------------------------------------------------------------------------
+}
+
+struct ConstructorBase
+{
+	virtual
+	~ConstructorBase() = default;
+	
+	virtual
+	void*
+	Construct() = 0;
+	
+	virtual
+	void*
+	Construct(void* a_location) = 0;
+
+	virtual
+	void
+	Deconstruct(void* a_location) = 0;
+};
+
+template<typename T>
+struct Constructor : ConstructorBase
+{
+	using value_type = T;
+
+	~Constructor() override = default;
+
+	void*
+	Construct() override
+	{
+		//value_type* p = ::operator new(sizeof(value_type));
+		//new(p) value_type;
+		//return p;
+
+		return new value_type;
+	}
+	
+	void*
+	Construct(void* a_location) override
+	{
+		return new(a_location) value_type;
+	}
+
+	void
+	Deconstruct(void* a_location) override
+	{
+		value_type* p = static_cast<value_type*>(a_location);
+		p->~value_type();
+	}
+};
+
+struct Type
+{
+	size_t size;
+	ConstructorBase* constructor;
+};
+
+struct Thing
+{
+	Thing()
+		: a(0)
+	{
+		puts("Thing Constructed");
+	}
+
+	virtual ~Thing()
+	{
+		puts("Thing Destructed");
+	}
+
+	virtual void Foo()
+	{
+		puts("Thing");
+	}
+
+	int a;
+};
+
+struct OtherThing : Thing
+{
+	OtherThing()
+	{
+		puts("OtherThing Constructed");
+	}
+
+	~OtherThing() override
+	{
+		puts("OtherThing Destructed");
+	}
+
+	void Foo() override
+	{
+		puts("OtherThing");
+	}
+};
+
+void
+Foo()
+{
+	//Type thing;
+	//thing.size = sizeof(Thing);
+	//thing.constructor = new Constructor<Thing>;
+	//
+	//void* construction = thing.constructor->Construct();
+	//Thing* tConstruction = static_cast<Thing*>(construction);
+	//tConstruction->a = 5;
+	//thing.constructor->Deconstruct(construction);
+
+	//puts("");
+	//
+	//Type other;
+	//other.size = sizeof(OtherThing);
+	//other.constructor = new Constructor<OtherThing>;
+
+	//std::byte bytes[sizeof(OtherThing)];
+	//construction = other.constructor->Construct(bytes);
+	//tConstruction = static_cast<OtherThing*>(construction);
+	//tConstruction->a = 5;
+	//other.constructor->Deconstruct(construction);
+
+	//static_assert(sizeof(Thing) == sizeof(OtherThing));
+	//puts("");
+	//
+	//Thing t;
+	//new(&t) OtherThing;
+	//t.Foo();
+	//(&t)->Foo();
 }

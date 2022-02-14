@@ -98,6 +98,20 @@ namespace NextCore::Reflection
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) noexcept = default;
+		//{
+		//	this->instanceFields = std::move(a_other.instanceFields);
+
+		//	this->name = std::move(a_other.name);
+
+		//	this->m_typeId = a_other.m_typeId;
+		//	a_other.m_typeId = StaticTypeId::Null;
+
+		//	this->m_size = a_other.m_size;
+		//	a_other.m_size = 0;
+		//	
+		//	std::memcpy(this->m_constructorData, a_other.m_constructorData, sizeof(m_constructorData));
+		//	std::memset(a_other.m_constructorData, 0, sizeof(m_constructorData));
+		//};
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
@@ -127,7 +141,12 @@ namespace NextCore::Reflection
 		 * \brief Get the instance of the \link GenericConstructor \endlink associated with this type.
 		 * \return A pointer to the \link GenericConstructor \endlink associated with this type.
 		 */
-		const GenericConstructor* GetConstructor() const { return &m_constructor; }
+		const GenericConstructor* GetConstructor()
+		{
+			// See https://en.cppreference.com/w/cpp/types/aligned_storage
+			auto pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(m_constructorData));
+			return pConstructor;
+		}
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
@@ -142,9 +161,14 @@ namespace NextCore::Reflection
 		Register() noexcept
 		{
 			StaticTypeId id = Reflection::GetStaticId<T>();
-			
-			auto iter = Types().emplace(id, Type::Reflect<T>()).first;
+
+			Type type = Type::Reflect<T>();
+			auto iter = Types().emplace(id, std::move(type)).first;
 			iter->second.m_typeId = id;
+			iter->second.m_size = sizeof(T);
+			
+			GenericConstructor* pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(iter->second.m_constructorData));
+
 			return iter;
 		}
 		
@@ -256,9 +280,12 @@ namespace NextCore::Reflection
 			T::_Reflect(reflector);
 
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+			auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
 			// ReSharper disable once CppDeprecatedEntity
-			T::_GetGenericConstructor(&reflector.m_constructor);
+			T::_GetGenericConstructor(pConstructor);
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+			pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(reflector.m_constructorData));
 
 			return reflector;
 		}
@@ -272,10 +299,12 @@ namespace NextCore::Reflection
 	private:
 		StaticTypeId m_typeId = StaticTypeId::Null;
 
-		[[deprecated("Access using GetConstructor() instead")]]
-		GenericConstructor m_constructor;
+		//std::aligned_storage_t<sizeof(GenericConstructor), alignof(GenericConstructor)> m_constructorData;
+		std::byte m_constructorData[sizeof(GenericConstructor)] { std::byte() };
+		
+		//GenericConstructor m_constructor;
 
-		int m_size;
+		int m_size = 0;
 		
 	private:
 		template<typename T>

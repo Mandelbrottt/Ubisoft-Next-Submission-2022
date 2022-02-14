@@ -12,10 +12,20 @@ namespace NextCore::Scripting
 			return nullptr;
 		}
 
-		throw "Not Implemented";
+		auto* componentType = Reflection::Type::TryGet(a_typeId);
 
-		// TODO: Need a way to construct from just a type id
-		return nullptr;
+		if (componentType == nullptr)
+		{
+			return nullptr;
+		}
+
+		auto* constructor = componentType->GetConstructor();
+		void* p = constructor->Construct();
+		Component* result = static_cast<Component*>(p);
+
+		m_components.push_back({ a_typeId, result });
+		
+		return result;
 	}
 
 	bool
@@ -26,16 +36,9 @@ namespace NextCore::Scripting
 			return false;
 		}
 
-		auto iter   = FindComponentById(a_typeId);
-		bool result = iter != m_components.end();
+		auto iter = FindComponentById(a_typeId);
 
-		if (result)
-		{
-			delete iter->component;
-			m_components.erase(iter);
-		}
-
-		return result;
+		return RemoveComponentByIterator(iter);
 	}
 
 	bool
@@ -46,15 +49,9 @@ namespace NextCore::Scripting
 			return false;
 		}
 
-		auto iter   = FindComponent(a_component);
-		bool result = iter != m_components.end();
+		auto iter = FindComponent(a_component);
 
-		if (result)
-		{
-			m_components.erase(iter);
-		}
-
-		return result;
+		return RemoveComponentByIterator(iter);
 	}
 
 	Component*
@@ -111,5 +108,25 @@ namespace NextCore::Scripting
 		}
 
 		return iter;
+	}
+
+	bool
+	Entity::RemoveComponentByIterator(decltype(m_components)::iterator a_iter)
+	{
+		bool result = a_iter != m_components.end();
+
+		// If component exists and it's type is registered with reflection, destruct it
+		if (result)
+		{
+			if (auto* componentType = Reflection::Type::TryGet(a_iter->id); componentType != nullptr)
+			{
+				auto* constructor = componentType->GetConstructor();
+				constructor->Destruct(a_iter->component);
+			}
+			
+			m_components.erase(a_iter);
+		}
+
+		return result;
 	}
 }

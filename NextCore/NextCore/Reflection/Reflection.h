@@ -25,13 +25,15 @@
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
 			typedef _REFLECT_NAMESPACE Constructor<_REFLECT_TYPE_ALIAS> ThisConstructor;\
-			static_assert(sizeof(ThisConstructor) == sizeof(_REFLECT_NAMESPACE GenericConstructor)); \
-			static\
+			inline \
+			static \
 			_REFLECT_NAMESPACE GenericConstructor* \
 			_GetGenericConstructor() \
 			{ \
+				static_assert(sizeof(ThisConstructor) == sizeof(_REFLECT_NAMESPACE GenericConstructor)); \
 				return new ThisConstructor; \
 			} \
+			inline \
 			static \
 			void \
 			_GetGenericConstructor(_REFLECT_NAMESPACE GenericConstructor* a_location) \
@@ -126,7 +128,7 @@
 
 	#pragma endregion
 	#define REFLECT_REGISTER(_type_) \
-		static int _REFLECT_REGISTER_##_type_ = []() \
+		static _REFLECT_NAMESPACE StaticTypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetStaticId<_type_>(); \

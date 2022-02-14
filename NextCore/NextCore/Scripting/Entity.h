@@ -26,7 +26,7 @@ namespace NextCore::Scripting
 		{
 			return AddComponent(a_type.GetStaticId());
 		}
-		
+
 		Component*
 		AddComponent(Reflection::StaticTypeId a_typeId);
 
@@ -85,6 +85,9 @@ namespace NextCore::Scripting
 
 		decltype(m_components)::iterator
 		FindComponent(Component* a_component);
+
+		bool
+		RemoveComponentByIterator(decltype(m_components)::iterator a_iter);
 	};
 
 	template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool>>

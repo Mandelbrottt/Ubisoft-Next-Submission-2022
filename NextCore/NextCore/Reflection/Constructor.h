@@ -14,21 +14,21 @@ namespace NextCore::Reflection
 
 		virtual
 		void*
-		Construct()
+		Construct() const
 		{
 			return nullptr;
 		}
 
 		virtual
 		void*
-		Construct(void* a_location)
+		Construct(void* a_location) const
 		{
 			return nullptr;
 		};
 
 		virtual
 		void
-		Deconstruct(void* a_location, bool a_deallocate = true) { };
+		Destruct(void* a_location, bool a_deallocate = true) const { };
 	};
 
 	template<typename T>
@@ -47,20 +47,20 @@ namespace NextCore::Reflection
 		~Constructor() override = default;
 
 		void*
-		Construct() override
+		Construct() const override
 		{
 			return new value_type;
 		}
 
 		void*
-		Construct(void* a_location) override
+		Construct(void* a_location) const override
 		{
 			return new(a_location) value_type;
 		}
 
 		// TODO: Come up with a better way (preferably compile time) to evaluate lifetime
 		void
-		Deconstruct(void* a_location, bool a_deallocate = true) override
+		Destruct(void* a_location, bool a_deallocate = true) const override
 		{
 			value_type* p = static_cast<value_type*>(a_location);
 			p->~value_type();
