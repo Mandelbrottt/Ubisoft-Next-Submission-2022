@@ -38,22 +38,38 @@ namespace NextCore::Reflection
 		const char* c_str;
 	};
 
-	using static_type_id_t = uint32_t;
+	using static_type_id_underlying_t = uint32_t;
 
-	constexpr static_type_id_t INVALID_TYPE_ID     = 0;
-	constexpr static_type_id_t FIRST_VALID_TYPE_ID = 1;
+	enum class StaticTypeId : static_type_id_underlying_t { Null = 0, FirstValid = 1 };
+
+	constexpr
+	bool
+	operator ==(StaticTypeId a_lhs, StaticTypeId a_rhs)
+	{
+		auto lhs = static_cast<static_type_id_underlying_t>(a_lhs);
+		auto rhs = static_cast<static_type_id_underlying_t>(a_rhs);
+
+		return lhs == rhs;
+	}
+
+	constexpr
+	bool
+	operator !=(StaticTypeId a_lhs, StaticTypeId a_rhs)
+	{
+		return a_lhs == a_rhs;
+	}
 
 	template<typename T>
-	static_type_id_t
+	StaticTypeId
 	GetStaticId() noexcept;
 	
 	class Type
 	{
-		using types_container_t = std::unordered_map<int, class Type>;
+		using types_container_t = std::unordered_map<StaticTypeId, class Type>;
 
-		static static_type_id_t& StaticIdCounter()
+		static StaticTypeId& StaticIdCounter()
 		{
-			static static_type_id_t staticIdCounter { FIRST_VALID_TYPE_ID };
+			static StaticTypeId staticIdCounter { StaticTypeId::FirstValid };
 			return staticIdCounter;
 		}
 
@@ -82,7 +98,7 @@ namespace NextCore::Reflection
 		 * \brief Retrieve the statically assigned type id for the class represented by the current \link Type \endlink
 		 * \return The non-zero static type id if the current type is valid, zero otherwise
 		 */
-		static_type_id_t
+		StaticTypeId
 		GetStaticId() const
 		{
 			return m_typeId;
@@ -99,7 +115,8 @@ namespace NextCore::Reflection
 		types_container_t::iterator
 		Register() noexcept
 		{
-			int  id = Reflection::GetStaticId<T>();
+			StaticTypeId id = Reflection::GetStaticId<T>();
+			
 			auto iter = Types().emplace(id, Type::Reflect<T>()).first;
 			iter->second.m_typeId = id;
 			return iter;
@@ -118,7 +135,7 @@ namespace NextCore::Reflection
 		Type&
 		Get() noexcept
 		{
-			int id = Reflection::GetStaticId<T>();
+			StaticTypeId id = Reflection::GetStaticId<T>();
 
 			auto iter = Types().find(id);
 			if (iter == Types().end())
@@ -141,7 +158,7 @@ namespace NextCore::Reflection
 		Type*
 		TryGet() noexcept
 		{
-			int id = Reflection::GetStaticId<T>();
+			StaticTypeId id = Reflection::GetStaticId<T>();
 			
 			return TryGet(id);
 		}
@@ -156,7 +173,7 @@ namespace NextCore::Reflection
 		 */
 		static
 		Type*
-		TryGet(static_type_id_t a_id) noexcept
+		TryGet(StaticTypeId a_id) noexcept
 		{
 			Type* result = nullptr;
 			if (auto iter = Types().find(a_id); iter != Types().end())
@@ -221,12 +238,12 @@ namespace NextCore::Reflection
 		}
 
 	private:
-		static_type_id_t m_typeId = INVALID_TYPE_ID;
+		StaticTypeId m_typeId = StaticTypeId::Null;
 
 	private:
 		template<typename T>
 		friend
-		static_type_id_t
+		StaticTypeId
 		GetStaticId() noexcept;
 	};
 
@@ -237,18 +254,27 @@ namespace NextCore::Reflection
 		template<typename T, typename = void>
 		struct static_id_helper
 		{
-			static static_type_id_t Increment(static_type_id_t& a_id)
+			static StaticTypeId Increment(StaticTypeId& a_id)
 			{
-				return 0;
+				return StaticTypeId::Null;
 			}
 		};
 		
 		template<typename T>
 		struct static_id_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
 		{
-			static static_type_id_t Increment(static_type_id_t& a_id)
+			static StaticTypeId Increment(StaticTypeId& a_id)
 			{
-				return a_id++;
+				// Emulate pre-increment because id doesn't start at 0
+				auto result = a_id;
+
+				// Can't cast to reference and pre-increment, so write to temp var and reassign
+				auto underlying_id = static_cast<static_type_id_underlying_t>(a_id);
+				underlying_id++;
+
+				a_id = static_cast<StaticTypeId>(underlying_id);
+				
+				return result;
 			}
 		};
 	}
@@ -259,7 +285,7 @@ namespace NextCore::Reflection
 	 * \return A non-zero type id for a valid reflection type, zero otherwise
 	 */
 	template<typename T>
-	static_type_id_t
+	StaticTypeId
 	GetStaticId() noexcept
 	{
 		auto& static_id_counter = Type::StaticIdCounter();
