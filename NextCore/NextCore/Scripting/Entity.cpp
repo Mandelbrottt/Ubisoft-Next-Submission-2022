@@ -3,11 +3,15 @@
 #include "Entity.h"
 #include "Component.h"
 
+#include "Components/Transform.h"
+
 namespace NextCore::Scripting
 {
 	Entity::Entity()
 	{
 		m_entityId = EntityId::Null;
+
+		AddComponent<NextCore::Component::Transform>();
 	}
 
 	void
@@ -184,5 +188,12 @@ namespace NextCore::Scripting
 		auto iter = FindComponentById(id);
 
 		m_components.erase(iter);
+	}
+	
+	bool
+	Entity::RemoveComponent(identity<NextCore::Component::Transform>)
+	{
+		auto static_id = Reflection::GetStaticId<NextCore::Component::Transform>();
+		return RemoveComponent(static_id);
 	}
 }
