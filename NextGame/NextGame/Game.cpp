@@ -18,16 +18,12 @@ void
 GameInit()
 {
 	g_entities.reserve(100);
-
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
+	
 	{
 		g_entities.emplace_back();
 		Scripting::Entity& player = g_entities.back();
 		player.AddComponent<Player>();
-		int a = 2;
 	}
-	//------------------------------------------------------------------------
 }
 
 //------------------------------------------------------------------------
@@ -42,15 +38,6 @@ GameUpdate()
 	for (auto& entity : g_entities)
 	{
 		entity.OnUpdate();
-	}
-
-	//------------------------------------------------------------------------
-	// Sample Sound.
-	//------------------------------------------------------------------------
-	if (Input::GetButtonDown(Input::Button::B))
-	{
-		std::string path = Application::ResourcePath() + "Test.wav";
-		App::PlaySound(path.c_str());
 	}
 }
 

@@ -4,7 +4,11 @@
 
 #include <Application/Application.h>
 
+#include <Components/AudioSource.h>
+
 using namespace NextCore;
+
+using namespace NextCore::Component;
 
 enum
 {
@@ -19,21 +23,24 @@ Player::OnCreate()
 {
 	using NextCore::Sprite;
 
-	// TEMPORARY:
+	// Create the sound
+	std::string path = Application::ResourcePath() + "Test.wav";
+	auto* audioSource = AddComponent<AudioSource>();
+	audioSource->Load(path);
+
+	// Create the sprite
 	m_filePath       = Application::ResourcePath() + "Test.bmp";
 	m_animationSpeed = 1.0f / 15.0f;
-
 	auto* sprite = AddComponent<Sprite>();
 	sprite->LoadFromTexture(m_filePath, 8, 4);
-
 	sprite->SetPosition(400.0f, 400.0f);
+	sprite->SetScale(2.0f);
 
+	// Sprite animations
 	sprite->CreateAnimation(AnimDown, m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
 	sprite->CreateAnimation(AnimLeft, m_animationSpeed, { 8, 9, 10, 11, 12, 13, 14, 15 });
 	sprite->CreateAnimation(AnimRight, m_animationSpeed, { 16, 17, 18, 19, 20, 21, 22, 23 });
 	sprite->CreateAnimation(AnimUp, m_animationSpeed, { 24, 25, 26, 27, 28, 29, 30, 31 });
-
-	sprite->SetScale(2.0f);
 }
 
 void
@@ -46,6 +53,7 @@ Player::OnUpdate()
 
 	Vector2 position = sprite->GetPosition();
 
+	// Movement
 	if (Input::GetAxis(Input::Axis::LeftStickX) > 0.5f)
 	{
 		sprite->SetAnimation(AnimRight);
@@ -69,6 +77,7 @@ Player::OnUpdate()
 
 	sprite->SetPosition(position);
 
+	// Sprite rotation and scale
 	if (Input::GetButton(Input::Button::DPadUp) || GetAxis(Input::Axis::VerticalLook) > 0.5)
 	{
 		sprite->SetScale(sprite->GetScale() + 0.1f);
@@ -92,5 +101,12 @@ Player::OnUpdate()
 	if (Input::GetButtonDown(Input::Button::B)) // West Button
 	{
 		sprite->SetVertex(0, sprite->GetVertex(0) + Vector2(5.0f, 0));
+	}
+	
+	// Sample Sound
+	if (Input::GetButtonDown(Input::Button::B))
+	{
+		auto* audioSource = GetComponent<AudioSource>();
+		audioSource->Play();
 	}
 }

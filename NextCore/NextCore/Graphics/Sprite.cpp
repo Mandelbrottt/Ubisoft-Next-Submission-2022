@@ -11,16 +11,6 @@ namespace NextCore
 	using Math::Vector2;
 	using Math::Vector3;
 
-	Sprite::Sprite(std::string_view a_fileName, unsigned int a_nColumns, unsigned int a_nRows)
-	{
-		if (a_fileName.empty())
-		{
-			return;
-		}
-
-		LoadFromTexture(a_fileName, a_nColumns, a_nRows);
-	}
-
 	void
 	Sprite::OnUpdate()
 	{

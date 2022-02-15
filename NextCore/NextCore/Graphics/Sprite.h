@@ -12,28 +12,11 @@
 
 class CSimpleSprite;
 
-extern void
-Shutdown();
-
-namespace NextCore::Reflection
-{
-	template<typename T>
-	struct Constructor;
-}
-
 namespace NextCore
 {
 	class NEXT_CORE_EXPORT Sprite : public Scripting::Component
 	{
-		friend void
-		::Shutdown();
-
-		friend Reflection::Constructor<Sprite>;
-		
-		explicit
-		Sprite(std::string_view a_fileName = "", unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
-
-		~Sprite() override = default;
+		GenerateConstructors(Sprite);
 		
 	public:
 		void OnUpdate() override;
@@ -109,12 +92,13 @@ namespace NextCore
 		IsValid() const;
 
 	private:
+		// TODO: Keep local copies of variables and synchronise them once per frame with the sprite
 		::CSimpleSprite* m_sprite;
 
-		REFLECT_DECLARE(Sprite)
+		REFLECT_DECLARE(Sprite);
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(m_sprite)
-		)
+		);
 	};
 }
