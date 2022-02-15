@@ -2,8 +2,6 @@
 
 #include <MinimalInclude.h>
 
-#include <NextAPI/app.h>
-
 class Player final : public NextCore::Scripting::Behaviour
 {
 public:

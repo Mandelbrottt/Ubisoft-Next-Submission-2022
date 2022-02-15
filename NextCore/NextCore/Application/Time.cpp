@@ -52,7 +52,6 @@ namespace NextCore::Time
 	
 	// Consumers need to declare Update manually so as to not expose it unnecessarily
 	NEXT_CORE_EXPORT
-	extern
 	void
 	Update(float a_deltaTime)
 	{

@@ -39,7 +39,8 @@ project "NextCore"
     }
 
     defines {
-        "NEXT_CORE"
+        "NEXT_CORE",
+        "MMNOSOUND",
     }
 
     

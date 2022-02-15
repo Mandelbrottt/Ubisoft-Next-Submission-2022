@@ -132,5 +132,5 @@
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetStaticId<_type_>(); \
-		}();
+		}()
 #pragma endregion

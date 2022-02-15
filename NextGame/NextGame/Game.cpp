@@ -6,6 +6,8 @@
 
 #include "Player.h"
 
+#include <NextAPI/app.h>
+
 using namespace NextCore;
 
 std::vector<Scripting::Entity> g_entities;
@@ -43,7 +45,7 @@ GameUpdate()
 	//------------------------------------------------------------------------
 	// Sample Sound.
 	//------------------------------------------------------------------------
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
+	if (Input::GetButtonDown(Input::Button::B))
 	{
 		std::string path = Application::ResourcePath() + "Test.wav";
 		App::PlaySound(path.c_str());
@@ -80,7 +82,7 @@ GameRender()
 	{
 		auto* sprite = entity.GetComponent<Sprite>();
 
-		if (!sprite) continue;
+		if (!sprite || !sprite->IsValid()) continue;
 
 		sprite->Render();
 	}

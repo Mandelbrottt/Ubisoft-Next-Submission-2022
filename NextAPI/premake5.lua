@@ -53,7 +53,8 @@ project "NextAPI"
     filter {}
 
     defines {
-        "NEXT_CORE"
+        "NEXT_API",
+        "MMNOSOUND",
     }
 
     filter "system:windows"

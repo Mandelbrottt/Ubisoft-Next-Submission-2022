@@ -35,7 +35,7 @@ namespace NextCore
 		// Bug with update, there's no bounds checking so be careful to pass in
 		// sufficiently small values of delta time
 		adjustedDeltaTime = std::min(adjustedDeltaTime, 1.f / 30.f);
-		m_sprite->Update(adjustedDeltaTime);
+		m_sprite->Update(adjustedDeltaTime * 1000.f);
 	}
 
 	bool

@@ -43,6 +43,11 @@ project "NextGame"
         output_dir .. "/NextCore/",
     }
 
+    defines {
+        "NEXT_GAME",
+        "MMNOSOUND",
+    }
+
     filter "architecture:Win32"
         libdirs {
             "%{wks.location}/NextAPI/glut/lib/",
@@ -61,13 +66,6 @@ project "NextGame"
             "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. output_dir .. "/%{prj.name}/\"",
         }
 
-    filter {}
-
-    defines {
-        "NEXT_GAME"
-    }
-
-    
     filter "system:windows"
         systemversion "latest"
 
