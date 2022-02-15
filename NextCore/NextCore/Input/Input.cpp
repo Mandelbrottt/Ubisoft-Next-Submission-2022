@@ -5,9 +5,13 @@
 
 #include <NextAPI/app.h>
 
+#include "InputConversion.h"
+
 namespace NextCore::Input
 {
-	using key_underlying_t    = std::underlying_type_t<Key>;
+	constexpr static Detail::InputMap g_inputMap;
+	
+	using key_underlying_t = std::underlying_type_t<Key>;
 	using button_underlying_t = std::underlying_type_t<Button>;
 
 	/* TODO: We don't need this many keys, but we dont need to do additional processing
@@ -17,7 +21,7 @@ namespace NextCore::Input
 
 	static button_underlying_t g_thisFrameButtons[MAX_CONTROLLERS] { 0 };
 	static button_underlying_t g_lastFrameButtons[MAX_CONTROLLERS] { 0 };
-	
+
 	void
 	Update()
 	{
@@ -31,7 +35,7 @@ namespace NextCore::Input
 		
 		std::memcpy(g_lastFrameButtons, g_thisFrameButtons, sizeof(g_lastFrameButtons));
 		std::memset(g_thisFrameButtons, 0, sizeof(g_thisFrameButtons));
-		
+
 		for (int i = 0; i < MAX_CONTROLLERS; i++)
 		{
 			auto& controller = App::GetController(i);
@@ -42,6 +46,13 @@ namespace NextCore::Input
 		}
 	}
 
+	static
+	bool
+	GetKey(int a_key)
+	{
+		return g_thisFrameButtons[a_key];
+	}
+	
 	float
 	GetAxis(Axis a_axis, uint8_t a_controller)
 	{
@@ -49,7 +60,7 @@ namespace NextCore::Input
 
 		// Keep outside switch to use across multiple cases
 		float result;
-		Key emulated_key;
+		int   emulated_key;
 
 		switch (a_axis)
 		{
@@ -59,18 +70,17 @@ namespace NextCore::Input
 				// BUG: Emulated keys return the wrong signed value for StickY, so we adjust for that here
 				result = controller.GetLeftThumbStickY();
 				emulated_key = result < 0
-					               ? static_cast<Key>(APP_PAD_EMUL_LEFT_THUMB_UP)
-					               : static_cast<Key>(APP_PAD_EMUL_LEFT_THUMB_DOWN);
-				return GetKey(emulated_key) ? -result : result;
-				//return result;
+					               ? APP_PAD_EMUL_LEFT_THUMB_UP
+					               : APP_PAD_EMUL_LEFT_THUMB_DOWN;
+				return g_thisFrameKeys[emulated_key] ? -result : result;
 			case Axis::RightStickX:
 				return controller.GetRightThumbStickX();
 			case Axis::RightStickY:
 				result = controller.GetRightThumbStickY();
 				emulated_key = result < 0
-					               ? static_cast<Key>(APP_PAD_EMUL_RIGHT_THUMB_UP)
-					               : static_cast<Key>(APP_PAD_EMUL_RIGHT_THUMB_DOWN);
-				return GetKey(emulated_key) ? -result : result;
+					               ? APP_PAD_EMUL_RIGHT_THUMB_UP
+					               : APP_PAD_EMUL_RIGHT_THUMB_DOWN;
+				return g_thisFrameKeys[emulated_key] ? -result : result;
 			case Axis::LeftTrigger:
 				return controller.GetLeftTrigger();
 			case Axis::RightTrigger:
@@ -79,59 +89,59 @@ namespace NextCore::Input
 				throw "Invalid Axis";
 		}
 	}
-
+	
 	bool
 	GetButton(Button a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 
-		button_underlying_t buttonToCheck = static_cast<button_underlying_t>(a_button);
+		button_underlying_t buttonToCheck = g_inputMap[a_button];
 
 		return (thisButton & buttonToCheck);
 	}
-
+	
 	bool
 	GetButtonDown(Button a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 		button_underlying_t lastButton = g_lastFrameButtons[a_controller];
 
-		button_underlying_t buttonToCheck = static_cast<button_underlying_t>(a_button);
+		button_underlying_t buttonToCheck = g_inputMap[a_button];
 
 		return (thisButton & buttonToCheck) && !(lastButton & buttonToCheck);
 	}
-
+	
 	bool
 	GetButtonUp(Button a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 		button_underlying_t lastButton = g_lastFrameButtons[a_controller];
 
-		button_underlying_t buttonToCheck = static_cast<button_underlying_t>(a_button);
+		button_underlying_t buttonToCheck = g_inputMap[a_button];
 
 		return !(thisButton & buttonToCheck) && (lastButton & buttonToCheck);
 	}
-
+	
 	bool
 	GetKey(Key a_button)
 	{
-		key_underlying_t key = static_cast<key_underlying_t>(a_button);
+		key_underlying_t key = g_inputMap[a_button];
 
 		return g_thisFrameKeys[key];
 	}
-
+	
 	bool
 	GetKeyDown(Key a_key)
 	{
-		key_underlying_t key = static_cast<key_underlying_t>(a_key);
+		key_underlying_t key = g_inputMap[a_key];
 
 		return g_thisFrameKeys[key] && !g_lastFrameButtons[key];
 	}
-
+	
 	bool
 	GetKeyUp(Key a_key)
 	{
-		key_underlying_t key = static_cast<key_underlying_t>(a_key);
+		key_underlying_t key = g_inputMap[a_key];
 
 		return !g_thisFrameKeys[key] && g_lastFrameButtons[key];
 	}

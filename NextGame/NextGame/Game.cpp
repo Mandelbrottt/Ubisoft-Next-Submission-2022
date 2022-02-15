@@ -8,6 +8,8 @@
 
 #include <NextAPI/app.h>
 
+// TODO: Decouple Sound, Write wrapper for drawing and printing to screen
+
 using namespace NextCore;
 
 std::vector<Scripting::Entity> g_entities;

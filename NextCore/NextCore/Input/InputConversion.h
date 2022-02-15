@@ -10,7 +10,6 @@
 	#include <Xinput.h>
 #endif
 
-
 namespace NextCore::Input::Detail
 {
 	template<typename TEnum, typename TElement, int Size>
@@ -31,9 +30,18 @@ namespace NextCore::Input::Detail
 			underlying_t index = enum_cast(a_enum);
 			return array[index];
 		}
+		
+		constexpr
+		TElement
+		operator [](TEnum a_enum) const
+		{
+			underlying_t index = enum_cast(a_enum);
+			return array.at(index);
+		}
 
 	private:
 		constexpr
+		static
 		underlying_t
 		enum_cast(TEnum a_enum)
 		{
@@ -54,14 +62,14 @@ namespace NextCore::Input::Detail
 
 		constexpr
 		key_underlying_t
-		operator [](Key a_key)
+		operator [](Key a_key) const
 		{
 			return m_keys[a_key];
 		}
 
 		constexpr
 		button_underlying_t
-		operator [](Button a_button)
+		operator [](Button a_button) const
 		{
 			return m_buttons[a_button];
 		}
@@ -71,8 +79,6 @@ namespace NextCore::Input::Detail
 
 		EnumIndexedArray<Button, button_underlying_t, button_size> m_buttons;
 	};
-
-	constexpr InputMap g_inputMap;
 	
 	constexpr
 	InputMap::InputMap()

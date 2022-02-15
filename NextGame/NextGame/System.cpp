@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "Game.h"
-#include "NextCoreCommon.h"
 
 void
 Init()
