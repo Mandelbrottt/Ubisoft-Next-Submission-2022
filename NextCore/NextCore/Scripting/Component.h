@@ -3,7 +3,7 @@
 #include "Object.h"
 #include "Entity.h"
 
-#include "Reflection/Type.h"
+#include "Reflection/Reflection.h"
 
 #define GenerateConstructors(_class_) \
 		_REFLECT_AUTO_FORMAT_INDENT \
@@ -11,7 +11,7 @@
 		friend ::NextCore::Reflection::Constructor<_class_>; \
 		\
 		_class_() = default; \
-		~_class_() override = default
+		~_class_() override = default;
 
 namespace NextCore::Reflection
 {

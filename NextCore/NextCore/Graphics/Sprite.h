@@ -16,7 +16,7 @@ namespace NextCore
 {
 	class NEXT_CORE_EXPORT Sprite : public Scripting::Component
 	{
-		GenerateConstructors(Sprite);
+		GenerateConstructors(Sprite)
 		
 	public:
 		void OnUpdate() override;
@@ -95,10 +95,10 @@ namespace NextCore
 		// TODO: Keep local copies of variables and synchronise them once per frame with the sprite
 		::CSimpleSprite* m_sprite;
 
-		REFLECT_DECLARE(Sprite);
+		REFLECT_DECLARE(Sprite)
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(m_sprite)
-		);
+		)
 	};
 }

@@ -56,8 +56,7 @@
 	#define _REFLECT_DECLARE_1(_class_) \
 		struct Base; \
 		class  Base; \
-		_REFLECT_DECLARE_COMMON(_class_) \
-		_REFLECT_REQUIRE_SEMICOLON
+		_REFLECT_DECLARE_COMMON(_class_)
 
 	#define _REFLECT_DECLARE_2(_derived_, _base_) \
 		_REFLECT_DECLARE_COMMON(_derived_) \
@@ -71,8 +70,7 @@
 		static _REFLECT_NAMESPACE Type* TryGetBaseType() \
 		{ \
 			return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\
-		} \
-		_REFLECT_REQUIRE_SEMICOLON
+		}
 
 	#define REFLECT_DECLARE(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
 
@@ -90,8 +88,7 @@
 			{ \
 				r.operator()<Base, This>(); \
 			} \
-		} \
-		_REFLECT_REQUIRE_SEMICOLON
+		}
 
 	#pragma region Reflect Field Overloads
 		#define _REFLECT_FIELD_PROTOTYPE(_field_, ...) \

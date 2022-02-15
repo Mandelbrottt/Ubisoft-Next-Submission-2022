@@ -12,7 +12,7 @@ namespace NextCore::Component
 {
 	class AudioSource : public Scripting::Component
 	{
-		GenerateConstructors(AudioSource);
+		GenerateConstructors(AudioSource)
 
 	public:
 		Audio::AudioClip audioClip;
@@ -32,10 +32,10 @@ namespace NextCore::Component
 		bool
 		IsPlaying() const;
 		
-		REFLECT_DECLARE(AudioSource);
+		REFLECT_DECLARE(AudioSource)
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(audioClip, r_name = "Audio Clip")
-		);
+		)
 	};
 }
