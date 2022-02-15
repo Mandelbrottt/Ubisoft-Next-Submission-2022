@@ -5,6 +5,11 @@
 
 namespace NextCore::Scripting
 {
+	Entity::Entity()
+	{
+		m_entityId = EntityId::Null;
+	}
+
 	void
 	Entity::OnUpdate()
 	{

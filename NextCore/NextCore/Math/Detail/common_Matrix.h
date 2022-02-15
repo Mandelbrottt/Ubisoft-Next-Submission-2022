@@ -135,6 +135,14 @@ namespace NextCore::Math
 
 		return result;
 	}
+	
+	template<int SizeX, int SizeY, typename TUnderlying>
+	constexpr
+	Matrix<SizeX, SizeY, TUnderlying>
+	Inverse(Matrix<SizeX, SizeY, TUnderlying> const& a_value)
+	{
+		// TODO: Implement Inverse and Determinant
+	}
 		
 	#define _MATRIX_GENERATE_MEMBER_FUNCTIONS() \
       /*_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_SAME_TYPE(+) \

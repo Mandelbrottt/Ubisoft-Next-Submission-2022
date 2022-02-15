@@ -9,7 +9,7 @@
 #include "TypeTraits.h"
 #include "Constructor.h"
 
-#include "Common.h"
+#include "NextCoreCommon.h"
 
 #define DEPRECATED_WARNING_NUMBER 4996
 

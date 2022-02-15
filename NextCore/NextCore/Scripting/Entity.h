@@ -10,16 +10,17 @@
 
 namespace NextCore::Scripting
 {
+	// Forward declare to avoid circular include
 	class Component;
 	
+	/**
+	 * \brief 
+	 */
 	class Entity : public Object
 	{
 	public:
 		// TODO: Convert to protected when entity system is in place
-		Entity()
-		{
-			m_entityId = static_cast<EntityId>(0);
-		}
+		Entity();
 
 		virtual void
 		OnUpdate();

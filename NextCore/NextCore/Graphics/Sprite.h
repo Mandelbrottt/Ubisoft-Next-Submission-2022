@@ -3,7 +3,7 @@
 // Keep to avoid errors when including Sprite.h
 #include <string_view>
 
-#include "Common.h"
+#include "NextCoreCommon.h"
 #include "Math/Vector.h"
 
 #include "Reflection/Reflection.h"

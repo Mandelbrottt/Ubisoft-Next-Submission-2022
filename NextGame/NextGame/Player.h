@@ -1,10 +1,6 @@
 #pragma once
 
-#include <Scripting/Behaviour.h>
-
-#include <Reflection/Reflection.h>
-
-#include <Graphics/Sprite.h>
+#include <MinimalInclude.h>
 
 #include <NextAPI/app.h>
 

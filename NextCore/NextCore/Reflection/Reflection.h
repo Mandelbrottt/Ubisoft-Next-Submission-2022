@@ -2,7 +2,7 @@
 
 #include "Type.h"
 
-#include "Common.h"
+#include "NextCoreCommon.h"
 
 #pragma region Macro Argument Overloading
     #define _EXPAND(x) x
