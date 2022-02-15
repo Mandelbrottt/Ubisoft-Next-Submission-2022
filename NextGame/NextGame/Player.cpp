@@ -5,10 +5,11 @@
 #include <Application/Application.h>
 
 #include <Components/AudioSource.h>
+#include <Components/Transform.h>
 
 using namespace NextCore;
 
-using namespace NextCore::Component;
+using namespace Component;
 
 enum
 {
@@ -24,23 +25,25 @@ Player::OnCreate()
 	using NextCore::Sprite;
 
 	// Create the sound
-	std::string path = Application::ResourcePath() + "Test.wav";
-	auto* audioSource = AddComponent<AudioSource>();
+	std::string path        = Application::ResourcePath() + "Test.wav";
+	auto*       audioSource = AddComponent<AudioSource>();
 	audioSource->Load(path);
 
 	// Create the sprite
 	m_filePath       = Application::ResourcePath() + "Test.bmp";
 	m_animationSpeed = 1.0f / 15.0f;
-	auto* sprite = AddComponent<Sprite>();
+	auto* sprite     = AddComponent<Sprite>();
 	sprite->LoadFromTexture(m_filePath, 8, 4);
-	sprite->SetPosition(400.0f, 400.0f);
-	sprite->SetScale(2.0f);
+
+	auto* transform       = Transform();
+	transform->Position() = { 400.0f, 400.0f };
+	transform->Scale()    = Math::Vector3(2.0f);
 
 	// Sprite animations
-	sprite->CreateAnimation(AnimDown, m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
-	sprite->CreateAnimation(AnimLeft, m_animationSpeed, { 8, 9, 10, 11, 12, 13, 14, 15 });
+	sprite->CreateAnimation(AnimDown,  m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
+	sprite->CreateAnimation(AnimLeft,  m_animationSpeed, { 8, 9, 10, 11, 12, 13, 14, 15 });
 	sprite->CreateAnimation(AnimRight, m_animationSpeed, { 16, 17, 18, 19, 20, 21, 22, 23 });
-	sprite->CreateAnimation(AnimUp, m_animationSpeed, { 24, 25, 26, 27, 28, 29, 30, 31 });
+	sprite->CreateAnimation(AnimUp,    m_animationSpeed, { 24, 25, 26, 27, 28, 29, 30, 31 });
 }
 
 void
@@ -51,7 +54,8 @@ Player::OnUpdate()
 
 	Sprite* sprite = GetComponent<Sprite>();
 
-	Vector2 position = sprite->GetPosition();
+	auto* transform = Transform();
+	auto& position  = transform->Position();
 
 	// Movement
 	if (Input::GetAxis(Input::Axis::LeftStickX) > 0.5f)
@@ -75,24 +79,25 @@ Player::OnUpdate()
 		position.y -= 1.0f;
 	}
 
-	sprite->SetPosition(position);
+	auto& scale = transform->Scale().z;
+	auto& angle = transform->Rotation().z;
 
 	// Sprite rotation and scale
 	if (Input::GetButton(Input::Button::DPadUp) || GetAxis(Input::Axis::VerticalLook) > 0.5)
 	{
-		sprite->SetScale(sprite->GetScale() + 0.1f);
+		scale += 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadDown) || GetAxis(Input::Axis::VerticalLook) < -0.5)
 	{
-		sprite->SetScale(sprite->GetScale() - 0.1f);
+		scale -= 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadLeft) || GetAxis(Input::Axis::HorizontalLook) < -0.5)
 	{
-		sprite->SetAngle(sprite->GetAngle() + 0.1f);
+		angle += 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadRight) || GetAxis(Input::Axis::HorizontalLook) > 0.5)
 	{
-		sprite->SetAngle(sprite->GetAngle() - 0.1f);
+		angle -= 0.1f;
 	}
 	if (Input::GetButtonDown(Input::Button::A)) // South Button
 	{
@@ -102,7 +107,7 @@ Player::OnUpdate()
 	{
 		sprite->SetVertex(0, sprite->GetVertex(0) + Vector2(5.0f, 0));
 	}
-	
+
 	// Sample Sound
 	if (Input::GetButtonDown(Input::Button::B))
 	{

@@ -34,6 +34,11 @@ namespace NextCore::Math
 		Vector(TUnderlying a_x, TUnderlying a_y)
 			: x(a_x),
 			  y(a_y) { }
+		
+		constexpr
+		Vector(Vector<3, TUnderlying> a_other)
+			: x(a_other.data[0]),
+			  y(a_other.data[1]) { }
 
 		_VECTOR_GENERATE_CONSTRUCTORS();
 		

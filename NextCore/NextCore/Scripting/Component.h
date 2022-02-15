@@ -19,6 +19,11 @@ namespace NextCore::Reflection
 	struct Constructor;
 }
 
+namespace NextCore::Component
+{
+	class Transform;
+}
+
 namespace NextCore::Scripting
 {
 	/**
@@ -31,6 +36,7 @@ namespace NextCore::Scripting
 		Component() = default;
 
 		~Component() override = default;
+
 	public:
 		#pragma region Getters and Setters
 		EntityId
@@ -39,9 +45,9 @@ namespace NextCore::Scripting
 		Entity*
 		GetEntity() const;
 
-		// TEMPORARY:
-		void
-		SetEntity(Entity* a_entity);
+		NextCore::Component::Transform*
+		Transform();
+
 		#pragma endregion
 
 		#pragma region Event Functions

@@ -4,6 +4,8 @@
 
 #include "Application/Time.h"
 
+#include "Components/Transform.h"
+
 #include "Reflection/Constructor.h"
 
 namespace NextCore
@@ -50,23 +52,15 @@ namespace NextCore
 		{
 			return;
 		}
+		
+		auto* transform = Transform();
+		m_sprite->SetPosition(transform->Position().x, transform->Position().y);
+		m_sprite->SetAngle(transform->Rotation().z);
+		m_sprite->SetScale(transform->Scale().z);
 
 		m_sprite->Draw();
 	}
-
-	Vector2
-	Sprite::GetPosition() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		Vector2 result;
-		m_sprite->GetPosition(result.x, result.y);
-		return result;
-	}
-
+	
 	float
 	Sprite::GetWidth() const
 	{
@@ -104,29 +98,7 @@ namespace NextCore
 
 		return result;
 	}
-
-	float
-	Sprite::GetAngle() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		return m_sprite->GetAngle();
-	}
-
-	float
-	Sprite::GetScale() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		return m_sprite->GetScale();
-	}
-
+	
 	unsigned
 	Sprite::GetFrame() const
 	{
@@ -162,51 +134,7 @@ namespace NextCore
 
 		return result;
 	}
-
-	void
-	Sprite::SetPosition(Vector2 a_position)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetPosition(a_position.x, a_position.y);
-	}
-
-	void
-	Sprite::SetPosition(float a_x, float a_y)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		this->SetPosition({ a_x, a_y });
-	}
-
-	void
-	Sprite::SetAngle(float a_angle)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetAngle(a_angle);
-	}
-
-	void
-	Sprite::SetScale(float a_scale)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetScale(a_scale);
-	}
-
+	
 	void
 	Sprite::SetFrame(unsigned int a_frame)
 	{

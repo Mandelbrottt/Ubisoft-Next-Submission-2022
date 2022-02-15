@@ -31,7 +31,10 @@ namespace NextCore::Scripting
 		// TODO: Convert to protected when entity system is in place
 		Entity();
 
-		virtual void
+		void
+		OnCreate();
+
+		void
 		OnUpdate();
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>

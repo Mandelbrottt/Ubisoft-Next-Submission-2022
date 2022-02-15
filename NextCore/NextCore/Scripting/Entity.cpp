@@ -11,6 +11,13 @@ namespace NextCore::Scripting
 	{
 		m_entityId = EntityId::Null;
 
+		// TODO: Will eventually be implemented by the registry when a new entity is created
+		OnCreate();
+	}
+
+	void
+	Entity::OnCreate()
+	{
 		AddComponent<NextCore::Component::Transform>();
 	}
 

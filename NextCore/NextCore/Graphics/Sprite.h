@@ -26,10 +26,7 @@ namespace NextCore
 		
 		void
 		Render();
-
-		Math::Vector2
-		GetPosition() const;
-
+		
 		float
 		GetWidth() const;
 
@@ -38,13 +35,7 @@ namespace NextCore
 
 		Math::Vector2
 		GetSize() const;
-
-		float
-		GetAngle() const;
-
-		float
-		GetScale() const;
-
+		
 		unsigned int
 		GetFrame() const;
 
@@ -55,19 +46,7 @@ namespace NextCore
 		 */
 		Math::Vector2
 		GetVertex(unsigned int a_index) const;
-
-		void
-		SetPosition(Math::Vector2 a_position);
-
-		void
-		SetPosition(float a_x, float a_y);
-
-		void
-		SetAngle(float a_angle);
-
-		void
-		SetScale(float a_scale);
-
+		
 		void
 		SetFrame(unsigned int a_frame);
 
