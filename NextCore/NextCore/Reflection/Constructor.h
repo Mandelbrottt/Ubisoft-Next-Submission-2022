@@ -2,6 +2,10 @@
 
 namespace NextCore::Reflection
 {
+	/**
+	 * \brief Wrapper around construction and destruction of objects, statically evaluated
+	 *        with placement new and delete through polymorphism
+	 */
 	struct GenericConstructor
 	{
 		bool valid = false;
@@ -58,7 +62,7 @@ namespace NextCore::Reflection
 			return new(a_location) value_type;
 		}
 
-		// TODO: Come up with a better way (preferably compile time) to evaluate lifetime
+		// TODO: Come up with a better way (preferably compile time) to evaluate lifetime (Wrapper types?)
 		void
 		Destruct(void* a_location, bool a_deallocate = true) const override
 		{

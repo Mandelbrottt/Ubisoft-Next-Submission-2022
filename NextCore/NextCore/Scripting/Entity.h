@@ -1,13 +1,17 @@
 #pragma once
 
-#include "Component.h"
 #include "EntityId.h"
 #include "Object.h"
 
 #include "Reflection/Type.h"
+#include "Reflection/Constructor.h"
+
+#include <type_traits>
 
 namespace NextCore::Scripting
 {
+	class Component;
+	
 	class Entity : public Object
 	{
 	public:
@@ -16,6 +20,9 @@ namespace NextCore::Scripting
 		{
 			m_entityId = static_cast<EntityId>(0);
 		}
+
+		virtual void
+		OnUpdate();
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
@@ -79,6 +86,8 @@ namespace NextCore::Scripting
 
 		std::vector<ComponentListElement> m_components;
 
+		std::vector<Reflection::StaticTypeId> m_needsFirstUpdate;
+
 	private:
 		decltype(m_components)::iterator
 		FindComponentById(Reflection::StaticTypeId a_id);
@@ -88,6 +97,10 @@ namespace NextCore::Scripting
 
 		bool
 		RemoveComponentByIterator(decltype(m_components)::iterator a_iter);
+
+		void OnAddComponent(ComponentListElement& a_listElement);
+		
+		void OnRemoveComponent(ComponentListElement& a_listElement);
 	};
 
 	template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool>>
@@ -97,9 +110,11 @@ namespace NextCore::Scripting
 		auto static_id = Reflection::GetStaticId<TComponent>();
 
 		// TODO: Convert to use a pool allocator
-		auto result = new TComponent;
+		Reflection::Constructor<TComponent> constructor;
+		auto result = static_cast<TComponent*>(constructor.Construct());
 
-		m_components.push_back({ static_id, result });
+		ComponentListElement element = { static_id, result };
+		OnAddComponent(element);
 
 		return result;
 	}

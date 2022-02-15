@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "Scripting/Component.h"
 
 namespace NextCore::Scripting
 {

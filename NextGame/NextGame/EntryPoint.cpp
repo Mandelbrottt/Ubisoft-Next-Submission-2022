@@ -7,12 +7,10 @@
 #include <Graphics/Sprite.h>
 #include <Application/Time.h>
 #include <Application/Application.h>
-#include <Math/Matrix.h>
 
-#include <Reflection/Reflection.h>
-
-#include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
+
+#include "Player.h"
 
 int APIENTRY wWinMain(
 	_In_ HINSTANCE     hInstance,
@@ -84,64 +82,29 @@ void
 Shutdown()
 {
 	ExampleShutdown();
-
-	NextCore::Sprite::Cleanup();
 }
 
 //------------------------------------------------------------------------
 // Example data....
 //------------------------------------------------------------------------
+using namespace NextCore;
 using NextCore::Sprite;
 using NextCore::Math::Vector2;
 
-Sprite* g_testSprite;
-Sprite* g_testSprite2;
+std::vector<Scripting::Entity> g_entities;
 
-enum
-{
-	ANIM_FORWARDS,
-	ANIM_BACKWARDS,
-	ANIM_LEFT,
-	ANIM_RIGHT,
-};
+//Scripting::Entity* g_entity1;
+//Scripting::Entity* g_entity2;
+
+//Sprite* g_testSprite;
+//Sprite* g_testSprite2;
 
 //------------------------------------------------------------------------
 
-struct ValidReflection : public NextCore::Scripting::Component
-{
-	int a = 0;
-
-	ValidReflection()
-	{
-		puts("ValidReflection Constructed");
-	}
-	
-	~ValidReflection() override
-	{
-		puts("ValidReflection Destructed");
-	}
-
-	void
-	Foo()
-	{
-		puts("Valid Reflection");
-	}
-
-	REFLECT_DECLARE(ValidReflection)
-
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(a)
-	)
-};
-
-struct InvalidReflection
-{
-	int a;
-};
-
 using namespace NextCore;
 
-void Foo();
+void
+Foo();
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
@@ -149,45 +112,28 @@ void Foo();
 void
 ExampleInit()
 {
+	g_entities.reserve(100);
+
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	{
-		//testSprite = App::CreateSprite(".\\Resources\\Test.bmp", 8, 4);
-		g_testSprite = Sprite::Create(Application::ResourcePath() + "Test.bmp", 8, 4);
-		g_testSprite->SetPosition(400.0f, 400.0f);
-
-		float speed = 1.0f / 15.0f;
-		g_testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0, 1, 2, 3, 4, 5, 6, 7 });
-		g_testSprite->CreateAnimation(ANIM_LEFT, speed, { 8, 9, 10, 11, 12, 13, 14, 15 });
-		g_testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16, 17, 18, 19, 20, 21, 22, 23 });
-		g_testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24, 25, 26, 27, 28, 29, 30, 31 });
-
-		g_testSprite->SetScale(2.0f);
+		g_entities.emplace_back();
+		Scripting::Entity& player = g_entities.back();
+		player.AddComponent<Player>();
+		int a = 2;
 	}
 	{
-		//testSprite2 = App::CreateSprite(".\\Resources\\Ships.bmp", 2, 12);
-		g_testSprite2 = Sprite::Create(Application::ResourcePath() + "Ships.bmp", 2, 12);
-		g_testSprite2->SetPosition(400.0f, 400.0f);
-		g_testSprite2->SetFrame(2);
-		g_testSprite2->SetScale(1.0f);
+		g_entities.emplace_back();		
+		Scripting::Entity& randomSprite = g_entities.back();
+		
+		auto* sprite = randomSprite.AddComponent<Sprite>();
+		sprite->LoadFromTexture(Application::ResourcePath() + "Ships.bmp", 2, 12);
+		sprite->SetPosition(400.0f, 400.0f);
+		sprite->SetFrame(2);
+		sprite->SetScale(1.0f);
 	}
+
 	//------------------------------------------------------------------------
-
-	Scripting::Entity entity;
-
-	Reflection::Type::Register<ValidReflection>();
-
-	auto& valid_type = Reflection::Type::Get<ValidReflection>();
-	auto* valid_component = static_cast<ValidReflection*>(entity.AddComponent(valid_type));
-
-	valid_component->Foo();
-
-	entity.RemoveComponent(valid_component);
-	
-	auto invalid_id = Reflection::GetStaticId<InvalidReflection>();
-	Scripting::Component* invalid_component = entity.AddComponent(invalid_id);
-	//static_cast<ValidReflection*>(invalid_component)->Foo(); // runtime error, returns nullptr
-	entity.RemoveComponent(valid_component);	
 }
 
 //------------------------------------------------------------------------
@@ -199,58 +145,11 @@ ExampleUpdate()
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
-	g_testSprite->Update();
-	g_testSprite2->Update();
-
-	Vector2 position = g_testSprite->GetPosition();
-
-	if (App::GetController().GetLeftThumbStickX() > 0.5f)
+	for (auto& entity : g_entities)
 	{
-		g_testSprite->SetAnimation(ANIM_RIGHT);
-		position.x += 1.0f;
-	}
-	if (App::GetController().GetLeftThumbStickX() < -0.5f)
-	{
-		g_testSprite->SetAnimation(ANIM_LEFT);
-		position.x -= 1.0f;
-	}
-	if (App::GetController().GetLeftThumbStickY() > 0.5f)
-	{
-		g_testSprite->SetAnimation(ANIM_FORWARDS);
-		position.y += 1.0f;
-	}
-	if (App::GetController().GetLeftThumbStickY() < -0.5f)
-	{
-		g_testSprite->SetAnimation(ANIM_BACKWARDS);
-		position.y -= 1.0f;
+		entity.OnUpdate();
 	}
 
-	g_testSprite->SetPosition(position);
-
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-	{
-		g_testSprite->SetScale(g_testSprite->GetScale() + 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-	{
-		g_testSprite->SetScale(g_testSprite->GetScale() - 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-	{
-		g_testSprite->SetAngle(g_testSprite->GetAngle() + 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-	{
-		g_testSprite->SetAngle(g_testSprite->GetAngle() - 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_A, true))
-	{
-		g_testSprite->SetAnimation(-1);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
-	{
-		g_testSprite->SetVertex(0, g_testSprite->GetVertex(0) + Vector2(5.0f, 0));
-	}
 	//------------------------------------------------------------------------
 	// Sample Sound.
 	//------------------------------------------------------------------------
@@ -287,11 +186,14 @@ ExampleRender()
 		App::DrawLine(sx, sy, ex, ey, r, g, b);
 	}
 
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	g_testSprite->Render();
-	g_testSprite2->Render();
-	//------------------------------------------------------------------------
+	for (auto& entity : g_entities)
+	{
+		auto* sprite = entity.GetComponent<Sprite>();
+
+		if (!sprite) continue;
+
+		sprite->Render();
+	}
 
 	//------------------------------------------------------------------------
 	// Example Text.
@@ -315,11 +217,11 @@ struct ConstructorBase
 {
 	virtual
 	~ConstructorBase() = default;
-	
+
 	virtual
 	void*
 	Construct() = 0;
-	
+
 	virtual
 	void*
 	Construct(void* a_location) = 0;
@@ -345,7 +247,7 @@ struct Constructor : ConstructorBase
 
 		return new value_type;
 	}
-	
+
 	void*
 	Construct(void* a_location) override
 	{
@@ -362,7 +264,7 @@ struct Constructor : ConstructorBase
 
 struct Type
 {
-	size_t size;
+	size_t           size;
 	ConstructorBase* constructor;
 };
 
@@ -379,7 +281,8 @@ struct Thing
 		puts("Thing Destructed");
 	}
 
-	virtual void Foo()
+	virtual void
+	Foo()
 	{
 		puts("Thing");
 	}
@@ -399,7 +302,8 @@ struct OtherThing : Thing
 		puts("OtherThing Destructed");
 	}
 
-	void Foo() override
+	void
+	Foo() override
 	{
 		puts("OtherThing");
 	}

@@ -11,6 +11,10 @@ namespace NextCore::Scripting
 		Object()  = default;
 
 		virtual ~Object() = default;
+
 	public:
+		Object(Object const& a_other) = delete;
+
+		Object(Object&& a_other) = default;
 	};
 }

@@ -1,9 +1,30 @@
 #include "pch.h"
 
 #include "Entity.h"
+#include "Component.h"
 
 namespace NextCore::Scripting
 {
+	void
+	Entity::OnUpdate()
+	{
+		for (auto& id : m_needsFirstUpdate)
+		{
+			auto iter = FindComponentById(id);
+			if (iter == m_components.end())
+			{
+				continue;
+			}
+
+			iter->component->OnFirstUpdate();
+		}
+
+		for (auto& [id, component] : m_components)
+		{
+			component->OnUpdate();
+		}
+	}
+
 	Component*
 	Entity::AddComponent(Reflection::StaticTypeId a_typeId)
 	{
@@ -19,12 +40,13 @@ namespace NextCore::Scripting
 			return nullptr;
 		}
 
-		auto* constructor = componentType->GetConstructor();
-		void* p = constructor->Construct();
-		Component* result = static_cast<Component*>(p);
-
-		m_components.push_back({ a_typeId, result });
+		auto*      constructor = componentType->GetConstructor();
+		void*      p           = constructor->Construct();
+		Component* result      = static_cast<Component*>(p);
 		
+		ComponentListElement element = { a_typeId, result };
+		OnAddComponent(element);
+
 		return result;
 	}
 
@@ -74,7 +96,7 @@ namespace NextCore::Scripting
 
 	decltype(Entity::m_components)::iterator
 	Entity::FindComponentById(Reflection::StaticTypeId a_id)
-	{
+	{		
 		auto iter = m_components.begin();
 		auto end  = m_components.end();
 
@@ -118,15 +140,44 @@ namespace NextCore::Scripting
 		// If component exists and it's type is registered with reflection, destruct it
 		if (result)
 		{
-			if (auto* componentType = Reflection::Type::TryGet(a_iter->id); componentType != nullptr)
+			auto& [id, component] = *a_iter;
+			ComponentListElement element { id,  component };
+			OnRemoveComponent(element);
+			
+			if (auto* componentType = Reflection::Type::TryGet(id); componentType != nullptr)
 			{
 				auto* constructor = componentType->GetConstructor();
-				constructor->Destruct(a_iter->component);
+				constructor->Destruct(component);
 			}
-			
-			m_components.erase(a_iter);
 		}
 
 		return result;
+	}
+
+	void
+	Entity::OnAddComponent(ComponentListElement& a_listElement)
+	{
+		auto& [id, component] = a_listElement;
+
+		component->m_entity = this;
+		component->entityId = m_entityId;
+
+		component->OnCreate();
+
+		m_needsFirstUpdate.push_back(id);
+		
+		m_components.emplace_back(std::move(a_listElement));
+	}
+
+	void
+	Entity::OnRemoveComponent(ComponentListElement& a_listElement)
+	{
+		auto& [id, component] = a_listElement;
+
+		component->OnDestroy();
+
+		auto iter = FindComponentById(id);
+
+		m_components.erase(iter);
 	}
 }
