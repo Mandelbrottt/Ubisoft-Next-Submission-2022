@@ -2,6 +2,8 @@
 
 #include "Type.h"
 
+#include "NextCoreCommon.h"
+
 #pragma region Macro Argument Overloading
     #define _EXPAND(x) x
     #define _CAT(a, b) a##b
@@ -16,16 +18,31 @@
 #pragma region Reflection Macros
 	#define _REFLECT_OFFSET_OF(_type_, _field_) ((size_t) &((_type_*) 0)->_field_)
 
-	#define _REFLECT_TYPE_ALIAS This
-	#define _REFLECT_BASE_ALIAS Base
-
 	#define _REFLECT_NAMESPACE ::NextCore::Reflection::
 
 	#define _REFLECT_DECLARE_COMMON(_class_) \
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
+			typedef _REFLECT_NAMESPACE Constructor<_REFLECT_TYPE_ALIAS> ThisConstructor;\
+			inline \
+			static \
+			_REFLECT_NAMESPACE GenericConstructor* \
+			_GetGenericConstructor() \
+			{ \
+				static_assert(sizeof(ThisConstructor) == sizeof(_REFLECT_NAMESPACE GenericConstructor)); \
+				return new ThisConstructor; \
+			} \
+			inline \
+			static \
+			void \
+			_GetGenericConstructor(_REFLECT_NAMESPACE GenericConstructor* a_location) \
+			{ \
+				new(a_location) ThisConstructor; \
+			}\
+			\
 		public: \
+			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
 			static _REFLECT_NAMESPACE Type& GetType() \
 			{ \
 				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
@@ -61,7 +78,7 @@
 			friend class _REFLECT_NAMESPACE Type; \
 			static \
 			void \
-			Reflect(_REFLECT_NAMESPACE Type& r) \
+			_Reflect(_REFLECT_NAMESPACE Type& r) \
 			{ \
 				r _list_; \
 				\
@@ -111,7 +128,7 @@
 
 	#pragma endregion
 	#define REFLECT_REGISTER(_type_) \
-		static int _REFLECT_REGISTER_##_type_ = []() \
+		static _REFLECT_NAMESPACE StaticTypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetStaticId<_type_>(); \

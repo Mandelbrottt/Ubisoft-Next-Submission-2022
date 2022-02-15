@@ -2,7 +2,7 @@
 
 #include "Matrix4.h"
 
-#include "Common.h"
+#include "NextCoreCommon.h"
 
 namespace NextCore::Math
 {

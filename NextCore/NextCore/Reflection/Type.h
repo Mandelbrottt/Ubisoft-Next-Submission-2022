@@ -7,6 +7,11 @@
 
 #include "Field.h"
 #include "TypeTraits.h"
+#include "Constructor.h"
+
+#include "NextCoreCommon.h"
+
+#define DEPRECATED_WARNING_NUMBER 4996
 
 namespace NextCore::Reflection
 {
@@ -36,15 +41,38 @@ namespace NextCore::Reflection
 		const char* c_str;
 	};
 
-	using static_id_t = uint32_t;
+	using static_type_id_underlying_t = uint32_t;
 
+	enum class StaticTypeId : static_type_id_underlying_t { Null = 0, FirstValid = 1 };
+
+	constexpr
+	bool
+	operator ==(StaticTypeId a_lhs, StaticTypeId a_rhs)
+	{
+		auto lhs = static_cast<static_type_id_underlying_t>(a_lhs);
+		auto rhs = static_cast<static_type_id_underlying_t>(a_rhs);
+
+		return lhs == rhs;
+	}
+
+	constexpr
+	bool
+	operator !=(StaticTypeId a_lhs, StaticTypeId a_rhs)
+	{
+		return a_lhs == a_rhs;
+	}
+
+	template<typename T>
+	StaticTypeId
+	GetStaticId() noexcept;
+	
 	class Type
 	{
-		using types_container_t = std::unordered_map<int, class Type>;
+		using types_container_t = std::unordered_map<StaticTypeId, class Type>;
 
-		static static_id_t& StaticIdCounter()
+		static StaticTypeId& StaticIdCounter()
 		{
-			static static_id_t staticIdCounter { 0 };
+			static StaticTypeId staticIdCounter { StaticTypeId::FirstValid };
 			return staticIdCounter;
 		}
 
@@ -53,9 +81,6 @@ namespace NextCore::Reflection
 			static types_container_t container;
 			return container;
 		}
-
-		template<typename T>
-		friend uint32_t GetStaticId() noexcept;
 
 		explicit
 		Type(std::string a_name) noexcept
@@ -68,9 +93,61 @@ namespace NextCore::Reflection
 
 		Type&
 		operator =(Type&&) = delete;
-
+	
 	public:
+		// Warning because move constructor is public?
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) noexcept = default;
+		//{
+		//	this->instanceFields = std::move(a_other.instanceFields);
+
+		//	this->name = std::move(a_other.name);
+
+		//	this->m_typeId = a_other.m_typeId;
+		//	a_other.m_typeId = StaticTypeId::Null;
+
+		//	this->m_size = a_other.m_size;
+		//	a_other.m_size = 0;
+		//	
+		//	std::memcpy(this->m_constructorData, a_other.m_constructorData, sizeof(m_constructorData));
+		//	std::memset(a_other.m_constructorData, 0, sizeof(m_constructorData));
+		//};
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+		/**
+		 * \brief Retrieve the statically assigned type id for the type represented by the current \link Type \endlink.
+		 * \return The non-zero static type id if the current type is valid, zero otherwise.
+		 */
+		StaticTypeId
+		GetStaticId() const
+		{
+			return m_typeId;
+		}
+		
+		/**
+		 * \brief Retrieve the value returned by sizeof for the type class represented by
+		 *        the current \link Type \endlink.
+		 * \return The size of the type.
+		 */
+		int
+		GetSize() const
+		{
+			return m_size;
+		}
+		
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+		// ReSharper disable once CppDeprecatedEntity
+		/**
+		 * \brief Get the instance of the \link GenericConstructor \endlink associated with this type.
+		 * \return A pointer to the \link GenericConstructor \endlink associated with this type.
+		 */
+		const GenericConstructor* GetConstructor()
+		{
+			// See https://en.cppreference.com/w/cpp/types/aligned_storage
+			auto pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(m_constructorData));
+			return pConstructor;
+		}
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
 		 * \brief Register a type for reflection
@@ -83,8 +160,15 @@ namespace NextCore::Reflection
 		types_container_t::iterator
 		Register() noexcept
 		{
-			int  id   = GetStaticId<T>();
-			auto iter = Types().emplace(id, Type::Reflect<T>()).first;
+			StaticTypeId id = Reflection::GetStaticId<T>();
+
+			Type type = Type::Reflect<T>();
+			auto iter = Types().emplace(id, std::move(type)).first;
+			iter->second.m_typeId = id;
+			iter->second.m_size = sizeof(T);
+			
+			GenericConstructor* pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(iter->second.m_constructorData));
+
 			return iter;
 		}
 		
@@ -101,7 +185,7 @@ namespace NextCore::Reflection
 		Type&
 		Get() noexcept
 		{
-			int id = GetStaticId<T>();
+			StaticTypeId id = Reflection::GetStaticId<T>();
 
 			auto iter = Types().find(id);
 			if (iter == Types().end())
@@ -124,7 +208,7 @@ namespace NextCore::Reflection
 		Type*
 		TryGet() noexcept
 		{
-			int id = GetStaticId<T>();
+			StaticTypeId id = Reflection::GetStaticId<T>();
 			
 			return TryGet(id);
 		}
@@ -139,7 +223,7 @@ namespace NextCore::Reflection
 		 */
 		static
 		Type*
-		TryGet(static_id_t a_id) noexcept
+		TryGet(StaticTypeId a_id) noexcept
 		{
 			Type* result = nullptr;
 			if (auto iter = Types().find(a_id); iter != Types().end())
@@ -193,7 +277,16 @@ namespace NextCore::Reflection
 		Reflect() noexcept
 		{
 			Type reflector(typeid(T).name());
-			T::Reflect(reflector);
+			T::_Reflect(reflector);
+
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+			auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
+			// ReSharper disable once CppDeprecatedEntity
+			T::_GetGenericConstructor(pConstructor);
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+			pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(reflector.m_constructorData));
+
 			return reflector;
 		}
 
@@ -202,14 +295,72 @@ namespace NextCore::Reflection
 		{
 			instanceFields.emplace(a_fieldInfo.fieldName, a_fieldInfo);
 		}
+
+	private:
+		StaticTypeId m_typeId = StaticTypeId::Null;
+
+		//std::aligned_storage_t<sizeof(GenericConstructor), alignof(GenericConstructor)> m_constructorData;
+		std::byte m_constructorData[sizeof(GenericConstructor)] { std::byte() };
+		
+		//GenericConstructor m_constructor;
+
+		int m_size = 0;
+		
+	private:
+		template<typename T>
+		friend
+		StaticTypeId
+		GetStaticId() noexcept;
 	};
 
+	namespace Detail
+	{
+		// We need this helper because you can't partially specialize functions to make sfinae work in
+		// the way we want it to here, so pass in a reference to the static type id and increment it here
+		template<typename T, typename = void>
+		struct static_id_helper
+		{
+			static StaticTypeId Increment(StaticTypeId& a_id)
+			{
+				return StaticTypeId::Null;
+			}
+		};
+		
+		template<typename T>
+		struct static_id_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
+		{
+			static StaticTypeId Increment(StaticTypeId& a_id)
+			{
+				// Emulate pre-increment because id doesn't start at 0
+				auto result = a_id;
+
+				// Can't cast to reference and pre-increment, so write to temp var and reassign
+				auto underlying_id = static_cast<static_type_id_underlying_t>(a_id);
+				underlying_id++;
+
+				a_id = static_cast<StaticTypeId>(underlying_id);
+				
+				return result;
+			}
+		};
+	}
+	
+	/**
+	 * \brief  Retrieve the statically assigned type id for the given type
+	 * \tparam T The type who's Id to retrieve
+	 * \return A non-zero type id for a valid reflection type, zero otherwise
+	 */
 	template<typename T>
-	static_id_t
+	StaticTypeId
 	GetStaticId() noexcept
 	{
-		static static_id_t staticId = Type::StaticIdCounter()++;
-		return staticId;
+		static StaticTypeId result = [&]()
+		{
+			auto& static_id_counter = Type::StaticIdCounter();
+			return Detail::static_id_helper<T>::Increment(static_id_counter);
+		}();
+
+		return result;
 	}
 }
 
@@ -221,3 +372,5 @@ static NextCore::Reflection::Description r_description;
 
 // Write-Only
 static NextCore::Reflection::FieldFlags r_flags;
+
+#undef DEPRECATED_WARNING_NUMBER
