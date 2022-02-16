@@ -20,10 +20,7 @@ namespace NextCore::Audio
 
 		Load(a_fileName, a_playOnLoad, a_loop);
 	}
-
-	AudioClip::AudioClip(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
-		: AudioClip(a_fileName.data(), a_playOnLoad, a_loop) { }
-
+	
 	AudioClip::~AudioClip()
 	{
 		Stop();
@@ -51,13 +48,18 @@ namespace NextCore::Audio
 		// See NextAPI/app.h
 		DWORD flags = (a_loop) ? DSBPLAY_LOOPING : 0;
 
+	    //#define PLAY_TO_LOAD
+
 		/* HACK: No way to load a sound from the API directly and check for success,
 		         so play the sound and stop it in the same function is the best we can do */
+		/* BUG: Sound is still playing even though we stop it later in the function,
+		   just keep going and hope for the best */
+	#ifdef PLAY_TO_LOAD
 		if (!CSimpleSound::GetInstance().PlaySound(a_fileName, flags))
 		{
 			return false;
 		}
-
+	#endif
 		// Stop the current audio clip
 		Stop();
 
@@ -65,7 +67,14 @@ namespace NextCore::Audio
 
 		if (a_playOnLoad)
 		{
-			return true;
+			bool result =
+		#ifndef PLAY_TO_LOAD
+				CSimpleSound::GetInstance().PlaySound(a_fileName, flags);
+		#else
+				true;
+		#endif
+
+			return result;
 		}
 
 		// Stop the new audio clip

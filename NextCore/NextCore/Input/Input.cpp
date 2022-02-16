@@ -45,13 +45,6 @@ namespace NextCore::Input
 			}
 		}
 	}
-
-	static
-	bool
-	GetKey(int a_key)
-	{
-		return g_thisFrameButtons[a_key];
-	}
 	
 	float
 	GetAxis(Axis a_axis, uint8_t a_controller)
@@ -67,7 +60,7 @@ namespace NextCore::Input
 			case Axis::LeftStickX:
 				return controller.GetLeftThumbStickX();
 			case Axis::LeftStickY:
-				// BUG: Emulated keys return the wrong signed value for StickY, so we adjust for that here
+				// BUG: Emulated keys return the wrong-signed value for StickY, so we adjust for that here
 				result = controller.GetLeftThumbStickY();
 				emulated_key = result < 0
 					               ? APP_PAD_EMUL_LEFT_THUMB_UP
@@ -123,9 +116,9 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetKey(Key a_button)
+	GetKey(Key a_key)
 	{
-		key_underlying_t key = g_inputMap[a_button];
+		key_underlying_t key = g_inputMap[a_key];
 
 		return g_thisFrameKeys[key];
 	}

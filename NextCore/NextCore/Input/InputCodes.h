@@ -6,50 +6,61 @@ namespace NextCore::Input
 {
 	enum class Axis : uint8_t
 	{
+		// [-1, 1]
 		LeftStickX,
-		Horizontal = LeftStickX,
+		Horizontal     = LeftStickX,
+
+		// [-1, 1]
 		LeftStickY,
-		Vertical = LeftStickY,
+		Vertical       = LeftStickY,
+
+		// [-1, 1]
 		RightStickX,
 		HorizontalLook = RightStickX,
+
+		// [-1, 1]
 		RightStickY,
-		VerticalLook = RightStickY,
+		VerticalLook   = RightStickY,
+
+		// [0, 1]
 		LeftTrigger,
-		L2 = LeftTrigger,
+		L2             = LeftTrigger,
+
+		// [0, 1]
 		RightTrigger,
-		R2 = RightTrigger,
+		R2             = RightTrigger,
 	};
 
 	enum class Button : uint16_t
 	{
 		South,
-		Cross = South,
-		A = South,
-		West,
-		Circle = West,
-		B = West,
-		North,
-		Triangle = North,
-		Y = North,
-		East,
-		X = East,
-		Square = East,
+		Cross         = South,
+		A             = South,
+		West,		  
+		Circle        = West,
+		B             = West,
+		North,		  
+		Triangle      = North,
+		Y             = North,
+		East,		  
+		X             = East,
+		Square        = East,
 		DPadUp,
 		DPadDown,
 		DPadLeft,
 		DPadRight,
 		LeftShoulder,
-		LeftBumper = LeftShoulder,
-		L1 = LeftShoulder,
+		LeftBumper    = LeftShoulder,
+		L1            = LeftShoulder,
 		RightShoulder,
-		RightBumper = RightShoulder,
-		R1 = RightShoulder,
-		LeftStick,
-		RightStick,
-		Start,
-		Menu = Start,
-		Select,
-		Back = Select,
+		RightBumper   = RightShoulder,
+		R1            = RightShoulder,
+		LeftStick,	  
+		RightStick,	  
+		Start,		  
+		Menu          = Start,
+		Select,		  
+		Back          = Select,
 	};
 	
 	enum class Key : uint8_t
