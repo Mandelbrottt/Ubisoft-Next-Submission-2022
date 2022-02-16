@@ -15,6 +15,9 @@
 
 namespace NextCore::Reflection
 {
+	/**
+	 * \brief The display name of a reflected member
+	 */
 	struct Name
 	{
 		constexpr
@@ -27,7 +30,10 @@ namespace NextCore::Reflection
 
 		const char* c_str;
 	};
-
+	
+	/**
+	 * \brief The description of a reflected member
+	 */
 	struct Description
 	{
 		constexpr
@@ -66,6 +72,10 @@ namespace NextCore::Reflection
 	StaticTypeId
 	GetStaticId() noexcept;
 	
+	/**
+	 * \brief A runtime structure that represents a reflected data type.
+	 *        Contains information about member fields, functions, and other type information. 
+	 */
 	class Type
 	{
 		using types_container_t = std::unordered_map<StaticTypeId, class Type>;
@@ -98,20 +108,6 @@ namespace NextCore::Reflection
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) noexcept = default;
-		//{
-		//	this->instanceFields = std::move(a_other.instanceFields);
-
-		//	this->name = std::move(a_other.name);
-
-		//	this->m_typeId = a_other.m_typeId;
-		//	a_other.m_typeId = StaticTypeId::Null;
-
-		//	this->m_size = a_other.m_size;
-		//	a_other.m_size = 0;
-		//	
-		//	std::memcpy(this->m_constructorData, a_other.m_constructorData, sizeof(m_constructorData));
-		//	std::memset(a_other.m_constructorData, 0, sizeof(m_constructorData));
-		//};
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
 		/**
@@ -241,6 +237,7 @@ namespace NextCore::Reflection
 			return Types();
 		}
 
+		// Used by REFLECT_MEMBERS
 		inline
 		Type&
 		operator()(Field&& a_field) noexcept
@@ -249,7 +246,8 @@ namespace NextCore::Reflection
 
 			return *this;
 		}
-		
+
+		// Used by REFLECT_DECLARE if reflecting the base class
 		template<typename TBase, typename TDerived>
 		inline
 		Type&
@@ -271,20 +269,28 @@ namespace NextCore::Reflection
 		std::map<std::string, Field> instanceFields;
 
 	private:
+		// Called by Type::Register
 		template<class T>
 		static
 		Type
 		Reflect() noexcept
 		{
+			// Reflect type T and get information on members
 			Type reflector(typeid(T).name());
 			T::_Reflect(reflector);
-
+			
+			// Generate the constructor/destructor and use placement new under the hood
+			// We use vtable shenanigans to make this work, so the data represented
+			// by reflector.m_constructorData is stored "on the stack" inside this type while
+			// being able to reference it like a pointer and use the vtable to call overridden
+			// versions of Construct and Destruct
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 			auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
 			// ReSharper disable once CppDeprecatedEntity
 			T::_GetGenericConstructor(pConstructor);
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
+			// std::launder is necessary when reinterpret casting a storage pointer, otherwise undefined behaviour
 			pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(reflector.m_constructorData));
 
 			return reflector;
