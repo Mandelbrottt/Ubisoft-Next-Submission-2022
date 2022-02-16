@@ -62,7 +62,7 @@ namespace NextCore::Component
 		bool
 		IsPlaying() const;
 		
-		REFLECT_DECLARE(AudioSource)
+		REFLECT_DECLARE(AudioSource, Component)
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(audioClip, r_name = "Audio Clip")

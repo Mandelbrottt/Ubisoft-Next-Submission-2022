@@ -10,7 +10,8 @@
 	protected: \
 		friend ::NextCore::Reflection::Constructor<_class_>; \
 		\
-		_class_() = default; \
+		_class_() \
+			: Base({ #_class_ }) { } \
 		~_class_() override = default;
 
 namespace NextCore::Reflection
@@ -33,7 +34,10 @@ namespace NextCore::Scripting
 	{
 		friend class Entity;
 	protected:
-		Component() = default;
+		struct ComponentConstructionArgs : ObjectConstructionArgs { };
+
+		explicit
+		Component(ComponentConstructionArgs const& a_args);
 
 		~Component() override = default;
 
@@ -113,8 +117,8 @@ namespace NextCore::Scripting
 		#pragma endregion
 
 	private:
-		EntityId entityId;
+		EntityId m_entityId = EntityId::Null;
 
-		Entity* m_entity;
+		Entity* m_entity = nullptr;
 	};
 }

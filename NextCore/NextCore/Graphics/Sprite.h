@@ -12,7 +12,7 @@
 
 class CSimpleSprite;
 
-namespace NextCore
+namespace NextCore::Graphics
 {
 	class NEXT_CORE_EXPORT Sprite : public Scripting::Component
 	{
@@ -36,7 +36,7 @@ namespace NextCore
 		 * \brief Render the sprite to the screen
 		 */
 		void
-		Render();
+		OnRender();
 		
 		/**
 		 * \return The width of the sprite in pixels. 
@@ -113,7 +113,7 @@ namespace NextCore
 		// TODO: Keep local copies of variables and synchronise them once per frame with the sprite
 		::CSimpleSprite* m_sprite;
 
-		REFLECT_DECLARE(Sprite)
+		REFLECT_DECLARE(Sprite, Component)
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(m_sprite)

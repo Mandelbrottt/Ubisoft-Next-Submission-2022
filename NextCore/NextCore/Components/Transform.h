@@ -52,7 +52,7 @@ namespace NextCore::Component
 		Math::Vector3 m_rotation; // TODO: Convert to quaternion once implemented
 		Math::Vector3 m_scale;
 		
-		REFLECT_DECLARE(Transform)
+		REFLECT_DECLARE(Transform, Component)
 
 		REFLECT_MEMBERS(
 			REFLECT_FIELD(m_position)

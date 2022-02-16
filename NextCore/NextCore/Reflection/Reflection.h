@@ -63,10 +63,6 @@
 	private: \
 		typedef _base_ _REFLECT_BASE_ALIAS; \
 	public: \
-		static _REFLECT_NAMESPACE Type& GetBaseType() \
-		{ \
-			return _REFLECT_NAMESPACE Type::Get<_REFLECT_BASE_ALIAS>();\
-		} \
 		static _REFLECT_NAMESPACE Type* TryGetBaseType() \
 		{ \
 			return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\

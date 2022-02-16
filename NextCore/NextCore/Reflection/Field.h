@@ -41,7 +41,7 @@ namespace NextCore::Reflection
 
 		// Flags that provide additional information about the field.
 		const FieldFlags flags = FfNone;
-
+		
 		/**
 		 * \brief Get a read-only pointer to the field for the given object.
 		 * \tparam TContaining The type that contains the field (can be void*).

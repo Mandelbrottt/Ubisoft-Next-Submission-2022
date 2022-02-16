@@ -18,7 +18,7 @@ private:
 
 	std::string m_filePath;
 
-	REFLECT_DECLARE(Player)
+	REFLECT_DECLARE(Player, Behaviour)
 
 	REFLECT_MEMBERS(
 		REFLECT_FIELD(m_animationSpeed, r_name = "Animation Speed")

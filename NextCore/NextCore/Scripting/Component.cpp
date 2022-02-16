@@ -7,10 +7,13 @@
 
 namespace NextCore::Scripting
 {
+	Component::Component(ComponentConstructionArgs const& a_args)
+		: Object(a_args) {}
+
 	EntityId
 	Component::GetEntityId() const
 	{
-		return entityId;
+		return m_entityId;
 	}
 
 	Entity*

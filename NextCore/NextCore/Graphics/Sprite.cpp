@@ -8,7 +8,7 @@
 
 #include "Reflection/Constructor.h"
 
-namespace NextCore
+namespace NextCore::Graphics
 {
 	using Math::Vector2;
 	using Math::Vector3;
@@ -46,7 +46,7 @@ namespace NextCore
 	}
 
 	void
-	Sprite::Render()
+	Sprite::OnRender()
 	{
 		if (!IsValid())
 		{

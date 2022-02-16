@@ -8,6 +8,7 @@
 namespace NextCore::Scripting
 {
 	Entity::Entity()
+		: Object({ "Entity" })
 	{
 		m_entityId = EntityId::Null;
 
@@ -176,7 +177,7 @@ namespace NextCore::Scripting
 		auto& [id, component] = a_listElement;
 
 		component->m_entity = this;
-		component->entityId = m_entityId;
+		component->m_entityId = m_entityId;
 
 		component->OnCreate();
 

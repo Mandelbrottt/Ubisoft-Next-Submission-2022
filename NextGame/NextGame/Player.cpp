@@ -1,5 +1,3 @@
-#include "pch.h"
-
 #include "Player.h"
 
 #include <Application/Application.h>
@@ -19,11 +17,12 @@ enum
 	AnimRight,
 };
 
+using Graphics::Sprite;
+using namespace Math;
+
 void
 Player::OnCreate()
 {
-	using NextCore::Sprite;
-
 	// Create the sound
 	std::string path        = Application::ResourcePath() + "Test.wav";
 	auto*       audioSource = AddComponent<AudioSource>();
@@ -37,21 +36,18 @@ Player::OnCreate()
 
 	auto* transform       = Transform();
 	transform->Position() = { 400.0f, 400.0f };
-	transform->Scale()    = Math::Vector3(2.0f);
+	transform->Scale()    = Vector3(2.0f);
 
 	// Sprite animations
-	sprite->CreateAnimation(AnimDown,  m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
-	sprite->CreateAnimation(AnimLeft,  m_animationSpeed, { 8, 9, 10, 11, 12, 13, 14, 15 });
+	sprite->CreateAnimation(AnimDown, m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
+	sprite->CreateAnimation(AnimLeft, m_animationSpeed, { 8, 9, 10, 11, 12, 13, 14, 15 });
 	sprite->CreateAnimation(AnimRight, m_animationSpeed, { 16, 17, 18, 19, 20, 21, 22, 23 });
-	sprite->CreateAnimation(AnimUp,    m_animationSpeed, { 24, 25, 26, 27, 28, 29, 30, 31 });
+	sprite->CreateAnimation(AnimUp, m_animationSpeed, { 24, 25, 26, 27, 28, 29, 30, 31 });
 }
 
 void
 Player::OnUpdate()
 {
-	using NextCore::Sprite;
-	using namespace NextCore::Math;
-
 	Sprite* sprite = GetComponent<Sprite>();
 
 	auto* transform = Transform();
