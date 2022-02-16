@@ -299,7 +299,7 @@ namespace NextCore::Reflection
 		void
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{
-			instanceFields.emplace(a_fieldInfo.fieldName, a_fieldInfo);
+			instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
 		}
 
 	private:
