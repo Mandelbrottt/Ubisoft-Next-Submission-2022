@@ -24,8 +24,8 @@ GameInit()
 	{
 		g_entities.emplace_back();
 		Scripting::Entity& player = g_entities.back();
-		player.AddComponent<Player>();
-		player.AddComponent<CrazyLineThing>();
+		player.AddComponent(Player::GetType());
+		player.AddComponent(CrazyLineThing::GetType());
 	}
 }
 

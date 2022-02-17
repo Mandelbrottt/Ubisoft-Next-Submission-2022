@@ -6,6 +6,8 @@
 
 namespace NextCore::Component
 {
+	REFLECT_REGISTER(LineRenderer);
+
 	using Point = LineRenderer::Point;
 
 	std::size_t

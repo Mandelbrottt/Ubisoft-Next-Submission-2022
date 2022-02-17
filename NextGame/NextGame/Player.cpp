@@ -5,6 +5,8 @@
 #include <Components/AudioSource.h>
 #include <Components/Transform.h>
 
+REFLECT_REGISTER(Player);
+
 using namespace NextCore;
 
 using namespace Component;

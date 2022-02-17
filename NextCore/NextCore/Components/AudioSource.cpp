@@ -4,6 +4,8 @@
 
 namespace NextCore::Component
 {
+	REFLECT_REGISTER(AudioSource);
+	
 	bool
 	AudioSource::Play(bool a_loop)
 	{
@@ -33,6 +35,4 @@ namespace NextCore::Component
 	{
 		return audioClip.IsPlaying();
 	}
-
-	REFLECT_REGISTER(AudioSource);
 }
