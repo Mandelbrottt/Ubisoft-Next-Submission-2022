@@ -152,6 +152,6 @@ namespace NextCore::Component
 	bool
 	LineRenderer::IsIndexInBounds(int a_index) const
 	{
-		return a_index > 0 && a_index < m_points.size();
+		return a_index >= 0 && a_index < m_points.size();
 	}
 }

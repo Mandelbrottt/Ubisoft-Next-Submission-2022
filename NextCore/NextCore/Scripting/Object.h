@@ -17,8 +17,8 @@ namespace NextCore::Scripting
 
 		explicit
 		Object(ObjectConstructionArgs const& a_args)
-			:
 		#ifdef NEXT_DEBUG
+			:
 			m_typeName(a_args.typeName)
 		#endif
 		{ }

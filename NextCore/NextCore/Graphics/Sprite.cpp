@@ -200,7 +200,7 @@ namespace NextCore::Graphics
 		m_sprite->SetVertex(y_index, a_value.y);
 	}
 
-	inline bool
+	bool
 	Sprite::IsValid() const
 	{
 		return m_sprite != nullptr;
