@@ -45,14 +45,14 @@ GameRender()
 {	
 	for (auto& entity : g_entities)
 	{
-		if (auto* sprite = entity.GetComponent<Graphics::Sprite>(); sprite && sprite->IsValid())
-		{
-			sprite->OnRender();
-		}
-
 		if (auto* lineRenderer = entity.GetComponent<Component::LineRenderer>(); lineRenderer)
 		{
 			lineRenderer->OnRender();
+		}
+
+		if (auto* sprite = entity.GetComponent<Graphics::Sprite>(); sprite && sprite->IsValid())
+		{
+			sprite->OnRender();
 		}
 	}
 

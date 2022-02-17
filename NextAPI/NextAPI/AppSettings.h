@@ -11,7 +11,7 @@
 #define APP_MAX_FRAME_RATE		(60.0f)					// Maximum update rate.
 #define APP_INIT_WINDOW_WIDTH	(APP_VIRTUAL_WIDTH)		// Initial window width.
 #define APP_INIT_WINDOW_HEIGHT	(APP_VIRTUAL_HEIGHT)	// Initial window height.
-#define APP_WINDOW_TITLE		("Game")
+#define APP_WINDOW_TITLE		("NextGame")
 
 #define APP_ENABLE_DEBUG_INFO_BUTTON		(XINPUT_GAMEPAD_DPAD_UP)
 #define APP_QUIT_KEY						(VK_ESCAPE)

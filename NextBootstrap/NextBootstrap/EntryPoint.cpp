@@ -1,7 +1,5 @@
 #include <Windows.h>
 
-#include "MinimalInclude.h"
-
 int
 APIENTRY
 wWinMain(
