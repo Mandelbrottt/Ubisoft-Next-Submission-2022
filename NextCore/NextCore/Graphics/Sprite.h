@@ -3,6 +3,7 @@
 // Keep to avoid errors when including Sprite.h
 #include <string_view>
 
+#include "Color.h"
 #include "NextCoreCommon.h"
 #include "Math/Vector.h"
 
@@ -31,6 +32,25 @@ namespace NextCore::Graphics
 		 */
 		bool
 		LoadFromTexture(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
+		
+		/**
+		 * \brief Load an image from the given file. The image can be a sprite sheet.
+		 * \param a_imageData A pointer to an array of colors.
+		 * \param a_width The width of the image.
+		 * \param a_height The height of the image.
+		 * \param a_nColumns If the image is a sprite sheet, the number of columns in the sheet.
+		 * \param a_nRows    If the image is a sprite sheet, the number of rows in the sheet.
+		 * \return True if the image was loaded successfully, false otherwise.
+		 * \remark Currently only supports .bmp files.
+		 */
+		bool
+		LoadFromData(
+			Color*   a_imageData,
+			uint32_t a_width,
+			uint32_t a_height,
+			uint32_t a_nColumns = 1,
+			uint32_t a_nRows    = 1
+		);
 		
 		/**
 		 * \brief Render the sprite to the screen

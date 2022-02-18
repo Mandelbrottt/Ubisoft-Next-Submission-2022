@@ -16,7 +16,8 @@ class CSimpleSprite
 {
 public:
     // If width, height and UV coords are not provided then they will be derived from the texture size.
-    CSimpleSprite(const char *fileName, unsigned int nColumns = 1, unsigned int nRows = 1 );
+    CSimpleSprite(const char *fileName, unsigned int nColumns = 1, unsigned int nRows = 1, bool cache = true);
+    CSimpleSprite(unsigned char* imageData, unsigned width, unsigned height, unsigned int nColumns = 1, unsigned int nRows = 1 );
     void Update(float dt);
     void Draw();
     void SetPosition(float x, float y) { m_xpos = x; m_ypos = y; }   
@@ -80,7 +81,8 @@ private:
         unsigned int m_height;
         GLuint m_textureID;
     };
-    bool LoadTexture(const char*);
+    bool LoadTexture(const char* filename, bool cache = true);
+    bool LoadTexture(unsigned char* imageData, unsigned width, unsigned height, const char* cacheName = nullptr);
     static std::map<const char *, sTextureDef > m_textures;
     
 };
