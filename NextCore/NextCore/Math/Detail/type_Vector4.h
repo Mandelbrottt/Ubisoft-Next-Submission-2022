@@ -48,6 +48,13 @@ namespace NextCore::Math
 			  z(a_z),
 			  w(a_w) { }
 		
+		constexpr
+		Vector(Vector<3, TUnderlying> a_vector, TUnderlying a_w)
+			: x(a_vector.data[0]),
+			  y(a_vector.data[1]),
+			  z(a_vector.data[2]),
+			  w(a_w) { }
+		
 		_VECTOR_GENERATE_CONSTRUCTORS();
 
 	#pragma warning( push )

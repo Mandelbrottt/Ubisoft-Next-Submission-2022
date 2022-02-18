@@ -6,12 +6,15 @@
 
 #include "Components/Transform.h"
 
+#include "Math/Transformations.h"
+
 #include "Reflection/Constructor.h"
 
 namespace NextCore::Graphics
 {
 	using Math::Vector2;
 	using Math::Vector3;
+	using Math::Vector4;
 
 	void
 	Sprite::OnUpdate()
@@ -53,10 +56,61 @@ namespace NextCore::Graphics
 			return;
 		}
 		
+		//model[2][3] = -10;
+		
 		auto* transform = Transform();
-		m_sprite->SetPosition(transform->Position().x, transform->Position().y);
-		m_sprite->SetAngle(transform->Rotation().z);
-		m_sprite->SetScale(transform->Scale().z);
+		auto& position = transform->Position();
+		position.z = 5;
+
+		auto widthOn2  = m_sprite->GetWidth()  / 2;
+		auto heightOn2 = m_sprite->GetHeight() / 2;
+
+		// Ensure a consistent model size for now
+		//SetVertex(0, { -widthOn2, -heightOn2 });
+		//SetVertex(1, {  widthOn2, -heightOn2 });
+		//SetVertex(2, {  widthOn2,  heightOn2 });
+		//SetVertex(3, { -widthOn2,  heightOn2 });
+
+		SetVertex(0, { -1, -1 });
+		SetVertex(1, {  1, -1 });
+		SetVertex(2, {  1,  1 });
+		SetVertex(3, { -1,  1 });
+		
+		auto perspective = Math::Perspective(90, 16.f / 9.f, 0.1, 1000);
+
+		auto model = Math::Translate(position);
+
+		for (int i = 0; i < 4; i++)
+		{
+			Vector4 vertex = { GetVertex(i), 1.0f };
+			vertex.z = -15;
+
+			auto mvp = model * perspective;
+			//auto mvp = perspective;
+			auto adjustedVertex = mvp * vertex;
+
+			if (adjustedVertex.w != 0.0f)
+			{
+				adjustedVertex.x /= adjustedVertex.w;
+				adjustedVertex.y /= adjustedVertex.w;
+				adjustedVertex.z /= adjustedVertex.w;
+			}
+
+			auto map = [](float a_value, float a_inStart, float a_inEnd, float a_outStart, float a_outEnd)
+			{
+				float slope = (a_outEnd - a_outStart) / (a_inEnd - a_inStart);
+				return a_outStart + slope * (a_value - a_inStart);
+			};
+
+			adjustedVertex.x = map(adjustedVertex.x, -1, 1, 0, APP_VIRTUAL_WIDTH);
+			adjustedVertex.y = map(adjustedVertex.y, -1, 1, 0, APP_VIRTUAL_HEIGHT);
+
+			SetVertex(i, { adjustedVertex.x, adjustedVertex.y });
+		}
+		
+		//m_sprite->SetPosition(transform->Position().x, transform->Position().y);
+		//m_sprite->SetAngle(transform->Rotation().z);
+		//m_sprite->SetScale(transform->Scale().z);
 
 		m_sprite->Draw();
 	}
@@ -115,7 +169,7 @@ namespace NextCore::Graphics
 	 * \param a_index The index of quad's vertex in the range [0, 3]
 	 * \return The value of the vertex
 	 */
-	Vector2
+	Vector3
 	Sprite::GetVertex(unsigned int a_index) const
 	{
 		if (!IsValid())

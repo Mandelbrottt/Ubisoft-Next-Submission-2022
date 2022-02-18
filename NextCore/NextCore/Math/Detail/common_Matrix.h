@@ -60,8 +60,12 @@ namespace NextCore::Math
 		for (int x = 0; x < SizeRhsX;   x++)
 		for (int z = 0; z < SizeShared; z++)
 		{
-			TUnderlying left  = a_lhs.data[y * SizeShared + z];
-			TUnderlying right = a_rhs.data[z * SizeRhsX   + x];
+			auto leftIndex = y * SizeShared + z;
+			TUnderlying left  = a_lhs.data[leftIndex];
+
+			auto rightIndex = z * SizeRhsX + x;
+			TUnderlying right = a_rhs.data[rightIndex];
+			
 			TUnderlying product = left * right;
 			result.data[y * SizeRhsX + x] += product;
 		}

@@ -37,7 +37,7 @@ Player::OnCreate()
 	sprite->LoadFromTexture(m_filePath, 8, 4);
 
 	auto* transform       = Transform();
-	transform->Position() = { 400.0f, 400.0f };
+	transform->Position() = { 0.0f, 0.0f };
 	transform->Scale()    = Vector3(2.0f);
 
 	// Sprite animations
@@ -59,22 +59,22 @@ Player::OnUpdate()
 	if (Input::GetAxis(Input::Axis::LeftStickX) > 0.5f)
 	{
 		sprite->SetAnimation(AnimRight);
-		position.x += 1.0f;
+		position.x += 1.0f * Time::DeltaTime();
 	}
 	if (Input::GetAxis(Input::Axis::LeftStickX) < -0.5f)
 	{
 		sprite->SetAnimation(AnimLeft);
-		position.x -= 1.0f;
+		position.x -= 1.0f * Time::DeltaTime();
 	}
 	if (Input::GetAxis(Input::Axis::LeftStickY) > 0.5f)
 	{
 		sprite->SetAnimation(AnimUp);
-		position.y += 1.0f;
+		position.y += 1.0f * Time::DeltaTime();
 	}
 	if (Input::GetAxis(Input::Axis::LeftStickY) < -0.5f)
 	{
 		sprite->SetAnimation(AnimDown);
-		position.y -= 1.0f;
+		position.y -= 1.0f * Time::DeltaTime();
 	}
 
 	auto& scale = transform->Scale().z;
@@ -101,10 +101,10 @@ Player::OnUpdate()
 	{
 		sprite->SetAnimation(-1);
 	}
-	if (Input::GetButtonDown(Input::Button::B)) // West Button
-	{
-		sprite->SetVertex(0, sprite->GetVertex(0) + Vector2(5.0f, 0));
-	}
+	//if (Input::GetButtonDown(Input::Button::B)) // West Button
+	//{
+	//	sprite->SetVertex(0, sprite->GetVertex(0) + Vector2(5.0f, 0));
+	//}
 
 	// Sample Sound
 	if (Input::GetButtonDown(Input::Button::B))

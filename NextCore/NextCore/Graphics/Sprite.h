@@ -66,7 +66,7 @@ namespace NextCore::Graphics
 		 * \param a_index The index of quad's vertex in the range [0, 3]
 		 * \return The value of the vertex
 		 */
-		Math::Vector2
+		Math::Vector3
 		GetVertex(unsigned int a_index) const;
 		
 		/**
