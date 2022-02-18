@@ -3,11 +3,23 @@
 #include "Entity.h"
 #include "Component.h"
 
+#include "Components/Transform.h"
+
 namespace NextCore::Scripting
 {
 	Entity::Entity()
+		: Object({ "Entity" })
 	{
 		m_entityId = EntityId::Null;
+
+		// TODO: Will eventually be implemented by the registry when a new entity is created
+		OnCreate();
+	}
+
+	void
+	Entity::OnCreate()
+	{
+		AddComponent<NextCore::Component::Transform>();
 	}
 
 	void
@@ -165,7 +177,7 @@ namespace NextCore::Scripting
 		auto& [id, component] = a_listElement;
 
 		component->m_entity = this;
-		component->entityId = m_entityId;
+		component->m_entityId = m_entityId;
 
 		component->OnCreate();
 
@@ -184,5 +196,12 @@ namespace NextCore::Scripting
 		auto iter = FindComponentById(id);
 
 		m_components.erase(iter);
+	}
+	
+	bool
+	Entity::RemoveComponent(identity<NextCore::Component::Transform>)
+	{
+		auto static_id = Reflection::GetStaticId<NextCore::Component::Transform>();
+		return RemoveComponent(static_id);
 	}
 }

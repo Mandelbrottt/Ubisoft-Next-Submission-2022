@@ -3,12 +3,17 @@
 
 #include "Entity.h"
 
+#include "Components/Transform.h"
+
 namespace NextCore::Scripting
 {
+	Component::Component(ComponentConstructionArgs const& a_args)
+		: Object(a_args) {}
+
 	EntityId
 	Component::GetEntityId() const
 	{
-		return entityId;
+		return m_entityId;
 	}
 
 	Entity*
@@ -16,13 +21,13 @@ namespace NextCore::Scripting
 	{
 		return m_entity;
 	}
-	
-	void
-	Component::SetEntity(Entity* a_entity)
-	{
-		m_entity = a_entity;
-	}
 
+	NextCore::Component::Transform*
+	Component::Transform()
+	{
+		return GetComponent<NextCore::Component::Transform>();
+	}
+	
 	Component*
 	Component::AddComponent(Reflection::Type const& a_type)
 	{

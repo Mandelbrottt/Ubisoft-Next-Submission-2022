@@ -7,6 +7,15 @@
 #include "Reflection/Constructor.h"
 
 #include <type_traits>
+//
+//#include "Components/AudioSource.h"
+//
+//#include "Components/Transform.h"
+
+namespace NextCore::Component
+{
+	class Transform;
+}
 
 namespace NextCore::Scripting
 {
@@ -22,7 +31,10 @@ namespace NextCore::Scripting
 		// TODO: Convert to protected when entity system is in place
 		Entity();
 
-		virtual void
+		void
+		OnCreate();
+
+		void
 		OnUpdate();
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
@@ -42,8 +54,8 @@ namespace NextCore::Scripting
 		bool
 		RemoveComponent()
 		{
-			auto static_id = Reflection::GetStaticId<TComponent>();
-			return RemoveComponent(static_id);
+			// HACK: Use specialization shenanigans to allow private specialization for Transform
+			return RemoveComponent<TComponent>(identity<TComponent> {});
 		}
 
 		bool
@@ -102,6 +114,23 @@ namespace NextCore::Scripting
 		void OnAddComponent(ComponentListElement& a_listElement);
 		
 		void OnRemoveComponent(ComponentListElement& a_listElement);
+
+		template<typename T>
+		struct identity { typedef T type; };
+		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		bool
+		RemoveComponent(identity<TComponent>)
+		{
+			auto static_id = Reflection::GetStaticId<TComponent>();
+			return RemoveComponent(static_id);
+		}
+		
+		/**
+		 * \brief Specialization to only allow this and friends to remove transform
+		 */
+		bool
+		RemoveComponent(identity<NextCore::Component::Transform>);
 	};
 
 	template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool>>

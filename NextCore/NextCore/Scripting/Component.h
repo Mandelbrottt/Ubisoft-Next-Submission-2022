@@ -3,7 +3,27 @@
 #include "Object.h"
 #include "Entity.h"
 
-#include "Reflection/Type.h"
+#include "Reflection/Reflection.h"
+
+#define GenerateConstructors(_class_) \
+		_REFLECT_AUTO_FORMAT_INDENT \
+	protected: \
+		friend ::NextCore::Reflection::Constructor<_class_>; \
+		\
+		_class_() \
+			: Base({ #_class_ }) { } \
+		~_class_() override = default;
+
+namespace NextCore::Reflection
+{
+	template<typename T>
+	struct Constructor;
+}
+
+namespace NextCore::Component
+{
+	class Transform;
+}
 
 namespace NextCore::Scripting
 {
@@ -14,9 +34,13 @@ namespace NextCore::Scripting
 	{
 		friend class Entity;
 	protected:
-		Component() = default;
+		struct ComponentConstructionArgs : ObjectConstructionArgs { };
+
+		explicit
+		Component(ComponentConstructionArgs const& a_args);
 
 		~Component() override = default;
+
 	public:
 		#pragma region Getters and Setters
 		EntityId
@@ -25,9 +49,9 @@ namespace NextCore::Scripting
 		Entity*
 		GetEntity() const;
 
-		// TEMPORARY:
-		void
-		SetEntity(Entity* a_entity);
+		NextCore::Component::Transform*
+		Transform();
+
 		#pragma endregion
 
 		#pragma region Event Functions
@@ -93,8 +117,8 @@ namespace NextCore::Scripting
 		#pragma endregion
 
 	private:
-		EntityId entityId;
+		EntityId m_entityId = EntityId::Null;
 
-		Entity* m_entity;
+		Entity* m_entity = nullptr;
 	};
 }

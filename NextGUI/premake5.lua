@@ -1,64 +1,51 @@
 local project_name = script_dir()
 
 project(project_name)
-    location "%{wks.location}/%{prj.name}"
+    location "%{wks.location}/%{prj.name}/"
     kind "StaticLib"
     language "C++"
-    cppdialect "C++14"
+    cppdialect "C++17"
     staticruntime "off"
     floatingpoint "fast"
-
-    warnings "off"
+    rtti "on"
     
     flags {
+        "FatalWarnings",
         "MultiProcessorCompile"
     }
     
     targetdir(output_dir .. "/%{prj.name}/")
     objdir   (obj_dir    .. "/%{prj.name}/")
 
-    pchheader "stdafx.h"
-    pchsource "stdafx.cpp"
+    pchheader "pch.h"
+    pchsource "pch/pch.cpp"
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
         "%{prj.location}/%{prj.name}/**.h",
-        "%{prj.location}/*.cpp",
-        "%{prj.location}/*.h",
-    }
-
-    removefiles { 
-        "*GameTest.cpp", 
-        "**/DirectSound.*", 
-        "**/mydirectsound.h" 
+        "%{prj.location}/pch/*",
     }
 
     includedirs {
         "%{prj.location}/",
-        "%{wks.location}/NextAPI/",
+        "%{prj.location}/pch/",
+        "%{wks.location}/NextCore/",
     }
 
     links {
-        "freeglut"
+        "NextCore",
     }
 
-    filter "architecture:Win32"
-        libdirs {
-            "%{prj.location}/glut/lib/",
-        }
-
-    filter "architecture:x64"
-        libdirs {
-            "%{prj.location}/glut/lib/x64/",
-        }
-
-    filter {}
+    libdirs {
+        output_dir .. "/NextCore/",
+    }
 
     defines {
-        "NEXT_API",
+        "NEXT_GUI",
         "MMNOSOUND",
     }
 
+    
     filter "system:windows"
         systemversion "latest"
 

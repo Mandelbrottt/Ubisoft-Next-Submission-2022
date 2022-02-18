@@ -24,8 +24,14 @@ namespace NextCore::Math
 		constexpr static TUnderlying size = VECTOR_SIZE;
 
 		constexpr
+		Vector()
+			: x(0),
+			  y(0),
+			  z(0) { }
+		
+		constexpr
 		explicit
-		Vector(TUnderlying a_value = 0)
+		Vector(TUnderlying a_value)
 			: x(a_value),
 			  y(a_value),
 			  z(a_value) { }
@@ -34,6 +40,12 @@ namespace NextCore::Math
 		Vector(TUnderlying a_x, TUnderlying a_y)
 			: x(a_x),
 			  y(a_y),
+			  z(0) { }
+		
+		constexpr
+		Vector(Vector<2, TUnderlying> a_other)
+			: x(a_other.data[0]),
+			  y(a_other.data[1]),
 			  z(0) { }
 
 		constexpr

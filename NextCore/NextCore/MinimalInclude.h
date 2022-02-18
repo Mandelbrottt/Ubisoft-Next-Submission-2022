@@ -5,7 +5,11 @@
 
 #include <Graphics/Sprite.h>
 
+#include <Input/Input.h>
+
+#include <Reflection/Field.h>
 #include <Reflection/Reflection.h>
+#include <Reflection/Type.h>
 
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>

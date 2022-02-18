@@ -2,10 +2,10 @@
 
 #include <MinimalInclude.h>
 
-#include <NextAPI/app.h>
-
 class Player final : public NextCore::Scripting::Behaviour
 {
+	GenerateConstructors(Player)
+
 public:
 	void
 	OnCreate() override;
@@ -18,7 +18,7 @@ private:
 
 	std::string m_filePath;
 
-	REFLECT_DECLARE(Player)
+	REFLECT_DECLARE(Player, Behaviour)
 
 	REFLECT_MEMBERS(
 		REFLECT_FIELD(m_animationSpeed, r_name = "Animation Speed")

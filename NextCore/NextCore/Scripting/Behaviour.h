@@ -10,7 +10,11 @@ namespace NextCore::Scripting
 	class Behaviour : public Component
 	{
 	protected:
-		Behaviour() = default;
+		struct BehaviourConstructionArgs : ComponentConstructionArgs { };
+
+		explicit
+		Behaviour(BehaviourConstructionArgs const& a_args)
+			: Component(a_args) {}
 
 		~Behaviour() override = default;
 	public:

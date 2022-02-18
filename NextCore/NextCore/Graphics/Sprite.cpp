@@ -4,22 +4,14 @@
 
 #include "Application/Time.h"
 
+#include "Components/Transform.h"
+
 #include "Reflection/Constructor.h"
 
-namespace NextCore
+namespace NextCore::Graphics
 {
 	using Math::Vector2;
 	using Math::Vector3;
-
-	Sprite::Sprite(std::string_view a_fileName, unsigned int a_nColumns, unsigned int a_nRows)
-	{
-		if (a_fileName.empty())
-		{
-			return;
-		}
-
-		LoadFromTexture(a_fileName, a_nColumns, a_nRows);
-	}
 
 	void
 	Sprite::OnUpdate()
@@ -35,7 +27,7 @@ namespace NextCore
 		// Bug with update, there's no bounds checking so be careful to pass in
 		// sufficiently small values of delta time
 		adjustedDeltaTime = std::min(adjustedDeltaTime, 1.f / 30.f);
-		m_sprite->Update(adjustedDeltaTime);
+		m_sprite->Update(adjustedDeltaTime * 1000.f);
 	}
 
 	bool
@@ -54,29 +46,21 @@ namespace NextCore
 	}
 
 	void
-	Sprite::Render()
+	Sprite::OnRender()
 	{
 		if (!IsValid())
 		{
 			return;
 		}
+		
+		auto* transform = Transform();
+		m_sprite->SetPosition(transform->Position().x, transform->Position().y);
+		m_sprite->SetAngle(transform->Rotation().z);
+		m_sprite->SetScale(transform->Scale().z);
 
 		m_sprite->Draw();
 	}
-
-	Vector2
-	Sprite::GetPosition() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		Vector2 result;
-		m_sprite->GetPosition(result.x, result.y);
-		return result;
-	}
-
+	
 	float
 	Sprite::GetWidth() const
 	{
@@ -114,29 +98,7 @@ namespace NextCore
 
 		return result;
 	}
-
-	float
-	Sprite::GetAngle() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		return m_sprite->GetAngle();
-	}
-
-	float
-	Sprite::GetScale() const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		return m_sprite->GetScale();
-	}
-
+	
 	unsigned
 	Sprite::GetFrame() const
 	{
@@ -172,51 +134,7 @@ namespace NextCore
 
 		return result;
 	}
-
-	void
-	Sprite::SetPosition(Vector2 a_position)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetPosition(a_position.x, a_position.y);
-	}
-
-	void
-	Sprite::SetPosition(float a_x, float a_y)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		this->SetPosition({ a_x, a_y });
-	}
-
-	void
-	Sprite::SetAngle(float a_angle)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetAngle(a_angle);
-	}
-
-	void
-	Sprite::SetScale(float a_scale)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		m_sprite->SetScale(a_scale);
-	}
-
+	
 	void
 	Sprite::SetFrame(unsigned int a_frame)
 	{
@@ -282,7 +200,7 @@ namespace NextCore
 		m_sprite->SetVertex(y_index, a_value.y);
 	}
 
-	inline bool
+	bool
 	Sprite::IsValid() const
 	{
 		return m_sprite != nullptr;

@@ -6,6 +6,6 @@ namespace NextCore::Application
 {
 	std::string ResourcePath()
 	{
-		return "./Resources/";
+		return NEXT_RESOURCE_DIR;
 	}
 }

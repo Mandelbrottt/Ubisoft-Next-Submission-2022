@@ -35,3 +35,8 @@
 #define _REFLECT_TYPE_ALIAS This
 #define _REFLECT_BASE_ALIAS Base
 #define _REFLECT_VALID_REFLECTION_TYPE_ALIAS _ConfirmValidReflectionType
+
+#define _REFLECT_REQUIRE_SEMICOLON  static_assert(true)
+
+// Some auto formatters don't like access specifiers being the first line in a macro
+#define _REFLECT_AUTO_FORMAT_INDENT static_assert(true);

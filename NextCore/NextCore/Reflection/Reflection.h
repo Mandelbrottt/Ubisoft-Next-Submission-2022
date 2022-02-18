@@ -21,6 +21,7 @@
 	#define _REFLECT_NAMESPACE ::NextCore::Reflection::
 
 	#define _REFLECT_DECLARE_COMMON(_class_) \
+			_REFLECT_AUTO_FORMAT_INDENT \
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
@@ -59,34 +60,31 @@
 
 	#define _REFLECT_DECLARE_2(_derived_, _base_) \
 		_REFLECT_DECLARE_COMMON(_derived_) \
-		private: \
-			typedef _base_ _REFLECT_BASE_ALIAS; \
-		public: \
-			static _REFLECT_NAMESPACE Type& GetBaseType() \
-			{ \
-				return _REFLECT_NAMESPACE Type::Get<_REFLECT_BASE_ALIAS>();\
-			} \
-			static _REFLECT_NAMESPACE Type* TryGetBaseType() \
-			{ \
-				return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\
-			}
+	private: \
+		typedef _base_ _REFLECT_BASE_ALIAS; \
+	public: \
+		static _REFLECT_NAMESPACE Type* TryGetBaseType() \
+		{ \
+			return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\
+		}
 
 	#define REFLECT_DECLARE(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
 
 	#define REFLECT_MEMBERS(_list_) \
-		private:\
-			friend class _REFLECT_NAMESPACE Type; \
-			static \
-			void \
-			_Reflect(_REFLECT_NAMESPACE Type& r) \
+		_REFLECT_AUTO_FORMAT_INDENT \
+	private:\
+		friend class _REFLECT_NAMESPACE Type; \
+		static \
+		void \
+		_Reflect(_REFLECT_NAMESPACE Type& r) \
+		{ \
+			r _list_; \
+			\
+			if constexpr (_REFLECT_NAMESPACE is_complete_type_v<Base>) \
 			{ \
-				r _list_; \
-				\
-				if constexpr (_REFLECT_NAMESPACE is_complete_type_v<Base>)\
-				{\
-					r.operator()<Base, This>();\
-				}\
-			}
+				r.operator()<Base, This>(); \
+			} \
+		}
 
 	#pragma region Reflect Field Overloads
 		#define _REFLECT_FIELD_PROTOTYPE(_field_, ...) \
@@ -132,5 +130,5 @@
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetStaticId<_type_>(); \
-		}();
+		}()
 #pragma endregion

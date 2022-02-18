@@ -1,8 +1,4 @@
-#include "pch.h"
-
 #include <Windows.h>
-
-#include "MinimalInclude.h"
 
 int
 APIENTRY

@@ -1,5 +1,7 @@
-project "NextCore"
-    location "%{wks.location}/NextCore"
+local project_name = script_dir()
+
+project(project_name)
+    location "%{wks.location}/%{prj.name}"
     kind "StaticLib"
     language "C++"
     cppdialect "C++17"
@@ -16,16 +18,17 @@ project "NextCore"
     objdir   (obj_dir    .. "/%{prj.name}/")
 
     pchheader "pch.h"
-    pchsource "pch.cpp"
+    pchsource "pch/pch.cpp"
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
         "%{prj.location}/%{prj.name}/**.h",
-        "%{prj.location}/pch.*",
+        "%{prj.location}/pch/*",
     }
 
     includedirs {
         "%{prj.location}/",
+        "%{prj.location}/pch/",
         "%{prj.location}/NextCore/",
         "%{wks.location}/NextAPI/",
     }
@@ -39,15 +42,20 @@ project "NextCore"
     }
 
     defines {
-        "NEXT_CORE"
+        "NEXT_CORE",
+        "MMNOSOUND",
     }
-
+    
     
     filter "system:windows"
-        systemversion "latest"
-
+    systemversion "latest"
+    
     filter "configurations:Debug"
-        defines { "NEXT_DEBUG" }
+        defines { 
+            "NEXT_DEBUG",
+            -- "NEXT_RESOURCE_DIR=\"%{wks.location}/Resources/\""
+            "NEXT_RESOURCE_DIR=\"./\""
+        }
         runtime "debug"
         optimize "off"
         symbols "on"
@@ -59,7 +67,10 @@ project "NextCore"
     --     symbols "on"
     
     filter "configurations:Release"
-        defines { "NEXT_RELEASE" }
+        defines { 
+            "NEXT_RELEASE",
+            "NEXT_RESOURCE_DIR=\"./Resources/\""
+        }
         runtime "release"
         optimize "speed"
-        symbols "off"
+        symbols(do_release_symbols)

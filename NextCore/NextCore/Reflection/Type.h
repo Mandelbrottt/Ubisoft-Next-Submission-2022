@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <map>
 #include <typeinfo>
+#include <type_traits>
 #include <unordered_map>
 
 #include "Field.h"
@@ -15,6 +16,9 @@
 
 namespace NextCore::Reflection
 {
+	/**
+	 * \brief The display name of a reflected member
+	 */
 	struct Name
 	{
 		constexpr
@@ -27,7 +31,10 @@ namespace NextCore::Reflection
 
 		const char* c_str;
 	};
-
+	
+	/**
+	 * \brief The description of a reflected member
+	 */
 	struct Description
 	{
 		constexpr
@@ -66,6 +73,10 @@ namespace NextCore::Reflection
 	StaticTypeId
 	GetStaticId() noexcept;
 	
+	/**
+	 * \brief A runtime structure that represents a reflected data type.
+	 *        Contains information about member fields, functions, and other type information. 
+	 */
 	class Type
 	{
 		using types_container_t = std::unordered_map<StaticTypeId, class Type>;
@@ -77,8 +88,8 @@ namespace NextCore::Reflection
 		}
 
 		static types_container_t& Types()
-		{
-			static types_container_t container;
+		{			
+			static types_container_t container {};
 			return container;
 		}
 
@@ -98,22 +109,8 @@ namespace NextCore::Reflection
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) noexcept = default;
-		//{
-		//	this->instanceFields = std::move(a_other.instanceFields);
-
-		//	this->name = std::move(a_other.name);
-
-		//	this->m_typeId = a_other.m_typeId;
-		//	a_other.m_typeId = StaticTypeId::Null;
-
-		//	this->m_size = a_other.m_size;
-		//	a_other.m_size = 0;
-		//	
-		//	std::memcpy(this->m_constructorData, a_other.m_constructorData, sizeof(m_constructorData));
-		//	std::memset(a_other.m_constructorData, 0, sizeof(m_constructorData));
-		//};
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-
+		
 		/**
 		 * \brief Retrieve the statically assigned type id for the type represented by the current \link Type \endlink.
 		 * \return The non-zero static type id if the current type is valid, zero otherwise.
@@ -160,15 +157,22 @@ namespace NextCore::Reflection
 		types_container_t::iterator
 		Register() noexcept
 		{
+			static_assert(is_complete_type_v<typename T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS>);
+			
 			StaticTypeId id = Reflection::GetStaticId<T>();
 
+			auto& types = Types();
+			
+			if (auto iter = types.find(id); iter != types.end())
+			{
+				return iter;
+			}
+
 			Type type = Type::Reflect<T>();
-			auto iter = Types().emplace(id, std::move(type)).first;
+			auto iter = types.emplace(id, std::move(type)).first;
 			iter->second.m_typeId = id;
 			iter->second.m_size = sizeof(T);
 			
-			GenericConstructor* pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(iter->second.m_constructorData));
-
 			return iter;
 		}
 		
@@ -241,6 +245,7 @@ namespace NextCore::Reflection
 			return Types();
 		}
 
+		// Used by REFLECT_MEMBERS
 		inline
 		Type&
 		operator()(Field&& a_field) noexcept
@@ -249,18 +254,21 @@ namespace NextCore::Reflection
 
 			return *this;
 		}
-		
+
+		// Used by REFLECT_DECLARE if reflecting the base class
 		template<typename TBase, typename TDerived>
 		inline
 		Type&
 		operator()() noexcept
 		{
 			static_assert(std::is_base_of_v<TBase, TDerived>, "Second argument of REFLECT_DECLARE MUST be derived from the first!");
-			
-			auto& baseType   = Get<TBase>();
-			auto& baseFields = baseType.instanceFields;
-			
-			instanceFields.insert(baseFields.begin(), baseFields.end());
+
+			if (auto* baseType = TryGet<TBase>(); baseType && !baseType->instanceFields.empty())
+			{
+				auto& baseFields = baseType->instanceFields;
+				
+				instanceFields.insert(baseFields.begin(), baseFields.end());
+			}
 
 			return *this;
 		}
@@ -271,29 +279,55 @@ namespace NextCore::Reflection
 		std::map<std::string, Field> instanceFields;
 
 	private:
+		// We need this helper because you can't partially specialize functions to make sfinae work in
+		// the way we want it to here, so do the reflection work in the static reflect function
+		template<typename T, typename = void>
+		struct reflect_helper
+		{
+			static Type Reflect()
+			{
+				Type reflector(typeid(T).name());
+				return reflector;
+			}
+		};
+		
+		template<typename T>
+		struct reflect_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
+		{
+			static Type Reflect()
+			{
+				// Reflect type T and get information on members
+				Type reflector(typeid(T).name());
+				T::_Reflect(reflector);
+				
+				// Generate the constructor/destructor and use placement new under the hood
+				// We use vtable shenanigans to make this work, so the data represented
+				// by reflector.m_constructorData is stored "on the stack" inside this type while
+				// being able to reference it like a pointer and use the vtable to call overridden
+				// versions of Construct and Destruct
+				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+				auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
+				// ReSharper disable once CppDeprecatedEntity
+				T::_GetGenericConstructor(pConstructor);
+				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+				
+				return reflector;
+			}
+		};
+		
+		// Called by Type::Register
 		template<class T>
 		static
 		Type
 		Reflect() noexcept
 		{
-			Type reflector(typeid(T).name());
-			T::_Reflect(reflector);
-
-			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-			auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
-			// ReSharper disable once CppDeprecatedEntity
-			T::_GetGenericConstructor(pConstructor);
-			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-
-			pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(reflector.m_constructorData));
-
-			return reflector;
+			return reflect_helper<T>::Reflect();
 		}
 
 		void
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{
-			instanceFields.emplace(a_fieldInfo.fieldName, a_fieldInfo);
+			instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
 		}
 
 	private:
