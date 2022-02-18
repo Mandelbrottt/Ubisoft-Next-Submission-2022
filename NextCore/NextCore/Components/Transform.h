@@ -48,9 +48,9 @@ namespace NextCore::Component
 		}
 
 	private:
-		Math::Vector3 m_position;
-		Math::Vector3 m_rotation; // TODO: Convert to quaternion once implemented
-		Math::Vector3 m_scale;
+		Math::Vector3 m_position = Math::Vector3(0);
+		Math::Vector3 m_rotation = Math::Vector3(0); // TODO: Convert to quaternion once implemented
+		Math::Vector3 m_scale    = Math::Vector3(1);
 		
 		REFLECT_DECLARE(Transform, Component)
 
