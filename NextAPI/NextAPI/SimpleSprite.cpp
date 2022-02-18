@@ -21,11 +21,11 @@
 std::map<const char *, CSimpleSprite::sTextureDef > CSimpleSprite::m_textures;
 
 //-----------------------------------------------------------------------------
-CSimpleSprite::CSimpleSprite(const char *fileName, unsigned int nColumns, unsigned int nRows, bool cache)
+CSimpleSprite::CSimpleSprite(const char *fileName, unsigned int nColumns, unsigned int nRows)
 	: m_nColumns(nColumns)
 	, m_nRows(nRows)
 {
-	if (LoadTexture(fileName, cache))
+	if (LoadTexture(fileName))
 	{
 		CalculateUVs();
 		m_points[0] = -(m_width / 2.0f);
@@ -39,23 +39,6 @@ CSimpleSprite::CSimpleSprite(const char *fileName, unsigned int nColumns, unsign
 	}
 }
 
-CSimpleSprite::CSimpleSprite(unsigned char* imageData, unsigned width, unsigned height, unsigned nColumns, unsigned nRows)
-	: m_nColumns(nColumns)
-	, m_nRows(nRows)
-{
-	if (LoadTexture(imageData, width, height))
-	{
-		CalculateUVs();
-		m_points[0] = -(m_width / 2.0f);
-		m_points[1] = -(m_height / 2.0f);
-		m_points[2] = m_width / 2.0f;
-		m_points[3] = -(m_height / 2.0f);
-		m_points[4] = m_width / 2.0f;
-		m_points[5] = m_height / 2.0f;
-		m_points[6] = -(m_width / 2.0f);
-		m_points[7] = m_height / 2.0f;
-	}
-}
 void CSimpleSprite::Update(float dt)
 {
     if (m_currentAnim >= 0)
@@ -80,7 +63,7 @@ void CSimpleSprite::CalculateUVs()
     int column = m_frame % m_nColumns;
 
     m_width = m_texWidth * u;
-    m_height = m_texHeight * v;
+    m_height = m_texWidth * v;
     m_uvcoords[0] = u * column;
     m_uvcoords[1] = v * (float)(row+1);
 
@@ -154,7 +137,7 @@ void CSimpleSprite::SetAnimation(int id)
 	m_currentAnim = -1;
 }
 
-bool CSimpleSprite::LoadTexture(const char * filename, bool cache)
+bool CSimpleSprite::LoadTexture(const char * filename)
 {
     if (m_textures.find(filename) != m_textures.end())
     {        
@@ -167,23 +150,7 @@ bool CSimpleSprite::LoadTexture(const char * filename, bool cache)
     
     unsigned char *imageData = loadBMPRaw(filename, m_texWidth, m_texHeight, true);
 
-	const char* cacheName = nullptr;
-	
-	bool result = LoadTexture(imageData, m_texWidth, m_texHeight);
-	
-	if (cache)
-	{
-		cacheName = filename;
-	}
-
-	free(imageData);
-
-	return result;
-}
-
-bool CSimpleSprite::LoadTexture(unsigned char* imageData, unsigned width, unsigned height, const char* cacheName)
-{
-	GLuint texture = 0;
+    GLuint texture = 0;
 	if (imageData)
 	{
 		glGenTextures(1, &texture);
@@ -194,17 +161,11 @@ bool CSimpleSprite::LoadTexture(unsigned char* imageData, unsigned width, unsign
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_texWidth, m_texHeight, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+		free(imageData);
+		sTextureDef textureDef = { m_texWidth, m_texHeight, texture };
+		m_textures[filename] = textureDef;
 		m_texture = texture;
-		m_texWidth = width;
-		m_texHeight = height;
-
-		if (cacheName)
-		{
-			sTextureDef textureDef = { m_texWidth, m_texHeight, m_texture };
-			m_textures[cacheName] = textureDef;
-		}
-		
 		return true;
 	}
 	return false;
