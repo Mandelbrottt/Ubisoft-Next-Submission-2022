@@ -63,7 +63,7 @@ void CSimpleSprite::CalculateUVs()
     int column = m_frame % m_nColumns;
 
     m_width = m_texWidth * u;
-    m_height = m_texWidth * v;
+    m_height = m_texHeight * v;
     m_uvcoords[0] = u * column;
     m_uvcoords[1] = v * (float)(row+1);
 

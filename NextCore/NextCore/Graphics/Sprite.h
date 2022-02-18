@@ -70,6 +70,13 @@ namespace NextCore::Graphics
 		GetVertex(unsigned int a_index) const;
 		
 		/**
+		 * \param a_index The index of quad's Uv in the range [0, 3]
+		 * \return The value of the uv
+		 */
+		Math::Vector2
+		GetUv(unsigned int a_index) const;
+		
+		/**
 		 * \param a_frame The frame of animation to move to. 
 		 */
 		void
@@ -105,6 +112,13 @@ namespace NextCore::Graphics
 		 */
 		void
 		SetVertex(unsigned int a_index, Math::Vector2 a_value);
+		
+		/**
+		 * \param a_index The index of the quad's uv in the range [0, 3]
+		 * \param a_value The value of the uv
+		 */
+		void
+		SetUv(unsigned int a_index, Math::Vector2 a_value);
 
 		bool
 		IsValid() const;

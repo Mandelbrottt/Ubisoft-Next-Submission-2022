@@ -40,8 +40,11 @@ public:
         m_animations.push_back(anim);        
     };
 	
-	void SetVertex(unsigned int i, float v) { if(i < 8) m_points[i] = v; }
 	float GetVertex(unsigned int i) { if (i >= 8) i = 0; return m_points[i]; }
+	void SetVertex(unsigned int i, float v) { if(i < 8) m_points[i] = v; }
+	
+	float GetUv(unsigned int i) { if (i >= 8) i = 0; return m_uvcoords[i]; }
+	void SetUv(unsigned int i, float v) { if(i < 8) m_uvcoords[i] = v; }
 
 private:
     void CalculateUVs();

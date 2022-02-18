@@ -134,7 +134,27 @@ namespace NextCore::Graphics
 
 		return result;
 	}
-	
+
+	Math::Vector2
+	Sprite::GetUv(unsigned a_index) const
+	{
+		if (!IsValid())
+		{
+			return {};
+		}
+
+		// Multiply input index by 2 because underlying api uses individual floats instead of structs
+		unsigned x_index = a_index * 2;
+		unsigned y_index = x_index + 1;
+
+		Vector2 result {
+			m_sprite->GetUv(x_index),
+			m_sprite->GetUv(y_index)
+		};
+
+		return result;
+	}
+
 	void
 	Sprite::SetFrame(unsigned int a_frame)
 	{
@@ -198,6 +218,22 @@ namespace NextCore::Graphics
 
 		m_sprite->SetVertex(x_index, a_value.x);
 		m_sprite->SetVertex(y_index, a_value.y);
+	}
+
+	void
+	Sprite::SetUv(unsigned a_index, Math::Vector2 a_value)
+	{
+		if (!IsValid())
+		{
+			return;
+		}
+
+		// Multiply input index by 2 because underlying api uses individual floats instead of structs
+		unsigned x_index = a_index * 2;
+		unsigned y_index = x_index + 1;
+
+		m_sprite->SetUv(x_index, a_value.x);
+		m_sprite->SetUv(y_index, a_value.y);
 	}
 
 	bool
