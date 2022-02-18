@@ -1,21 +1,22 @@
 local project_name = script_dir()
 
 project(project_name)
-    location "%{wks.location}/%{prj.name}"
-    kind "StaticLib"
-    language "C++"
-    cppdialect "C++14"
+    location      "%{wks.location}/%{prj.name}"
+    kind          "StaticLib"
+    language      "C++"
+    cppdialect    "C++14"
     staticruntime "off"
     floatingpoint "fast"
 
-    warnings "off"
+    -- Disable warnings because this isn't our code
+    warnings "off" 
     
     flags {
         "MultiProcessorCompile"
     }
     
-    targetdir(output_dir .. "/%{prj.name}/")
-    objdir   (obj_dir    .. "/%{prj.name}/")
+    targetdir(user_config.output_dir .. "/%{prj.name}/")
+    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
 
     pchheader "stdafx.h"
     pchsource "stdafx.cpp"
@@ -68,14 +69,14 @@ project(project_name)
         optimize "off"
         symbols "on"
     
-    -- filter "configurations:Development"
-    --     defines { "NEXT_DEVELOPMENT" }
-    --     runtime "release"
-    --     optimize "debug"
-    --     symbols "on"
+    filter "configurations:Development"
+        defines { "NEXT_DEVELOPMENT" }
+        runtime "release"
+        optimize "debug"
+        symbols "on"
     
     filter "configurations:Release"
         defines { "NEXT_RELEASE" }
         runtime "release"
         optimize "speed"
-        symbols(do_release_symbols)
+        symbols(user_config.do_release_symbols)

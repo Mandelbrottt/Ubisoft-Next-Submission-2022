@@ -1,13 +1,18 @@
 -- Config
-output_dir = "%{wks.location}/Build/Bin/%{cfg.architecture}/%{cfg.buildcfg}"
-obj_dir    = "%{wks.location}/Build/Obj/%{cfg.architecture}/%{cfg.buildcfg}"
+user_config = {
+    -- Application settings
+    app_name = "NextGame",
+    exe_dir  = "Executable/",
+    
+    -- Project settings
+    do_release_symbols = "on",
+    
+    -- Build locations
+    output_dir = "%{wks.location}/Build/Bin/%{cfg.architecture}/%{cfg.buildcfg}",
+    obj_dir    = "%{wks.location}/Build/Obj/%{cfg.architecture}/%{cfg.buildcfg}",
+}
 
-app_name = "NextGame"
-exe_dir  = "Executable/"
-
-exe_output_dir = output_dir .. "/" .. exe_dir
-
-do_release_symbols = "on"
+user_config.exe_output_dir = user_config.output_dir .. "/" .. user_config.exe_dir
 
 local function mysplit (inputstr, sep)
     if sep == nil then
@@ -37,6 +42,7 @@ workspace "NextSubmission"
 
     configurations {
         "Debug", 
+        "Development",
         "Release"
     }
 

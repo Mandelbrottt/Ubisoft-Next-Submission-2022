@@ -1,23 +1,24 @@
 local project_name = script_dir()
 
 project(project_name)
-    location "%{wks.location}/%{prj.name}/"
-    kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++17"
+    location      "%{wks.location}/%{prj.name}/"
+    kind          "ConsoleApp"
+    language      "C++"
+    cppdialect    "C++17"
     staticruntime "off"
     floatingpoint "fast"
-    rtti "on"
+    rtti          "on"
     
     flags {
         "FatalWarnings",
         "MultiProcessorCompile"
     }
     
-    targetdir(exe_output_dir)
-    objdir   (obj_dir    .. "/%{prj.name}/")
+    -- Output to the executable directory instead of a project directory
+    targetdir(user_config.exe_output_dir)
+    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
 
-    targetname(app_name)
+    targetname(user_config.app_name)
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
@@ -42,9 +43,9 @@ project(project_name)
     }
 
     libdirs {
-        output_dir .. "/NextAPI/",
-        output_dir .. "/NextCore/",
-        output_dir .. "/%{prj.name}/",
+        user_config.output_dir .. "/NextAPI/",
+        user_config.output_dir .. "/NextCore/",
+        user_config.output_dir .. "/%{prj.name}/",
     }
 
     defines {
@@ -58,7 +59,7 @@ project(project_name)
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/*.dll\" \"" .. exe_output_dir .. "\"",
+            "{COPY} \"%{wks.location}NextAPI/glut/bin/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
         }
 
     filter "architecture:x64"
@@ -67,27 +68,35 @@ project(project_name)
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. exe_output_dir .. "\"",
+            "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
         }
 
     filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"
-        defines { "NEXT_DEBUG" }
-        runtime "debug"
+        defines  { "NEXT_DEBUG" }
+        runtime  "debug"
         optimize "off"
-        symbols "on"
-        debugdir "%{wks.location}/Resources/" -- Why doesn't this work?
+        symbols  "on"
     
-    -- filter "configurations:Development"
-    --     defines { "NEXT_DEVELOPMENT" }
-    --     runtime "release"
-    --     optimize "debug"
-    --     symbols "on"
+    filter "configurations:Development"
+        defines  { "NEXT_DEVELOPMENT" }
+        runtime  "release"
+        optimize "debug"
+        symbols  "on"
+
+    filter "configurations:not Release"
+        debugdir "%{wks.location}/"
     
     filter "configurations:Release"
-        defines { "NEXT_RELEASE" }
-        runtime "release"
+        defines  { "NEXT_RELEASE" }
+        runtime  "release"
         optimize "speed"
-        symbols(do_release_symbols)
+        symbols  (do_release_symbols)
+        debugdir (user_config.exe_output_dir) -- Why doesn't this work?
+    
+        -- Only copy game resources in Release because we use the resources in-place otherwise
+        postbuildcommands {
+            "{COPY} \"%{wks.location}Resources/\" \"" .. user_config.exe_output_dir .. "/Resources/\"",
+        }

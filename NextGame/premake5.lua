@@ -1,22 +1,21 @@
 local project_name = script_dir()
 
 project(project_name)
-    location "%{wks.location}/%{prj.name}/"
-    -- kind "ConsoleApp"
-    kind "StaticLib"
-    language "C++"
-    cppdialect "C++17"
+    location      "%{wks.location}/%{prj.name}/"
+    kind          "StaticLib"
+    language      "C++"
+    cppdialect    "C++17"
     staticruntime "off"
     floatingpoint "fast"
-    rtti "on"
+    rtti          "on"
 
     flags {
         "FatalWarnings",
         "MultiProcessorCompile"
     }
 
-    targetdir(output_dir .. "/%{prj.name}/")
-    objdir   (obj_dir    .. "/%{prj.name}/")
+    targetdir(user_config.output_dir .. "/%{prj.name}/")
+    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
@@ -36,8 +35,8 @@ project(project_name)
     }
 
     libdirs {
-        output_dir .. "/NextAPI/",
-        output_dir .. "/NextCore/",
+        user_config.output_dir .. "/NextAPI/",
+        user_config.output_dir .. "/NextCore/",
     }
 
     defines {
@@ -54,18 +53,14 @@ project(project_name)
         optimize "off"
         symbols "on"
     
-    -- filter "configurations:Development"
-    --     defines { "NEXT_DEVELOPMENT" }
-    --     runtime "release"
-    --     optimize "debug"
-    --     symbols "on"
+    filter "configurations:Development"
+        defines { "NEXT_DEVELOPMENT" }
+        runtime "release"
+        optimize "debug"
+        symbols "on"
     
     filter "configurations:Release"
         defines { "NEXT_RELEASE" }
         runtime "release"
         optimize "speed"
-        symbols(do_release_symbols)
-        
-        postbuildcommands {
-            "{COPY} \"%{prj.location}Resources/\" \"" .. exe_output_dir .. "/Resources/\"",
-        }
+        symbols(user_config.do_release_symbols)
