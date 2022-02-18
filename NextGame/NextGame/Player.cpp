@@ -35,10 +35,14 @@ Player::OnCreate()
 	m_animationSpeed = 1.0f / 15.0f;
 	auto* sprite     = AddComponent<Sprite>();
 	sprite->LoadFromTexture(m_filePath, 8, 4);
+	sprite->SetVertex(0, { -1, -1 });
+	sprite->SetVertex(1, {  1, -1 });
+	sprite->SetVertex(2, {  1,  1 });
+	sprite->SetVertex(3, { -1,  1 });
 
 	auto* transform       = Transform();
-	transform->Position() = { 0.0f, 0.0f };
-	transform->Scale()    = Vector3(2.0f);
+	transform->Position() = { 0.0f, 0.0f, 5 };
+	transform->Scale()    = Vector3(1.0f);
 
 	// Sprite animations
 	sprite->CreateAnimation(AnimDown, m_animationSpeed, { 0, 1, 2, 3, 4, 5, 6, 7 });
@@ -77,25 +81,24 @@ Player::OnUpdate()
 		position.y -= 1.0f * Time::DeltaTime();
 	}
 
-	auto& scale = transform->Scale().z;
-	auto& angle = transform->Rotation().z;
+	auto& scale = transform->Scale();
 
 	// Sprite rotation and scale
 	if (Input::GetButton(Input::Button::DPadUp) || GetAxis(Input::Axis::VerticalLook) > 0.5)
 	{
-		scale += 0.1f;
+		scale.y += 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadDown) || GetAxis(Input::Axis::VerticalLook) < -0.5)
 	{
-		scale -= 0.1f;
+		scale.y -= 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadLeft) || GetAxis(Input::Axis::HorizontalLook) < -0.5)
 	{
-		angle += 0.1f;
+		scale.x -= 0.1f;
 	}
 	if (Input::GetButton(Input::Button::DPadRight) || GetAxis(Input::Axis::HorizontalLook) > 0.5)
 	{
-		angle -= 0.1f;
+		scale.x += 0.1f;
 	}
 	if (Input::GetButtonDown(Input::Button::A)) // South Button
 	{

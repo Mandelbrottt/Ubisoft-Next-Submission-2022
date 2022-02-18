@@ -1,6 +1,6 @@
 #include "CrazyLineThing.h"
 
-#include <Application/Time.h>
+#include <MinimalInclude.h>
 
 #include <Components/LineRenderer.h>
 

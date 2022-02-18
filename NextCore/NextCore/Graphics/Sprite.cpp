@@ -56,62 +56,48 @@ namespace NextCore::Graphics
 			return;
 		}
 		
-		//model[2][3] = -10;
+		//SetVertex(0, { -1, -1 });
+		//SetVertex(1, {  1, -1 });
+		//SetVertex(2, {  1,  1 });
+		//SetVertex(3, { -1,  1 });
+
+		using namespace Math;
+
+		float fov = 90;
+		float aspect = 16.f / 9.f;
+		
+		auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+
+		static float rotationAngle = 0;
+		rotationAngle += Time::DeltaTime();
 		
 		auto* transform = Transform();
 		auto& position = transform->Position();
-		position.z = 5;
+		auto& scale    = transform->Scale();
 
-		auto widthOn2  = m_sprite->GetWidth()  / 2;
-		auto heightOn2 = m_sprite->GetHeight() / 2;
-
-		// Ensure a consistent model size for now
-		//SetVertex(0, { -widthOn2, -heightOn2 });
-		//SetVertex(1, {  widthOn2, -heightOn2 });
-		//SetVertex(2, {  widthOn2,  heightOn2 });
-		//SetVertex(3, { -widthOn2,  heightOn2 });
-
-		SetVertex(0, { -1, -1 });
-		SetVertex(1, {  1, -1 });
-		SetVertex(2, {  1,  1 });
-		SetVertex(3, { -1,  1 });
-		
-		auto perspective = Math::Perspective(90, 16.f / 9.f, 0.1, 1000);
-
-		auto model = Math::Translate(position);
+		auto model = Matrix4::Identity();
+		model *= Scale(scale);
+		model *= RotateZ(rotationAngle * 0.5f);
+		model *= RotateX(rotationAngle);
+		model *= Translate(position);
 
 		for (int i = 0; i < 4; i++)
 		{
-			Vector4 vertex = { GetVertex(i), 1.0f };
-			vertex.z = -15;
+			Vector4 vertex = { m_vertices[i], 1.0f };
+			
+			auto transformedVertex = model       * vertex;
+			auto projectedVertex   = perspective * transformedVertex;
+			
+			projectedVertex.x /= projectedVertex.w;
+			projectedVertex.y /= projectedVertex.w;
+			projectedVertex.z /= projectedVertex.w;
+			
+			projectedVertex.y *= aspect;
 
-			auto mvp = model * perspective;
-			//auto mvp = perspective;
-			auto adjustedVertex = mvp * vertex;
-
-			if (adjustedVertex.w != 0.0f)
-			{
-				adjustedVertex.x /= adjustedVertex.w;
-				adjustedVertex.y /= adjustedVertex.w;
-				adjustedVertex.z /= adjustedVertex.w;
-			}
-
-			auto map = [](float a_value, float a_inStart, float a_inEnd, float a_outStart, float a_outEnd)
-			{
-				float slope = (a_outEnd - a_outStart) / (a_inEnd - a_inStart);
-				return a_outStart + slope * (a_value - a_inStart);
-			};
-
-			adjustedVertex.x = map(adjustedVertex.x, -1, 1, 0, APP_VIRTUAL_WIDTH);
-			adjustedVertex.y = map(adjustedVertex.y, -1, 1, 0, APP_VIRTUAL_HEIGHT);
-
-			SetVertex(i, { adjustedVertex.x, adjustedVertex.y });
+			m_sprite->SetVertex(2 * i,     projectedVertex.x);
+			m_sprite->SetVertex(2 * i + 1, projectedVertex.y);
 		}
 		
-		//m_sprite->SetPosition(transform->Position().x, transform->Position().y);
-		//m_sprite->SetAngle(transform->Rotation().z);
-		//m_sprite->SetScale(transform->Scale().z);
-
 		m_sprite->Draw();
 	}
 	
@@ -178,13 +164,15 @@ namespace NextCore::Graphics
 		}
 
 		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		unsigned x_index = a_index * 2;
-		unsigned y_index = x_index + 1;
+		//unsigned x_index = a_index * 2;
+		//unsigned y_index = x_index + 1;
 
-		Vector2 result {
-			m_sprite->GetVertex(x_index),
-			m_sprite->GetVertex(y_index)
-		};
+		//Vector2 result {
+		//	m_sprite->GetVertex(x_index),
+		//	m_sprite->GetVertex(y_index)
+		//};
+
+		Vector3 result = m_vertices[a_index];
 
 		return result;
 	}
@@ -259,7 +247,7 @@ namespace NextCore::Graphics
 	 * \param a_value The value of the vertex
 	 */
 	void
-	Sprite::SetVertex(unsigned int a_index, Vector2 a_value)
+	Sprite::SetVertex(unsigned int a_index, Vector3 a_value)
 	{
 		if (!IsValid())
 		{
@@ -267,11 +255,13 @@ namespace NextCore::Graphics
 		}
 
 		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		unsigned x_index = a_index * 2;
-		unsigned y_index = x_index + 1;
+		//unsigned x_index = a_index * 2;
+		//unsigned y_index = x_index + 1;
 
-		m_sprite->SetVertex(x_index, a_value.x);
-		m_sprite->SetVertex(y_index, a_value.y);
+		//m_sprite->SetVertex(x_index, a_value.x);
+		//m_sprite->SetVertex(y_index, a_value.y);
+
+		m_vertices[a_index] = a_value;
 	}
 
 	void

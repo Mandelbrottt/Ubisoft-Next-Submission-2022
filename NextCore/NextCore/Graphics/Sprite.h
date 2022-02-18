@@ -111,7 +111,7 @@ namespace NextCore::Graphics
 		 * \param a_value The value of the vertex
 		 */
 		void
-		SetVertex(unsigned int a_index, Math::Vector2 a_value);
+		SetVertex(unsigned int a_index, Math::Vector3 a_value);
 		
 		/**
 		 * \param a_index The index of the quad's uv in the range [0, 3]
@@ -126,6 +126,8 @@ namespace NextCore::Graphics
 	private:
 		// TODO: Keep local copies of variables and synchronise them once per frame with the sprite
 		::CSimpleSprite* m_sprite;
+
+		Math::Vector3 m_vertices[4];
 
 		REFLECT_DECLARE(Sprite, Component)
 

@@ -54,6 +54,10 @@ namespace NextCore::Math
 	operator *(Matrix<SizeShared, SizeLhsY, TUnderlying> a_lhs, Matrix<SizeRhsX, SizeShared, TUnderlying> a_rhs)
 	{
 		Matrix<SizeRhsX, SizeShared, TUnderlying> result { 0 };
+
+		const auto sizeX      = SizeRhsX;
+		const auto sizeY      = SizeLhsY;
+		const auto sizeShared = SizeShared;
 		
 		// ReSharper disable CppBadChildStatementIndent
 		for (int y = 0; y < SizeLhsY;   y++)
@@ -63,11 +67,11 @@ namespace NextCore::Math
 			auto leftIndex = y * SizeShared + z;
 			TUnderlying left  = a_lhs.data[leftIndex];
 
-			auto rightIndex = z * SizeRhsX + x;
+			auto rightIndex = y * SizeRhsX + x;
 			TUnderlying right = a_rhs.data[rightIndex];
 			
 			TUnderlying product = left * right;
-			result.data[y * SizeRhsX + x] += product;
+			result.data[z * SizeRhsX + x] += product;
 		}
 		// ReSharper restore CppBadChildStatementIndent
 
@@ -156,6 +160,7 @@ namespace NextCore::Math
 		_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_UNDERLYING_TYPE(*) \
 		_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_UNDERLYING_TYPE(/) \
 	  */\
+		_MATRIX_DEFINE_BINARY_OPERATOR_MEMBER_SAME_TYPE_SIMPLE(*) \
 		constexpr \
 		Vector<size_x, TUnderlying>& \
 		operator [](int a_index)\
