@@ -33,6 +33,22 @@ namespace NextCore::Graphics
 		LoadFromTexture(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
 		/**
+		 * \brief Prepare the sprite for rendering
+		 */
+		void
+		OnPreRender();
+
+		/**
+		 * \return The average depth of this sprite
+		 * \remark only valid on any given frame after the call to \link OnPreRender \endlink
+		 */
+		float
+		GetDepth() const
+		{
+			return m_depth;
+		}
+		
+		/**
 		 * \brief Render the sprite to the screen
 		 */
 		void
@@ -128,6 +144,8 @@ namespace NextCore::Graphics
 		::CSimpleSprite* m_sprite;
 
 		Math::Vector3 m_vertices[4];
+
+		float m_depth;
 
 		REFLECT_DECLARE(Sprite, Component)
 

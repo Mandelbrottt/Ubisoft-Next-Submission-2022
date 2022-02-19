@@ -47,20 +47,15 @@ namespace NextCore::Graphics
 
 		return true;
 	}
-
+	
 	void
-	Sprite::OnRender()
+	Sprite::OnPreRender()
 	{
 		if (!IsValid())
 		{
 			return;
 		}
 		
-		//SetVertex(0, { -1, -1 });
-		//SetVertex(1, {  1, -1 });
-		//SetVertex(2, {  1,  1 });
-		//SetVertex(3, { -1,  1 });
-
 		using namespace Math;
 
 		// Model Matrix
@@ -83,6 +78,8 @@ namespace NextCore::Graphics
 		float aspect = 16.f / 9.f;
 		
 		auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+
+		float runningDepthTotal = 0.0f;
 		
 		for (int i = 0; i < 4; i++)
 		{
@@ -99,6 +96,19 @@ namespace NextCore::Graphics
 
 			m_sprite->SetVertex(2 * i,     projectedVertex.x);
 			m_sprite->SetVertex(2 * i + 1, projectedVertex.y);
+
+			runningDepthTotal += projectedVertex.z;
+		}
+
+		m_depth = runningDepthTotal / 4;
+	}
+
+	void
+	Sprite::OnRender()
+	{
+		if (!IsValid())
+		{
+			return;
 		}
 		
 		m_sprite->Draw();
