@@ -111,9 +111,9 @@ void Display()
 	gUserRenderProfiler.Stop();
 	if (gRenderUpdateTimes)
 	{
-		gUpdateDeltaTime.Print	 (10, 40, "Update");
-		gUserRenderProfiler.Print(10, 25, "User Render");
-		gUserUpdateProfiler.Print(10, 10, "User Update");
+		gUpdateDeltaTime.Print	 (-0.95, -0.90, "Update");
+		gUserRenderProfiler.Print(-0.95, -0.93, "User Render");
+		gUserUpdateProfiler.Print(-0.95, -0.96, "User Update");
 	}
 	glFlush();  // Render now						 
 }

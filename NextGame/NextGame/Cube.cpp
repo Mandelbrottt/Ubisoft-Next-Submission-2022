@@ -18,24 +18,14 @@ Cube::OnUpdate()
 {
 	//m_timeElapsed += Time::DeltaTime();
 
+	auto& position = Transform()->Position();
 	auto& rotation = Transform()->Rotation();
 	
-	if (Input::GetAxis(Input::Axis::Vertical) > 0.5)
-	{
-		rotation.x += 1.0f * Time::DeltaTime();
-	}
-	if (Input::GetAxis(Input::Axis::Vertical) < -0.5)
-	{
-		rotation.x -= 1.0f * Time::DeltaTime();
-	}
-	if (Input::GetAxis(Input::Axis::Horizontal) > 0.5)
-	{
-		rotation.y += 1.0f * Time::DeltaTime();
-	}
-	if (Input::GetAxis(Input::Axis::Horizontal) < -0.5)
-	{
-		rotation.y -= 1.0f * Time::DeltaTime();
-	}
-	
-	//Transform()->Rotation() = { m_timeElapsed * 0.5f, m_timeElapsed };
+	position.x += GetAxis(Input::Axis::Horizontal)   * Time::DeltaTime();
+	position.y += GetAxis(Input::Axis::RightTrigger) * Time::DeltaTime();
+	position.y -= GetAxis(Input::Axis::LeftTrigger)  * Time::DeltaTime();
+	position.z += GetAxis(Input::Axis::Vertical)     * Time::DeltaTime();
+
+	rotation.x += GetAxis(Input::Axis::VerticalLook)   * Time::DeltaTime();
+	rotation.y += GetAxis(Input::Axis::HorizontalLook) * Time::DeltaTime();
 }

@@ -27,7 +27,8 @@ GameInit()
 {
 	g_entities.reserve(100);
 
-	g_model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+	//g_model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+	g_model.LoadFromFile(Application::ResourcePath() + "complex/deer.obj");
 	
 	{
 		//g_entities.emplace_back();
@@ -106,6 +107,16 @@ GameRender()
 		auto predicate = [](const Graphics::Primitive* a_lhs, const Graphics::Primitive* a_rhs)
 		{
 			// Depth is front-to-back 1-0
+			if (a_lhs->GetDepth() < 0 || a_lhs->GetDepth() > 1)
+			{
+				return false;
+			}
+
+			if (a_rhs->GetDepth() < 0 || a_rhs->GetDepth() > 1)
+			{
+				return true;
+			}
+			
 			return a_lhs->GetDepth() > a_rhs->GetDepth();
 		};
 
@@ -113,6 +124,12 @@ GameRender()
 
 		for (int i = 0; i < primitives.size(); i++)
 		{
+			float depth = sortedPrimitives[i]->GetDepth();
+			if (depth < 0 || depth > 1)
+			{
+				break;
+			}
+			
 			const_cast<Graphics::Primitive*>(sortedPrimitives[i])->OnRender();
 		}
 	}
