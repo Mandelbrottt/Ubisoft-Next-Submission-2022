@@ -129,24 +129,17 @@ namespace NextCore::Graphics::Detail
 
 		// Holy arguments, batman!
 		// Read in face data
+		// ReSharper disable CppBadListLineBreaks
 		auto numIndicesRead = sscanf_s(
-			a_line,
-			format,
-			&indices[runningIndex].x,
-			&indices[runningIndex].y,
-			&indices[runningIndex++].z,
-			&indices[runningIndex].x,
-			&indices[runningIndex].y,
-			&indices[runningIndex++].z,
-			&indices[runningIndex].x,
-			&indices[runningIndex].y,
-			&indices[runningIndex++].z,
-			&indices[runningIndex].x,
-			&indices[runningIndex].y,
-			&indices[runningIndex++].z
+			a_line, format,
+			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
+			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
+			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
+			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z
 		);
+		// ReSharper restore CppBadListLineBreaks
 
-		if (!PrimitiveSanityCheck(numIndicesRead))
+		if (!PrimitiveTypeSanityCheck(numIndicesRead))
 		{
 			return;
 		}
@@ -155,24 +148,22 @@ namespace NextCore::Graphics::Detail
 		for (int i = 0; i < numVertices; i++)
 		{
 			Vertex v;
-			{
-				int positionIndex = indices[numIndicesRead].x;
-				v.position = m_positions[positionIndex];
-			}
-			{
-				int uvIndex = indices[numIndicesRead].y;
-				v.uv = m_uvs[uvIndex];
-			}
-			{
-				int normalIndex = indices[numIndicesRead].z;
-				v.normal = m_normals[normalIndex];
-			}
+			
+			int positionIndex = indices[numIndicesRead].x;
+			v.position = m_positions[positionIndex];
+			
+			int uvIndex = indices[numIndicesRead].y;
+			v.uv = m_uvs[uvIndex];
+			
+			int normalIndex = indices[numIndicesRead].z;
+			v.normal = m_normals[normalIndex];
+			
 			m_vertices.push_back(v);
 		}
 	}
 
 	bool
-	WavefrontModelLoader::PrimitiveSanityCheck(int a_numIndicesRead)
+	WavefrontModelLoader::PrimitiveTypeSanityCheck(int a_numIndicesRead)
 	{
 		auto primitiveType = PrimitiveType::Null;
 		
