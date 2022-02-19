@@ -5,6 +5,10 @@
 
 #include <Components/LineRenderer.h>
 
+#include <Graphics/Model.h>
+
+#include <Math/Transformations.h>
+
 #include <NextAPI/app.h>
 
 #include "CrazyLineThing.h"
@@ -17,10 +21,14 @@ using namespace NextCore;
 
 std::vector<Scripting::Entity> g_entities;
 
+Graphics::Model g_model;
+
 void
 GameInit()
 {
 	g_entities.reserve(100);
+
+	g_model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
 	
 	{
 		//g_entities.emplace_back();
@@ -65,25 +73,72 @@ GameRender()
 		int spriteCount;
 		auto* sprites = entity.GetComponents<Graphics::Sprite>(&spriteCount);
 		
-		if (sprites)
+		//if (sprites)
+		//{
+		//	for (int i = 0; i < spriteCount; i++)
+		//	{
+		//		sprites[i]->OnPreRender();
+		//	}
+		//	
+		//	auto predicate = [](Graphics::Sprite* a_lhs, Graphics::Sprite* a_rhs)
+		//	{
+		//		// Depth is front-to-back 1-0
+		//		return a_lhs->GetDepth() > a_rhs->GetDepth();
+		//	};
+		//	
+		//	std::sort(sprites, sprites + spriteCount, predicate);
+		//	
+		//	for (int i = 0; i < spriteCount; i++)
+		//	{
+		//		sprites[i]->OnRender();
+		//	}
+		//}
+	}
+
+	using namespace Math;
+
+	// Model Matrix
+	auto* transform = g_entities[0].GetComponent<Component::Transform>();
+	auto& scale     = transform->Scale();
+	auto& rotation  = transform->Rotation();
+	auto& position  = transform->Position();
+
+	auto model = Matrix4::Identity();
+	model *= Scale(scale);
+	model *= RotateZ(rotation.z);
+	model *= RotateY(rotation.y);
+	model *= RotateX(rotation.x);
+	model *= Translate(position);
+
+	// View Matrix
+
+	// Perspective Matrix
+	float fov    = 90;
+	float aspect = 16.f / 9.f;
+
+	auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+
+	for (auto& mesh : g_model.GetMeshes())
+	{
+		auto const&                 primitives       = mesh.GetPrimitives();
+		const Graphics::Primitive** sortedPrimitives = new const Graphics::Primitive*[primitives.size()];
+		for (int i = 0; i < primitives.size(); i++)
 		{
-			for (int i = 0; i < spriteCount; i++)
-			{
-				sprites[i]->OnPreRender();
-			}
-			
-			auto predicate = [](Graphics::Sprite* a_lhs, Graphics::Sprite* a_rhs)
-			{
-				// Depth is front-to-back 1-0
-				return a_lhs->GetDepth() > a_rhs->GetDepth();
-			};
-			
-			std::sort(sprites, sprites + spriteCount, predicate);
-			
-			for (int i = 0; i < spriteCount; i++)
-			{
-				sprites[i]->OnRender();
-			}
+			sortedPrimitives[i] = &primitives[i];
+			const_cast<Graphics::Primitive&>(primitives[i]).OnRenderPrepare(model, {}, perspective);
+		}
+
+		auto predicate = [](const Graphics::Primitive* a_lhs, const Graphics::Primitive* a_rhs)
+		{
+			// Depth is front-to-back 1-0
+			return a_lhs->GetDepth() > a_rhs->GetDepth();
+		};
+
+		std::sort(sortedPrimitives, sortedPrimitives + primitives.size(), predicate);
+
+		for (int i = 0; i < primitives.size(); i++)
+		{
+			const_cast<Graphics::Primitive*>(sortedPrimitives[i])->OnRender();
 		}
 	}
 

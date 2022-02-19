@@ -9,6 +9,11 @@ using namespace Math;
 void
 Cube::OnCreate()
 {
+	auto* transform       = Transform();
+	transform->Position() = { 0.0f, 0.0f, 5 };
+
+	return;
+	
 	// Create the sound
 	m_baseFilePath = Application::ResourcePath() + "cube/";
 
@@ -61,9 +66,6 @@ Cube::OnCreate()
 		sprite->SetVertex(2, {  1,  1, -1 }); //1.000000 1.000000 -1.000000
 		sprite->SetVertex(3, {  1, -1, -1 }); //1.000000 -1.000000 -1.000000
 	}
-
-	auto* transform       = Transform();
-	transform->Position() = { 0.0f, 0.0f, 5 };
 }
 
 void

@@ -25,8 +25,9 @@ namespace NextCore::Graphics
 		friend class Mesh;
 		
 		Primitive() = default;
-		~Primitive() = default;
 	public:
+		~Primitive() = default;
+		
 		Primitive(Primitive const& a_other) = delete;
 		Primitive& 
 		operator =(Primitive const& a_other) = delete;

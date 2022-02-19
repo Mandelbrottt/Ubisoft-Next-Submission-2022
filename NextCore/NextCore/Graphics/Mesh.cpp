@@ -29,7 +29,7 @@ namespace NextCore::Graphics
 				throw "Invalid File";
 		}
 
-		int numPrimitives = a_vertices.size() / numVerticesPerPrimitive;
+		int numPrimitives = static_cast<int>(a_vertices.size() / numVerticesPerPrimitive);
 
 		for (int i = 0; i < numPrimitives; i++)
 		{
@@ -48,7 +48,7 @@ namespace NextCore::Graphics
 			m_primitives.emplace_back(std::move(p));
 		}
 		
-		return false;
+		return m_primitives.size() != 0;
 	}
 
 	void

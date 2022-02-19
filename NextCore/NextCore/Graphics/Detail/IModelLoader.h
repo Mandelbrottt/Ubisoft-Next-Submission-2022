@@ -2,8 +2,6 @@
 
 #include "ModelLoaderTypedefs.h"
 
-#include "Graphics/Mesh.h"
-
 #include <fstream>
 
 namespace NextCore::Graphics::Detail

@@ -2,6 +2,8 @@
 
 #include "IModelLoader.h"
 
+#include "Graphics/Primitive.h"
+
 namespace NextCore::Graphics::Detail
 {
 	class WavefrontModelLoader : public IModelLoader
@@ -24,7 +26,7 @@ namespace NextCore::Graphics::Detail
 		ReadFace(const char* a_line);
 
 		bool
-		PrimitiveSanityCheck(int a_numIndicesRead);
+		PrimitiveTypeSanityCheck(int a_numIndicesRead);
 
 	private:
 		std::vector<Math::Vector3> m_positions;

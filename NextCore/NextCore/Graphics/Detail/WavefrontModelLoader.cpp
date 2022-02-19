@@ -2,6 +2,8 @@
 
 #include "WavefrontModelLoader.h"
 
+#include "Graphics/Mesh.h"
+
 #include <filesystem>
 #include <fstream>
 
@@ -22,15 +24,20 @@ namespace NextCore::Graphics::Detail
 		{
 			std::getline(a_fileStream, line);
 
+			if (line.size() < 2)
+			{
+				continue;
+			}
+
 			auto index = line.find_first_not_of(" \t");
+
+			if (index == std::string::npos)
+				index = 0;
 
 			const char* line_c_str = line.c_str() + index;
 			
-			char& firstCharacter = line[index];
-			firstCharacter &= ~32;
-			
+			char& firstCharacter = line[index];			
 			char& secondCharacter = line[index + 1];
-			secondCharacter &= ~32;
 
 			if (firstCharacter == '#')
 			{
@@ -76,7 +83,7 @@ namespace NextCore::Graphics::Detail
 		const char* format = "v %f %f %f";
 		Vector3 position;
 
-		bool result = sscanf_s(a_line, format, &position.x, &position.y, &position.z);
+		int result = sscanf_s(a_line, format, &position.x, &position.y, &position.z);
 
 		if (result != position.size)
 		{
@@ -92,7 +99,7 @@ namespace NextCore::Graphics::Detail
 		const char* format = "vt %f %f";
 		Vector2 uv;
 
-		bool result = sscanf_s(a_line, format, &uv.x, &uv.y);
+		int result = sscanf_s(a_line, format, &uv.x, &uv.y);
 
 		if (result != uv.size)
 		{
@@ -108,7 +115,7 @@ namespace NextCore::Graphics::Detail
 		const char* format = "vn %f %f %f";
 		Vector3 normal;
 
-		bool result = sscanf_s(a_line, format, &normal.x, &normal.y, &normal.z);
+		int result = sscanf_s(a_line, format, &normal.x, &normal.y, &normal.z);
 
 		if (result != normal.size)
 		{
@@ -121,7 +128,7 @@ namespace NextCore::Graphics::Detail
 	void
 	WavefrontModelLoader::ReadFace(const char* a_line)
 	{
-		const char* format = "%d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d";
+		const char* format = "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d";
 
 		Math::Vector3i indices[4];
 
@@ -132,10 +139,10 @@ namespace NextCore::Graphics::Detail
 		// ReSharper disable CppBadListLineBreaks
 		auto numIndicesRead = sscanf_s(
 			a_line, format,
-			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
-			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
-			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z,
-			&indices[runningIndex].x, indices[runningIndex].y, indices[runningIndex++].z
+			&indices[0].x, &indices[0].y, &indices[0].z,
+			&indices[1].x, &indices[1].y, &indices[1].z,
+			&indices[2].x, &indices[2].y, &indices[2].z,
+			&indices[3].x, &indices[3].y, &indices[3].z
 		);
 		// ReSharper restore CppBadListLineBreaks
 
@@ -144,18 +151,19 @@ namespace NextCore::Graphics::Detail
 			return;
 		}
 
-		int numVertices = numIndicesRead / 3;
+		const int numVertices = numIndicesRead / 3;
 		for (int i = 0; i < numVertices; i++)
 		{
 			Vertex v;
-			
-			int positionIndex = indices[numIndicesRead].x;
+
+			// Subtract 1 from all indices because obj is one-base indexed
+			int positionIndex = indices[i].x - 1;
 			v.position = m_positions[positionIndex];
 			
-			int uvIndex = indices[numIndicesRead].y;
+			int uvIndex = indices[i].y - 1;
 			v.uv = m_uvs[uvIndex];
 			
-			int normalIndex = indices[numIndicesRead].z;
+			int normalIndex = indices[i].z - 1;
 			v.normal = m_normals[normalIndex];
 			
 			m_vertices.push_back(v);

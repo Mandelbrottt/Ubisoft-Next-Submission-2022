@@ -2,8 +2,6 @@
 
 #include "Primitive.h"
 
-#include "Application/Time.h"
-
 #include "Math/Transformations.h"
 
 namespace NextCore::Graphics
@@ -70,7 +68,7 @@ namespace NextCore::Graphics
 		//auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
 
 		float runningDepthTotal = 0.0f;
-		
+
 		for (int i = 0; i < 4; i++)
 		{
 			auto const& vertex = m_vertices[i];

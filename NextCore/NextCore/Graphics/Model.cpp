@@ -33,7 +33,7 @@ namespace NextCore::Graphics
 
 			TModelLoader loader;
 			
-			loader.LoadFromFile(a_filename, fileStream, a_meshContainer);
+			return loader.LoadFromFile(a_filename, fileStream, a_meshContainer);
 		}
 
 		return false;
@@ -50,10 +50,12 @@ namespace NextCore::Graphics
 		std::fs::path path = a_filename;
 
 		auto extension = path.extension();
+
+		bool result = false;
 		
 		// TODO: Add more support
-		if (TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", &m_meshes)) {}
+		if ((result = TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", &m_meshes))) {}
 
-		return false;
+		return result;
 	}
 }

@@ -26,7 +26,11 @@ namespace NextCore::Graphics
 		OnUpdate();
 
 		void
-		OnRenderPrepare(Math::Matrix4 const& a_model, Math::Matrix4 const& a_view, Math::Matrix4 const& a_projection);
+		OnRenderPrepare(
+			Math::Matrix4 const& a_model,
+			Math::Matrix4 const& a_view,
+			Math::Matrix4 const& a_projection
+		);
 
 		// There is no OnRender function here because the renderer collects all of the primitives,
 		// sorts them, and then renders them directly
