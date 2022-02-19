@@ -4,12 +4,16 @@
 
 #include "Application/Time.h"
 
-#include "Detail/ModelLoader.h"
+#include "Detail/IModelLoader.h"
 
 namespace NextCore::Graphics
 {
 	bool
-	Mesh::GeneratePrimitives(std::string_view a_textureFilename, Detail::vertex_container_t const& a_vertices)
+	Mesh::GeneratePrimitives(
+		std::string_view                  a_textureFilename,
+		Detail::vertex_container_t const& a_vertices,
+		PrimitiveType                     a_type
+	)
 	{
 		// TODO: Implement model loading
 		return false;

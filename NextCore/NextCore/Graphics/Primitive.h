@@ -13,6 +13,7 @@ namespace NextCore::Graphics
 	enum class PrimitiveType
 	{
 		// TODO: Add support for triangles
+		Null = 0,
 		Triangle,
 		Quad,
 	};
