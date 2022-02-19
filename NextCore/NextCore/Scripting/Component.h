@@ -114,6 +114,53 @@ namespace NextCore::Scripting
 
 		Component*
 		GetComponent(Reflection::StaticTypeId a_typeId);
+		
+		/**
+		 * \brief 
+		 * \tparam TComponent 
+		 * \param a_outCount 
+		 * \return 
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		TComponent**
+		GetComponents(int* a_outCount)
+		{
+			return m_entity->GetComponents<TComponent>(a_outCount);
+		}
+
+		/**
+		 * \brief 
+		 * \param a_type 
+		 * \param a_outCount 
+		 * \return 
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		Component**
+		GetComponents(Reflection::Type const& a_type, int* a_outCount);
+
+		/**
+		 * \brief 
+		 * \param a_typeId 
+		 * \param a_outCount 
+		 * \return 
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		Component**
+		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
+		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		int
+		NumComponents() const
+		{
+			return m_entity->NumComponents<TComponent>();
+		}
+		
+		int
+		NumComponents(Reflection::Type const& a_type) const;
+		
+		int
+		NumComponents(Reflection::StaticTypeId a_typeId) const;
 		#pragma endregion
 
 	private:

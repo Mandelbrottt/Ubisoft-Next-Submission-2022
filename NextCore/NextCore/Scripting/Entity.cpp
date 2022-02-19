@@ -111,6 +111,44 @@ namespace NextCore::Scripting
 		return result;
 	}
 
+	Component**
+	Entity::GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount)
+	{
+		if (a_typeId == Reflection::StaticTypeId::Null || !a_outCount)
+		{
+			return nullptr;
+		}
+
+		*a_outCount = NumComponents(a_typeId);
+
+		Component** components = new Component*[*a_outCount];
+
+		int count = 0;
+		for (const auto& [id, component] : m_components)
+		{
+			if (id == a_typeId)
+			{
+				components[count] = component;
+				count++;
+			}
+		}
+		
+		return components;
+	}
+
+	int
+	Entity::NumComponents(Reflection::StaticTypeId a_typeId) const
+	{
+		auto predicate = [&](ComponentListElement const& a_value)
+		{
+			return a_value.id == a_typeId;
+		};
+
+		auto numComponents = std::count_if(m_components.begin(), m_components.end(), predicate);
+
+		return static_cast<int>(numComponents);
+	}
+
 	decltype(Entity::m_components)::iterator
 	Entity::FindComponentById(Reflection::StaticTypeId a_id)
 	{		

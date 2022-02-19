@@ -69,4 +69,28 @@ namespace NextCore::Scripting
 	{
 		return m_entity->GetComponent(a_typeId);
 	}
+
+	Component**
+	Component::GetComponents(Reflection::Type const& a_type, int* a_outCount)
+	{
+		return m_entity->GetComponents(a_type, a_outCount);
+	}
+
+	Component**
+	Component::GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount)
+	{
+		return m_entity->GetComponents(a_typeId, a_outCount);
+	}
+
+	int
+	Component::NumComponents(Reflection::Type const& a_type) const
+	{
+		return m_entity->NumComponents(a_type);
+	}
+
+	int
+	Component::NumComponents(Reflection::StaticTypeId a_typeId) const
+	{
+		return m_entity->NumComponents(a_typeId);
+	}
 }

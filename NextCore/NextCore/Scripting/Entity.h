@@ -86,6 +86,61 @@ namespace NextCore::Scripting
 
 		Component*
 		GetComponent(Reflection::StaticTypeId a_typeId);
+		
+		/**
+		 * \brief 
+		 * \tparam TComponent 
+		 * \param a_outCount 
+		 * \return 
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		TComponent**
+		GetComponents(int* a_outCount)
+		{
+			auto static_id = Reflection::GetStaticId<TComponent>();
+			return reinterpret_cast<TComponent**>(GetComponents(static_id, a_outCount));
+		}
+
+		/**
+		 * \brief 
+		 * \param a_type 
+		 * \param a_outCount 
+		 * \return 
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		Component**
+		GetComponents(Reflection::Type const& a_type, int* a_outCount)
+		{
+			return GetComponents(a_type.GetStaticId(), a_outCount);
+		}
+
+		/**
+		 * \brief 
+		 * \param a_typeId 
+		 * \param a_outCount 
+		 * \return
+		 * \remark It is the callers responsibility to call delete[] on the array.
+		 */
+		Component**
+		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
+		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		int
+		NumComponents() const
+		{
+			auto static_id = Reflection::GetStaticId<TComponent>();
+			return NumComponents(static_id);
+		}
+		
+		int
+		NumComponents(Reflection::Type const& a_type) const
+		{
+			return NumComponents(a_type.GetStaticId());
+		}
+		
+		int
+		NumComponents(Reflection::StaticTypeId a_typeId) const;
 
 	private:
 		EntityId m_entityId;
