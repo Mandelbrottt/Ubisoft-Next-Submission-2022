@@ -3,6 +3,7 @@
 // Keep to avoid errors when including Sprite.h
 #include <string_view>
 
+#include "Color.h"
 #include "NextCoreCommon.h"
 #include "Math/Vector.h"
 
@@ -14,13 +15,15 @@ class CSimpleSprite;
 
 namespace NextCore::Graphics
 {
-	class NEXT_CORE_EXPORT Sprite : public Scripting::Component
+	class NEXT_CORE_EXPORT Sprite
 	{
-		GenerateConstructors(Sprite)
-		
+		friend class Primitive;
 	public:
-		void OnUpdate() override;
+		Sprite() = default;
 
+		explicit
+		Sprite(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
+		
 		/**
 		 * \brief Load an image from the given file. The image can be a sprite sheet.
 		 * \param a_fileName The name of the image file.
@@ -32,22 +35,8 @@ namespace NextCore::Graphics
 		bool
 		LoadFromTexture(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
-		/**
-		 * \brief Prepare the sprite for rendering
-		 */
-		void
-		OnPreRender();
+		void OnUpdate(float a_deltaTime = -1);
 
-		/**
-		 * \return The average depth of this sprite
-		 * \remark only valid on any given frame after the call to \link OnPreRender \endlink
-		 */
-		float
-		GetDepth() const
-		{
-			return m_depth;
-		}
-		
 		/**
 		 * \brief Render the sprite to the screen
 		 */
@@ -77,20 +66,6 @@ namespace NextCore::Graphics
 		 */
 		unsigned int
 		GetFrame() const;
-
-		/**
-		 * \param a_index The index of quad's vertex in the range [0, 3]
-		 * \return The value of the vertex
-		 */
-		Math::Vector3
-		GetVertex(unsigned int a_index) const;
-		
-		/**
-		 * \param a_index The index of quad's Uv in the range [0, 3]
-		 * \return The value of the uv
-		 */
-		Math::Vector2
-		GetUv(unsigned int a_index) const;
 		
 		/**
 		 * \param a_frame The frame of animation to move to. 
@@ -110,8 +85,8 @@ namespace NextCore::Graphics
 		 * \param a_color A color.
 		 */
 		void
-		SetColor(Math::Vector3 a_color);
-
+		SetColor(Color a_color);
+		
 		/**
 		 * \brief Create an animation reel that can be changed to later.
 		 * \param a_id A unique animation Id. Used to change to the animation with \link SetAnimation \endlink
@@ -121,36 +96,12 @@ namespace NextCore::Graphics
 		 */
 		void
 		CreateAnimation(unsigned int a_id, float a_speed, const std::vector<int>& a_frames);
-
-		/**
-		 * \param a_index The index of the quad's vertex in the range [0, 3]
-		 * \param a_value The value of the vertex
-		 */
-		void
-		SetVertex(unsigned int a_index, Math::Vector3 a_value);
 		
-		/**
-		 * \param a_index The index of the quad's uv in the range [0, 3]
-		 * \param a_value The value of the uv
-		 */
-		void
-		SetUv(unsigned int a_index, Math::Vector2 a_value);
-
 		bool
 		IsValid() const;
 
 	private:
 		// TODO: Keep local copies of variables and synchronise them once per frame with the sprite
-		::CSimpleSprite* m_sprite;
-
-		Math::Vector3 m_vertices[4];
-
-		float m_depth;
-
-		REFLECT_DECLARE(Sprite, Component)
-
-		REFLECT_MEMBERS(
-			REFLECT_FIELD(m_sprite)
-		)
+		::CSimpleSprite* m_simpleSprite = nullptr;
 	};
 }

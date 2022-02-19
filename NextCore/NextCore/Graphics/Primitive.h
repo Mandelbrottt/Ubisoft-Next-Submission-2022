@@ -3,6 +3,9 @@
 // Keep to avoid errors when included
 #include <string_view>
 
+#include "Color.h"
+#include "Sprite.h"
+
 #include "Detail/ModelLoaderTypedefs.h"
 
 #include "Math/Vector.h"
@@ -69,13 +72,13 @@ namespace NextCore::Graphics
 		{
 			return m_depth;
 		}
-		
-		/**
-		 * \return The frame number that the animation is currently on 
-		 */
-		unsigned int
-		GetFrame() const;
 
+		Sprite*
+		GetSprite()
+		{
+			return &m_sprite;
+		}
+		
 		/**
 		 * \param a_index The index of quad or triangle's vertex in the range [0, 3] or [0, 2] respectively
 		 * \return The value of the vertex
@@ -84,43 +87,13 @@ namespace NextCore::Graphics
 		GetVertex(unsigned int a_index) const;
 		
 		/**
-		 * \param a_index The index of quad's Uv in the range [0, 3]
-		 * \return The value of the uv
-		 */
-		Math::Vector2
-		GetUv(unsigned int a_index) const;
-		
-		/**
-		 * \param a_frame The frame of animation to move to. 
-		 */
-		void
-		SetFrame(unsigned int a_frame);
-
-		/**
-		 * \brief Switch to the animation with id a_id
-		 * \param a_id The id of the animation to switch to. 
-		 */
-		void
-		SetAnimation(unsigned int a_id);
-
-		/**
 		 * \brief Set the color that the texture will blend with.
 		 * \param a_color A color.
 		 * \remark Great for primitive lighting
 		 */
 		void
-		SetColor(Math::Vector3 a_color);
-
-		/**
-		 * \brief Create an animation reel that can be changed to later.
-		 * \param a_id A unique animation Id. Used to change to the animation with \link SetAnimation \endlink
-		 * \param a_speed The time in seconds between frames
-		 * \param a_frames A list of the zero-base indexed frames, where 0 is top-left
-		 *        and moves left to right, top to bottom
-		 */
-		void
-		CreateAnimation(unsigned int a_id, float a_speed, const std::vector<int>& a_frames);
-
+		SetColor(Color a_color);
+		
 		/**
 		 * \param a_index The index of the quad's vertex in the range [0, 3]
 		 * \param a_value The value of the vertex
@@ -128,18 +101,11 @@ namespace NextCore::Graphics
 		void
 		SetVertex(unsigned int a_index, Detail::Vertex a_value);
 		
-		/**
-		 * \param a_index The index of the quad's uv in the range [0, 3]
-		 * \param a_value The value of the uv
-		 */
-		void
-		SetUv(unsigned int a_index, Math::Vector2 a_value);
-
 		bool
 		IsValid() const;
 
 	private:
-		::CSimpleSprite* m_sprite;
+		Sprite m_sprite;
 
 		Detail::Vertex m_vertices[4];
 

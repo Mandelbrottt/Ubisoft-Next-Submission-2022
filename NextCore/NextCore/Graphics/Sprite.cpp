@@ -16,91 +16,44 @@ namespace NextCore::Graphics
 	using Math::Vector3;
 	using Math::Vector4;
 
-	void
-	Sprite::OnUpdate()
+	Sprite::Sprite(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
 	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		// NextAPI works in milliseconds while we work in seconds
-		float adjustedDeltaTime = Time::DeltaTime();
-		
-		// Bug with update, there's no bounds checking so be careful to pass in
-		// sufficiently small values of delta time
-		adjustedDeltaTime = std::min(adjustedDeltaTime, 1.f / 30.f);
-		m_sprite->Update(adjustedDeltaTime * 1000.f);
+		LoadFromTexture(a_fileName, a_nColumns, a_nRows);
 	}
 
 	bool
 	Sprite::LoadFromTexture(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
 	{
-		m_sprite = App::CreateSprite(a_fileName.data(), a_nColumns, a_nRows);
+		m_simpleSprite = new CSimpleSprite(a_fileName.data(), a_nColumns, a_nRows);
 
-		if (!m_sprite)
+		if (!m_simpleSprite)
 		{
 			return false;
 		}
 
-		SetFrame(0);
+		m_simpleSprite->SetFrame(-1);
 
 		return true;
 	}
 	
 	void
-	Sprite::OnPreRender()
+	Sprite::OnUpdate(float a_deltaTime)
 	{
 		if (!IsValid())
 		{
 			return;
 		}
-		
-		using namespace Math;
 
-		// Model Matrix
-		auto* transform = Transform();
-		auto& scale    = transform->Scale();
-		auto& rotation = transform->Rotation();
-		auto& position = transform->Position();
-
-		auto model = Matrix4::Identity();
-		model *= Scale(scale);
-		model *= RotateZ(rotation.z);
-		model *= RotateY(rotation.y);
-		model *= RotateX(rotation.x);
-		model *= Translate(position);
-
-		// View Matrix
-
-		// Perspective Matrix
-		float fov = 90;
-		float aspect = 16.f / 9.f;
-		
-		auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
-
-		float runningDepthTotal = 0.0f;
-		
-		for (int i = 0; i < 4; i++)
+		if (a_deltaTime == -1)
 		{
-			Vector4 vertex = { m_vertices[i], 1.0f };
+			// NextAPI works in milliseconds while we work in seconds
+			a_deltaTime = Time::DeltaTime();
 			
-			auto transformedVertex = model       * vertex;
-			auto projectedVertex   = perspective * transformedVertex;
-			
-			projectedVertex.x /= projectedVertex.w;
-			projectedVertex.y /= projectedVertex.w;
-			projectedVertex.z /= projectedVertex.w;
-			
-			//projectedVertex.x *= aspect;
-
-			m_sprite->SetVertex(2 * i,     projectedVertex.x);
-			m_sprite->SetVertex(2 * i + 1, projectedVertex.y);
-
-			runningDepthTotal += projectedVertex.z;
+			// Bug with update, there's no bounds checking so be careful to pass in
+			// sufficiently small values of delta time
+			a_deltaTime = std::min(a_deltaTime, 1.f / 30.f);
 		}
-
-		m_depth = runningDepthTotal / 4;
+		m_simpleSprite->Update(a_deltaTime * 1000.f);
 	}
 
 	void
@@ -111,7 +64,7 @@ namespace NextCore::Graphics
 			return;
 		}
 		
-		m_sprite->Draw();
+		m_simpleSprite->Draw();
 	}
 	
 	float
@@ -122,7 +75,7 @@ namespace NextCore::Graphics
 			return {};
 		}
 
-		return m_sprite->GetWidth();
+		return m_simpleSprite->GetWidth();
 	}
 
 	float
@@ -133,7 +86,7 @@ namespace NextCore::Graphics
 			return {};
 		}
 
-		return m_sprite->GetHeight();
+		return m_simpleSprite->GetHeight();
 	}
 
 	Vector2
@@ -145,8 +98,8 @@ namespace NextCore::Graphics
 		}
 
 		Vector2 result {
-			m_sprite->GetWidth(),
-			m_sprite->GetHeight()
+			m_simpleSprite->GetWidth(),
+			m_simpleSprite->GetHeight()
 		};
 
 		return result;
@@ -160,56 +113,9 @@ namespace NextCore::Graphics
 			return {};
 		}
 
-		return m_sprite->GetFrame();
+		return m_simpleSprite->GetFrame();
 	}
-
-	/**
-	 * \brief 
-	 * \param a_index The index of quad's vertex in the range [0, 3]
-	 * \return The value of the vertex
-	 */
-	Vector3
-	Sprite::GetVertex(unsigned int a_index) const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		//unsigned x_index = a_index * 2;
-		//unsigned y_index = x_index + 1;
-
-		//Vector2 result {
-		//	m_sprite->GetVertex(x_index),
-		//	m_sprite->GetVertex(y_index)
-		//};
-
-		Vector3 result = m_vertices[a_index];
-
-		return result;
-	}
-
-	Math::Vector2
-	Sprite::GetUv(unsigned a_index) const
-	{
-		if (!IsValid())
-		{
-			return {};
-		}
-
-		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		unsigned x_index = a_index * 2;
-		unsigned y_index = x_index + 1;
-
-		Vector2 result {
-			m_sprite->GetUv(x_index),
-			m_sprite->GetUv(y_index)
-		};
-
-		return result;
-	}
-
+	
 	void
 	Sprite::SetFrame(unsigned int a_frame)
 	{
@@ -218,7 +124,7 @@ namespace NextCore::Graphics
 			return;
 		}
 
-		m_sprite->SetFrame(a_frame);
+		m_simpleSprite->SetFrame(a_frame);
 	}
 
 	void
@@ -229,18 +135,18 @@ namespace NextCore::Graphics
 			return;
 		}
 
-		m_sprite->SetAnimation(a_id);
+		m_simpleSprite->SetAnimation(a_id);
 	}
 
 	void
-	Sprite::SetColor(Vector3 a_color)
+	Sprite::SetColor(Color a_color)
 	{
 		if (!IsValid())
 		{
 			return;
 		}
 
-		m_sprite->SetColor(a_color.r, a_color.g, a_color.b);
+		m_simpleSprite->SetColor(a_color.r, a_color.g, a_color.b);
 	}
 
 	void
@@ -251,51 +157,12 @@ namespace NextCore::Graphics
 			return;
 		}
 
-		m_sprite->CreateAnimation(a_id, a_speed, a_frames);
+		m_simpleSprite->CreateAnimation(a_id, a_speed, a_frames);
 	}
-
-	/**
-	 * \brief 
-	 * \param a_index The index of the quad's vertex in the range [0, 3]
-	 * \param a_value The value of the vertex
-	 */
-	void
-	Sprite::SetVertex(unsigned int a_index, Vector3 a_value)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		//unsigned x_index = a_index * 2;
-		//unsigned y_index = x_index + 1;
-
-		//m_sprite->SetVertex(x_index, a_value.x);
-		//m_sprite->SetVertex(y_index, a_value.y);
-
-		m_vertices[a_index] = a_value;
-	}
-
-	void
-	Sprite::SetUv(unsigned a_index, Math::Vector2 a_value)
-	{
-		if (!IsValid())
-		{
-			return;
-		}
-
-		// Multiply input index by 2 because underlying api uses individual floats instead of structs
-		unsigned x_index = a_index * 2;
-		unsigned y_index = x_index + 1;
-
-		m_sprite->SetUv(x_index, a_value.x);
-		m_sprite->SetUv(y_index, a_value.y);
-	}
-
+	
 	bool
 	Sprite::IsValid() const
 	{
-		return m_sprite != nullptr;
+		return m_simpleSprite != nullptr;
 	}
 }

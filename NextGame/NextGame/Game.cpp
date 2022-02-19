@@ -13,7 +13,6 @@
 
 #include "CrazyLineThing.h"
 #include "Cube.h"
-#include "Player.h"
 
 // TODO: Decouple Sound, Write wrapper for drawing and printing to screen
 
@@ -69,30 +68,6 @@ GameRender()
 				lineRenderers[i]->OnRender();
 			}
 		}
-
-		int spriteCount;
-		auto* sprites = entity.GetComponents<Graphics::Sprite>(&spriteCount);
-		
-		//if (sprites)
-		//{
-		//	for (int i = 0; i < spriteCount; i++)
-		//	{
-		//		sprites[i]->OnPreRender();
-		//	}
-		//	
-		//	auto predicate = [](Graphics::Sprite* a_lhs, Graphics::Sprite* a_rhs)
-		//	{
-		//		// Depth is front-to-back 1-0
-		//		return a_lhs->GetDepth() > a_rhs->GetDepth();
-		//	};
-		//	
-		//	std::sort(sprites, sprites + spriteCount, predicate);
-		//	
-		//	for (int i = 0; i < spriteCount; i++)
-		//	{
-		//		sprites[i]->OnRender();
-		//	}
-		//}
 	}
 
 	using namespace Math;
