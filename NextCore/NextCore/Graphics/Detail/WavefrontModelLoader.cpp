@@ -66,6 +66,15 @@ namespace NextCore::Graphics::Detail
 		std::filesystem::path path = a_filename;
 		path.replace_extension(".bmp");
 
+		if (path.extension() == ".bmp")
+		{
+			// BMPs are flipped along the y axis by the texture loader - account for this
+			for (auto& [position, uv, normal] : m_vertices)
+			{
+				uv.y = 1.0f - uv.y;
+			}
+		}
+
 		Mesh mesh;
 		bool result = mesh.GeneratePrimitives(path.string(), m_vertices, m_primitiveType);
 

@@ -51,7 +51,7 @@ namespace NextCore::Graphics
 
 		auto extension = path.extension();
 
-		bool result = false;
+		bool result;
 		
 		// TODO: Add more support
 		if ((result = TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", &m_meshes))) {}
