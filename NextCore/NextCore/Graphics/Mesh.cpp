@@ -34,6 +34,7 @@ namespace NextCore::Graphics
 		for (int i = 0; i < numPrimitives; i++)
 		{
 			Primitive p;
+			p.m_primitiveType = a_type;
 			p.LoadFromTexture(a_textureFilename);
 
 			int baseIndex = i * numVerticesPerPrimitive;
@@ -44,7 +45,7 @@ namespace NextCore::Graphics
 			// If numVerticesPerPrimitive is 3, set the last vertex to the first vertex since NextAPI
 			// uses quads under the hood
 			p.SetVertex(3, a_vertices[baseIndex + 3 % numVerticesPerPrimitive]);
-
+			
 			m_primitives.emplace_back(std::move(p));
 		}
 		

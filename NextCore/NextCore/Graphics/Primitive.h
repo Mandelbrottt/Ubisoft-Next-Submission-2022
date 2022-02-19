@@ -105,9 +105,19 @@ namespace NextCore::Graphics
 		IsValid() const;
 
 	private:
+		/**
+		 * \brief Process the given bmp file to ensure 32 bit pixels
+		 * \param a_filename The name of the file to process
+		 */
+		bool
+		ProcessBmp(std::string_view a_filename);
+	
+	private:
 		Sprite m_sprite;
 
 		Detail::Vertex m_vertices[4];
+
+		PrimitiveType m_primitiveType;
 
 		float m_depth;
 	};
