@@ -63,24 +63,27 @@ namespace NextCore::Graphics
 
 		using namespace Math;
 
+		// Model Matrix
+		auto* transform = Transform();
+		auto& scale    = transform->Scale();
+		auto& rotation = transform->Rotation();
+		auto& position = transform->Position();
+
+		auto model = Matrix4::Identity();
+		model *= Scale(scale);
+		model *= RotateZ(rotation.z);
+		model *= RotateY(rotation.y);
+		model *= RotateX(rotation.x);
+		model *= Translate(position);
+
+		// View Matrix
+
+		// Perspective Matrix
 		float fov = 90;
 		float aspect = 16.f / 9.f;
 		
 		auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
-
-		static float rotationAngle = 0;
-		rotationAngle += Time::DeltaTime();
 		
-		auto* transform = Transform();
-		auto& position = transform->Position();
-		auto& scale    = transform->Scale();
-
-		auto model = Matrix4::Identity();
-		model *= Scale(scale);
-		model *= RotateZ(rotationAngle * 0.5f);
-		model *= RotateX(rotationAngle);
-		model *= Translate(position);
-
 		for (int i = 0; i < 4; i++)
 		{
 			Vector4 vertex = { m_vertices[i], 1.0f };
@@ -92,7 +95,7 @@ namespace NextCore::Graphics
 			projectedVertex.y /= projectedVertex.w;
 			projectedVertex.z /= projectedVertex.w;
 			
-			projectedVertex.y *= aspect;
+			//projectedVertex.x *= aspect;
 
 			m_sprite->SetVertex(2 * i,     projectedVertex.x);
 			m_sprite->SetVertex(2 * i + 1, projectedVertex.y);
