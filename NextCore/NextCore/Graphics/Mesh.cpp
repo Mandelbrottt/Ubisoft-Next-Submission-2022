@@ -15,7 +15,39 @@ namespace NextCore::Graphics
 		PrimitiveType                     a_type
 	)
 	{
-		// TODO: Implement model loading
+		int numVerticesPerPrimitive;
+
+		switch (a_type)
+		{
+			case PrimitiveType::Triangle:
+				numVerticesPerPrimitive = 3;
+				break;
+			case PrimitiveType::Quad:
+				numVerticesPerPrimitive = 4;
+				break;
+			default:
+				throw "Invalid File";
+		}
+
+		int numPrimitives = a_vertices.size() / numVerticesPerPrimitive;
+
+		for (int i = 0; i < numPrimitives; i++)
+		{
+			Primitive p;
+			p.LoadFromTexture(a_textureFilename);
+
+			int baseIndex = i * numVerticesPerPrimitive;
+			
+			p.SetVertex(0, a_vertices[baseIndex]);
+			p.SetVertex(1, a_vertices[baseIndex + 1]);
+			p.SetVertex(2, a_vertices[baseIndex + 2]);
+			// If numVerticesPerPrimitive is 3, set the last vertex to the first vertex since NextAPI
+			// uses quads under the hood
+			p.SetVertex(3, a_vertices[baseIndex + 3 % numVerticesPerPrimitive]);
+
+			m_primitives.emplace_back(std::move(p));
+		}
+		
 		return false;
 	}
 

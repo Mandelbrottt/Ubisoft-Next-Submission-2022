@@ -70,12 +70,14 @@ namespace NextCore::Graphics
 		//auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
 
 		float runningDepthTotal = 0.0f;
-
+		
 		for (int i = 0; i < 4; i++)
 		{
-			Vector4 vertex = { m_vertices[i], 1.0f };
+			auto const& vertex = m_vertices[i];
+			
+			Vector4 position = { vertex.position, 1.0f };
 
-			auto transformedVertex = a_model * vertex;
+			auto transformedVertex = a_model * position;
 			auto projectedVertex   = a_projection * transformedVertex;
 
 			projectedVertex.x /= projectedVertex.w;
@@ -84,8 +86,11 @@ namespace NextCore::Graphics
 
 			//projectedVertex.x *= aspect;
 
-			m_sprite->SetVertex(2 * i, projectedVertex.x);
+			m_sprite->SetVertex(2 * i,     projectedVertex.x);
 			m_sprite->SetVertex(2 * i + 1, projectedVertex.y);
+			
+			m_sprite->SetUv(2 * i,     vertex.uv.x);
+			m_sprite->SetUv(2 * i + 1, vertex.uv.y);
 
 			runningDepthTotal += projectedVertex.z;
 		}
@@ -115,17 +120,15 @@ namespace NextCore::Graphics
 		return m_sprite->GetFrame();
 	}
 
-	Math::Vector3
+	Detail::Vertex
 	Primitive::GetVertex(unsigned a_index) const
 	{
 		if (!IsValid())
 		{
 			return {};
 		}
-
-		Math::Vector3 result = m_vertices[a_index];
-
-		return result;
+		
+		return m_vertices[a_index];
 	}
 
 	Math::Vector2
@@ -193,7 +196,7 @@ namespace NextCore::Graphics
 	}
 
 	void
-	Primitive::SetVertex(unsigned a_index, Math::Vector3 a_value)
+	Primitive::SetVertex(unsigned a_index, Detail::Vertex a_value)
 	{
 		if (!IsValid())
 		{

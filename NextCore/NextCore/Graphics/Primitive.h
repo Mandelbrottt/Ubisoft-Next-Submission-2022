@@ -3,6 +3,8 @@
 // Keep to avoid errors when included
 #include <string_view>
 
+#include "Detail/ModelLoaderTypedefs.h"
+
 #include "Math/Vector.h"
 #include "Math/Matrix4.h"
 
@@ -25,6 +27,12 @@ namespace NextCore::Graphics
 		Primitive() = default;
 		~Primitive() = default;
 	public:
+		Primitive(Primitive const& a_other) = delete;
+		Primitive& 
+		operator =(Primitive const& a_other) = delete;
+
+		Primitive(Primitive&& a_other) = default;
+		
 		void
 		OnUpdate(float a_deltaTime);
 		
@@ -71,7 +79,7 @@ namespace NextCore::Graphics
 		 * \param a_index The index of quad or triangle's vertex in the range [0, 3] or [0, 2] respectively
 		 * \return The value of the vertex
 		 */
-		Math::Vector3
+		Detail::Vertex
 		GetVertex(unsigned int a_index) const;
 		
 		/**
@@ -117,7 +125,7 @@ namespace NextCore::Graphics
 		 * \param a_value The value of the vertex
 		 */
 		void
-		SetVertex(unsigned int a_index, Math::Vector3 a_value);
+		SetVertex(unsigned int a_index, Detail::Vertex a_value);
 		
 		/**
 		 * \param a_index The index of the quad's uv in the range [0, 3]
@@ -132,7 +140,7 @@ namespace NextCore::Graphics
 	private:
 		::CSimpleSprite* m_sprite;
 
-		Math::Vector3 m_vertices[4];
+		Detail::Vertex m_vertices[4];
 
 		float m_depth;
 	};
