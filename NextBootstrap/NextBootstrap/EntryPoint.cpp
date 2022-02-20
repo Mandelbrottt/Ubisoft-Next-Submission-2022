@@ -10,13 +10,15 @@ wWinMain(
 );
 
 int
-main()
+wmain()
 {
 	HINSTANCE hInstance     = GetModuleHandleW(NULL);
 	HINSTANCE hPrevInstance = 0;
 	LPWSTR    lpCmdLine     = GetCommandLineW();
 	int       nShowCmd      = 0;
 
+	// TODO: Allocate a console
+	
 	// HACK: Call NextAPIs wWinMain() as a workaround to let us bootstrap NextAPI
 	return wWinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 }

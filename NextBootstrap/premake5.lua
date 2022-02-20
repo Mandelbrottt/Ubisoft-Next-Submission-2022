@@ -2,7 +2,7 @@ local project_name = script_dir()
 
 project(project_name)
     location      "%{wks.location}/%{prj.name}/"
-    kind          "ConsoleApp"
+    kind          "WindowedApp"
     language      "C++"
     cppdialect    "C++17"
     staticruntime "off"
