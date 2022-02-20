@@ -90,8 +90,26 @@ namespace NextCore::Graphics
 
 		if (Dot(normals[0], commonPointOnPrimitive) < 0 || Dot(normals[1], commonPointOnPrimitive) < 0)
 		{
+			Vector3 commonNormal = normals[0];
+
+			if (normals[1] != Vector3(0))
+			{
+				commonNormal += normals[1];
+				commonNormal = Normalize(commonNormal * 0.5f);
+			}
+			
 			for (int i = 0; i < numVerts; i++)
 			{
+				Vector3 lightDirection = { -1, 1, 1 };
+				lightDirection.Normalize();
+
+				float dotProduct = Dot(commonNormal, -lightDirection);
+				dotProduct = std::max(dotProduct, 0.f) + 0.3f;
+				
+				auto color = Color(dotProduct, dotProduct, dotProduct);
+				
+				m_sprite.SetColor(color);
+				
 				auto const& [position, uv, normal] = m_vertices[i];
 
 				auto projectedVertex   = a_projection * vertexPositions[i];

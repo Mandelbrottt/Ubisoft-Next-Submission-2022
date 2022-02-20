@@ -80,6 +80,40 @@ namespace NextCore::Math
 
 	template<int Size, typename TUnderlying>
 	constexpr
+	Vector<Size, TUnderlying>
+	operator -(Vector<Size, TUnderlying> const& a_value)
+	{
+		Vector<Size, TUnderlying> result;
+		for (int i = 0; i < Size; i++)
+		{
+			result.data[i] = -a_value.data[i];
+		}
+		return result;
+	}
+	
+	template<int Size, typename TUnderlying>
+	constexpr
+	bool
+	operator ==(Vector<Size, TUnderlying> const& a_lhs, Vector<Size, TUnderlying> const& a_rhs)
+	{
+		bool result = true;
+		for (int i = 0; i < Size; i++)
+		{
+			result &= a_lhs.data[i] == a_rhs.data[i];
+		}
+		return result;
+	}
+	
+	template<int Size, typename TUnderlying>
+	constexpr
+	bool
+	operator !=(Vector<Size, TUnderlying> const& a_lhs, Vector<Size, TUnderlying> const& a_rhs)
+	{
+		return !(a_lhs == a_rhs);
+	}
+	
+	template<int Size, typename TUnderlying>
+	constexpr
 	TUnderlying
 	Dot(Vector<Size, TUnderlying> const& a_lhs, Vector<Size, TUnderlying> const& a_rhs)
 	{
