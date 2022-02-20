@@ -143,5 +143,4 @@ GameRender()
 void
 GameShutdown()
 {
-
 }

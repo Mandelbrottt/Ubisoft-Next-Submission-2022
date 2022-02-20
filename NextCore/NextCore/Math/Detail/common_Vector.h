@@ -83,10 +83,10 @@ namespace NextCore::Math
 	TUnderlying
 	Dot(Vector<Size, TUnderlying> const& a_lhs, Vector<Size, TUnderlying> const& a_rhs)
 	{
-		TUnderlying result;
+		TUnderlying result = 0;
 		for (int i = 0; i < Size; i++)
 		{
-			result += a_lhs.data[i] + a_rhs.data[i];
+			result += a_lhs.data[i] * a_rhs.data[i];
 		}
 		return result;
 	}
@@ -96,7 +96,7 @@ namespace NextCore::Math
 	float
 	MagnitudeSquared(Vector<Size, TUnderlying> const& a_value)
 	{
-		TUnderlying result;
+		TUnderlying result = 0;
 		for (int i = 0; i < Size; i++)
 		{
 			result += a_value.data[i] * a_value.data[i];
@@ -113,6 +113,15 @@ namespace NextCore::Math
 		return std::sqrt(result);
 	}
 	
+	template<int Size, typename TUnderlying>
+	constexpr
+	Vector<Size, TUnderlying>
+	Normalize(Vector<Size, TUnderlying> const& a_value)
+	{
+		float magnitude = Magnitude(a_value);
+		return a_value / magnitude;
+	}
+	
 	#define _VECTOR_GENERATE_MEMBER_FUNCTIONS() \
 		constexpr \
 		float \
@@ -126,6 +135,13 @@ namespace NextCore::Math
 		Magnitude()\
 		{\
 			return ::NextCore::Math::Magnitude(*this);\
+		}\
+		\
+		constexpr \
+		type& \
+		Normalize()\
+		{\
+			return (*this = ::NextCore::Math::Normalize(*this));\
 		}\
 		\
 		constexpr \

@@ -65,39 +65,69 @@ namespace NextCore::Graphics
 		float runningDepthTotal = 0.0f;
 
 		int numVerts = m_primitiveType == PrimitiveType::Triangle ? 3 : 4;
+		
+		Math::Vector4 vertexPositions[4];
 
 		for (int i = 0; i < numVerts; i++)
 		{
-			const auto& [position, uv, normal] = m_vertices[i];
-			
+			auto const& [position, uv, normal] = m_vertices[i];
+
 			auto transformedVertex = a_model * Vector4(position, 1.0f);
-			auto projectedVertex   = a_projection * transformedVertex;
-
-			projectedVertex.x /= projectedVertex.w;
-			projectedVertex.y /= projectedVertex.w;
-			projectedVertex.z /= projectedVertex.w;
-
-			//projectedVertex.x *= aspect;
-
-			m_sprite.m_simpleSprite->SetVertex(2 * i,     projectedVertex.x);
-			m_sprite.m_simpleSprite->SetVertex(2 * i + 1, projectedVertex.y);
-			
-			m_sprite.m_simpleSprite->SetUv(2 * i,     uv.x);
-			m_sprite.m_simpleSprite->SetUv(2 * i + 1, uv.y);
-
-			runningDepthTotal += projectedVertex.z;
+			vertexPositions[i] = transformedVertex;
 		}
 
-		m_depth = runningDepthTotal / numVerts;
-		
-		// If primitive is a triangle, fourth vertex shares values with first
-		if (m_primitiveType == PrimitiveType::Triangle)
+		Math::Vector3 normals[2];
+
+		for (int i = 0; i < numVerts - 2; i++)
 		{
-			auto& s = m_sprite.m_simpleSprite;
-			s->SetVertex(6, s->GetVertex(0));
-			s->SetVertex(7, s->GetVertex(1));
-			s->SetUv(6, s->GetUv(0));
-			s->SetUv(7, s->GetUv(1));
+			Vector3 line1 = Vector3(vertexPositions[i + 1]) - Vector3(vertexPositions[0]);
+			Vector3 line2 = Vector3(vertexPositions[i + 2]) - Vector3(vertexPositions[0]);
+
+			normals[i] = Normalize(Cross(line1, line2));
+		}
+
+		Vector3 commonPointOnPrimitive = Vector3(vertexPositions[0]);
+
+		if (Dot(normals[0], commonPointOnPrimitive) < 0 || Dot(normals[1], commonPointOnPrimitive) < 0)
+		{
+			for (int i = 0; i < numVerts; i++)
+			{
+				auto const& [position, uv, normal] = m_vertices[i];
+
+				auto projectedVertex   = a_projection * vertexPositions[i];
+
+				projectedVertex.x /= projectedVertex.w;
+				projectedVertex.y /= projectedVertex.w;
+				projectedVertex.z /= projectedVertex.w;
+
+				//projectedVertex.x *= aspect;
+
+				m_sprite.m_simpleSprite->SetVertex(2 * i,     projectedVertex.x);
+				m_sprite.m_simpleSprite->SetVertex(2 * i + 1, projectedVertex.y);
+				
+				m_sprite.m_simpleSprite->SetUv(2 * i,     uv.x);
+				m_sprite.m_simpleSprite->SetUv(2 * i + 1, uv.y);
+
+				runningDepthTotal += projectedVertex.z;
+			}
+
+			m_depth = runningDepthTotal / numVerts;
+
+			//averageNormal /= numVerts;
+			//averageNormal.Normalize();
+			
+			// If primitive is a triangle, fourth vertex shares values with first
+			if (m_primitiveType == PrimitiveType::Triangle)
+			{
+				auto& s = m_sprite.m_simpleSprite;
+				s->SetVertex(6, s->GetVertex(0));
+				s->SetVertex(7, s->GetVertex(1));
+				s->SetUv(6, s->GetUv(0));
+				s->SetUv(7, s->GetUv(1));
+			}
+		} else
+		{
+			m_depth = -1;
 		}
 	}
 
