@@ -65,7 +65,7 @@ namespace NextCore::Component
 		}
 
 		Math::Matrix4
-		GetTransformationMatrix();
+		GetTransformationMatrix() const;
 
 	private:
 		Math::Vector3 m_position = Math::Vector3(0);
@@ -74,9 +74,9 @@ namespace NextCore::Component
 
 		Scripting::EntityId m_parent;
 
-		Math::Matrix4 m_cachedTransformationMatrix;
+		mutable Math::Matrix4 m_cachedTransformationMatrix;
 
-		bool m_isMatrixDirty = true;
+		mutable bool m_isMatrixDirty = true;
 		
 		REFLECT_DECLARE(Transform, Component)
 

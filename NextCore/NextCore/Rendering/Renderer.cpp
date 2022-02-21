@@ -17,10 +17,18 @@ namespace NextCore::Renderer
 		Scripting::EntityId entityId;
 	};
 
-	// TODO: Store offsets and sizes in separate array instead of in each primitive to reduce storage requirements
-	std::vector<RenderQueueElement> g_primitiveRenderQueue;
+	struct TransformationCacheElement
+	{
+		int numPrimitives;
 
-	std::unordered_map<Scripting::EntityId, Math::Matrix4> g_modelMatrices;
+		Math::Matrix4 modelMatrix;
+	};
+
+	std::vector<TransformationCacheElement> g_transformationCache;
+	
+	std::vector<Graphics::Primitive> g_primitiveRenderQueue;
+
+	//std::unordered_map<Scripting::EntityId, Math::Matrix4> g_modelMatrices;
 	
 	// If capacity is under recent max for X number of frames, shrink to fit next smallest maximum
 	static int g_shrinkToFitCounter = 0;
@@ -28,6 +36,8 @@ namespace NextCore::Renderer
 	void
 	Submit(Graphics::Model const& a_model, Scripting::Entity& a_entity)
 	{
+		decltype(g_primitiveRenderQueue)::size_type numPrimitives = 0;
+		
 		for (auto const& mesh : a_model.GetMeshes())
 		{
 			auto const& primitives = mesh.GetPrimitives();
@@ -40,9 +50,12 @@ namespace NextCore::Renderer
 				RenderQueueElement element = { primitive, a_entity.GetEntityId() };
 				g_primitiveRenderQueue.emplace_back(std::move(element));
 			}
+
+			numPrimitives += primitives.size();
 		}
 
-		g_modelMatrices[a_entity.GetEntityId()] = a_entity.Transform()->GetTransformationMatrix();
+		TransformationCacheElement element = { numPrimitives, a_entity.Transform()->GetTransformationMatrix() };
+		g_transformationCache.emplace_back(std::move(element));
 	}
 
 	static
@@ -82,7 +95,7 @@ namespace NextCore::Renderer
 		// In the future we could probably find a more efficient drawing algorithm (BSPs like doom does?)
 		std::sort(g_primitiveRenderQueue.begin(), g_primitiveRenderQueue.end(), PrimitiveBackToFrontSort);
 		
-		for (auto& [primitive, entityId] : g_primitiveRenderQueue)
+		for (auto& primitive : g_primitiveRenderQueue)
 		{
 			float depth = primitive.GetDepth();
 			if (depth < 0 || depth > 1)
@@ -97,6 +110,6 @@ namespace NextCore::Renderer
 		// https://www.cplusplus.com/reference/vector/vector/capacity/
 		// When does it happen? Can we avoid this?
 		g_primitiveRenderQueue.clear();
-		g_modelMatrices.clear();
+		g_transformationCache.clear();
 	}
 }

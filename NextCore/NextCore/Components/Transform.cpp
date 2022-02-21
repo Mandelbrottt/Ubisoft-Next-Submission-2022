@@ -39,7 +39,7 @@ namespace NextCore::Component
 	}
 
 	Math::Matrix4
-	Transform::GetTransformationMatrix()
+	Transform::GetTransformationMatrix() const
 	{
 		using Math::Matrix4;
 
