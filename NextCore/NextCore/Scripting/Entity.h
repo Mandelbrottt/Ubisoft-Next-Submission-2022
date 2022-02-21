@@ -37,6 +37,12 @@ namespace NextCore::Scripting
 		void
 		OnUpdate();
 
+		EntityId
+		GetEntityId() const
+		{
+			return m_entityId;
+		}
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
 		AddComponent();

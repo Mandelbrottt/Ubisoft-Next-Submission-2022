@@ -27,15 +27,16 @@ namespace NextCore::Graphics
 	{
 		friend class Mesh;
 		
-		Primitive() = default;
 	public:
+		/* TODO: Find a way to have non-public constructor, and deleted / non-public copy constructors
+		         and still be able to maintain a copied list in the renderer without resorting to memcpy */
+		Primitive() = default;
 		~Primitive() = default;
-		
-		Primitive(Primitive const& a_other) = delete;
-		Primitive& 
-		operator =(Primitive const& a_other) = delete;
-
 		Primitive(Primitive&& a_other) = default;
+		
+		Primitive(Primitive const& a_other) = default;
+		Primitive& 
+		operator =(Primitive const& a_other) = default;
 		
 		void
 		OnUpdate(float a_deltaTime);
