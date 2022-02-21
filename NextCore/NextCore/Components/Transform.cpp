@@ -43,6 +43,9 @@ namespace NextCore::Component
 	{
 		using Math::Matrix4;
 
+		// TEMPORARY:
+		m_isMatrixDirty = true;
+
 		if (m_isMatrixDirty)
 		{
 			// Calculate New Matrix
@@ -53,7 +56,8 @@ namespace NextCore::Component
 			result *= Math::RotateX(m_rotation.x);
 			result *= Math::Translate(m_position);
 
-			result *= GetParent()->GetTransformationMatrix();
+			// TODO: Implement parenting
+			//result *= GetParent()->GetTransformationMatrix();
 
 			m_cachedTransformationMatrix = std::move(result);
 			m_isMatrixDirty = false;
