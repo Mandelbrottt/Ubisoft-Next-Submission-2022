@@ -15,3 +15,7 @@
 
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
+
+#ifndef NEXT_EXPLICIT_NAMESPACE
+using namespace NextCore;
+#endif
