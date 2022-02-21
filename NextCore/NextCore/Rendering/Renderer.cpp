@@ -28,6 +28,8 @@ namespace NextCore::Renderer
 
 		Vector3 normals[2];
 
+		Graphics::Color color;
+
 		float depth = 0;
 	};
 
@@ -39,9 +41,8 @@ namespace NextCore::Renderer
 	};
 
 	static std::vector<TransformationCacheElement> g_transformationCache;
-	
-	static std::vector<Graphics::Primitive> g_primitiveHoldingQueue;
 
+	// TODO: Do all calculations in-place instead of copying them over every frame
 	static std::vector<RenderQueueElement> g_primitiveRenderQueue;
 
 	static std::mutex g_rasterQueueMutex;
@@ -128,6 +129,39 @@ namespace NextCore::Renderer
 			{
 				break;
 			}
+
+			auto& primitive = element.primitive;
+			auto& positions = element.positions;
+
+			auto* sprite = primitive.GetSprite();
+			
+			int numVerts = primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle ? 3 : 4;
+
+			for (int i = 0; i < 4; i++)
+			{
+				sprite->SetColor(element.color);
+			}
+			
+			for (int i = 0; i < numVerts; i++)
+			{
+				auto const& uv = primitive.GetVertex(i).uv;
+
+				sprite->m_simpleSprite->SetVertex(2 * i,     positions[i].x);
+				sprite->m_simpleSprite->SetVertex(2 * i + 1, positions[i].y);
+				
+				sprite->m_simpleSprite->SetUv(2 * i,     uv.x);
+				sprite->m_simpleSprite->SetUv(2 * i + 1, uv.y);
+			}
+			
+			// If primitive is a triangle, fourth vertex shares values with first
+			if (primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle)
+			{
+				auto* s = sprite->m_simpleSprite;
+				s->SetVertex(6, s->GetVertex(0));
+				s->SetVertex(7, s->GetVertex(1));
+				s->SetUv(6, s->GetUv(0));
+				s->SetUv(7, s->GetUv(1));
+			}
 			
 			element.primitive.OnRender();
 		}
@@ -147,7 +181,7 @@ namespace NextCore::Renderer
 		std::vector<std::size_t> primitivesToRaster;
 		primitivesToRaster.reserve(a_count);
 
-		for (std::size_t i = a_offset; i < a_count; i++)
+		for (std::size_t i = a_offset; i < a_offset + a_count; i++)
 		{
 			auto& element = g_primitiveRenderQueue[i];
 			auto& primitive = element.primitive;
@@ -226,7 +260,7 @@ namespace NextCore::Renderer
 				
 				auto color = Graphics::Color(dotProduct, dotProduct, dotProduct);
 
-				sprite->SetColor(color);
+				element.color = color;
 
 				//TODO: Factor in view matrix
 				
@@ -238,26 +272,12 @@ namespace NextCore::Renderer
 				projectedVertex.y /= projectedVertex.w;
 				projectedVertex.z /= projectedVertex.w;
 				
-				sprite->m_simpleSprite->SetVertex(2 * j,     projectedVertex.x);
-				sprite->m_simpleSprite->SetVertex(2 * j + 1, projectedVertex.y);
-				
-				sprite->m_simpleSprite->SetUv(2 * j,     uv.x);
-				sprite->m_simpleSprite->SetUv(2 * j + 1, uv.y);
-
 				element.depth += projectedVertex.z;
+				
+				positions[j] = projectedVertex;
 			}
 
 			element.depth = element.depth / numVerts;
-			
-			// If primitive is a triangle, fourth vertex shares values with first
-			if (primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle)
-			{
-				auto* s = sprite->m_simpleSprite;
-				s->SetVertex(6, s->GetVertex(0));
-				s->SetVertex(7, s->GetVertex(1));
-				s->SetUv(6, s->GetUv(0));
-				s->SetUv(7, s->GetUv(1));
-			}
 		}
 	}
 

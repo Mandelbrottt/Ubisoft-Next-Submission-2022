@@ -68,18 +68,4 @@ namespace NextCore::Graphics
 			primitive.OnUpdate(adjustedDeltaTime);
 		}
 	}
-
-	//void
-	//Mesh::OnRenderPrepare(
-	//	Math::Matrix4 const& a_model,
-	//	Math::Matrix4 const& a_view,
-	//	Math::Matrix4 const& a_projection
-	//)
-	//{
-	//	for (int i = 0; i < m_primitives.size(); i++)
-	//	{
-	//		auto& primitive = m_primitives[i];
-	//		primitive.OnRenderPrepare(a_model, a_view, a_projection);
-	//	}
-	//}
 }

@@ -16,7 +16,7 @@ class CSimpleSprite;
 namespace NextCore::Renderer
 {
 	void
-	TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count);
+	Flush();
 }
 
 namespace NextCore::Graphics
@@ -27,7 +27,7 @@ namespace NextCore::Graphics
 
 		friend
 		void
-		Renderer::TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count);
+		Renderer::Flush();
 	
 	public:
 		Sprite() = default;
