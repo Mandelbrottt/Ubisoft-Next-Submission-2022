@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include "Components/Transform.h"
+
 #include "Graphics/Model.h"
 
 namespace NextCore::Renderer
@@ -40,7 +42,7 @@ namespace NextCore::Renderer
 			}
 		}
 
-		// TODO: Get Model Matrix here when we can get it from transform
+		g_modelMatrices[a_entity.GetEntityId()] = a_entity.Transform()->GetTransformationMatrix();
 	}
 
 	static
