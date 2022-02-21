@@ -52,11 +52,11 @@ namespace NextCore::Graphics
 		bool
 		LoadFromTexture(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
-		/**
-		 * \brief Prepare the primitive for rendering
-		 */
-		void
-		OnRenderPrepare(Math::Matrix4 const& a_model, Math::Matrix4 const& a_view, Math::Matrix4 const& a_projection);
+		///**
+		// * \brief Prepare the primitive for rendering
+		// */
+		//void
+		//OnRenderPrepare(Math::Matrix4 const& a_model, Math::Matrix4 const& a_view, Math::Matrix4 const& a_projection);
 
 		/**
 		 * \brief Render the sprite to the screen
@@ -68,11 +68,11 @@ namespace NextCore::Graphics
 		 * \return The average depth of this sprite
 		 * \remark only valid on any given frame after the call to \link OnRenderPrepare \endlink
 		 */
-		float
-		GetDepth() const
-		{
-			return m_depth;
-		}
+		//float
+		//GetDepth() const
+		//{
+		//	return m_depth;
+		//}
 
 		Sprite*
 		GetSprite()
@@ -84,7 +84,7 @@ namespace NextCore::Graphics
 		 * \param a_index The index of quad or triangle's vertex in the range [0, 3] or [0, 2] respectively
 		 * \return The value of the vertex
 		 */
-		Detail::Vertex
+		Detail::Vertex const&
 		GetVertex(unsigned int a_index) const;
 
 		PrimitiveType
@@ -123,9 +123,9 @@ namespace NextCore::Graphics
 		Sprite m_sprite;
 
 		Detail::Vertex m_vertices[4];
-
+		
 		PrimitiveType m_primitiveType;
 
-		float m_depth;
+		//float m_depth;
 	};
 }

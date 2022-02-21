@@ -11,6 +11,8 @@
 
 #include <NextAPI/app.h>
 
+#include <Rendering/Renderer.h>
+
 #include "CrazyLineThing.h"
 #include "Cube.h"
 
@@ -74,65 +76,77 @@ GameRender()
 	using namespace Math;
 
 	// Model Matrix
-	auto* transform = g_entities[0].GetComponent<Component::Transform>();
-	auto& scale     = transform->Scale();
-	auto& rotation  = transform->Rotation();
-	auto& position  = transform->Position();
+	//auto* transform = g_entities[0].GetComponent<Component::Transform>();
+	//auto& scale     = transform->Scale();
+	//auto& rotation  = transform->Rotation();
+	//auto& position  = transform->Position();
 
-	auto model = Matrix4::Identity();
-	model *= Scale(scale);
-	model *= RotateZ(rotation.z);
-	model *= RotateY(rotation.y);
-	model *= RotateX(rotation.x);
-	model *= Translate(position);
+	//auto model = Matrix4::Identity();
+	//model *= Scale(scale);
+	//model *= RotateZ(rotation.z);
+	//model *= RotateY(rotation.y);
+	//model *= RotateX(rotation.x);
+	//model *= Translate(position);
 
-	// View Matrix
+	//// View Matrix
 
+	//// Perspective Matrix
+	//float fov    = 90;
+	//float aspect = 16.f / 9.f;
+
+	//auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+
+	//for (auto& mesh : g_model.GetMeshes())
+	//{
+	//	auto const&                 primitives       = mesh.GetPrimitives();
+	//	const Graphics::Primitive** sortedPrimitives = new const Graphics::Primitive*[primitives.size()];
+	//	for (int i = 0; i < primitives.size(); i++)
+	//	{
+	//		sortedPrimitives[i] = &primitives[i];
+	//		const_cast<Graphics::Primitive&>(primitives[i]).OnRenderPrepare(model, {}, perspective);
+	//	}
+
+	//	auto predicate = [](const Graphics::Primitive* a_lhs, const Graphics::Primitive* a_rhs)
+	//	{
+	//		// Depth is front-to-back 1-0
+	//		if (a_lhs->GetDepth() < 0 || a_lhs->GetDepth() > 1)
+	//		{
+	//			return false;
+	//		}
+
+	//		if (a_rhs->GetDepth() < 0 || a_rhs->GetDepth() > 1)
+	//		{
+	//			return true;
+	//		}
+	//		
+	//		return a_lhs->GetDepth() > a_rhs->GetDepth();
+	//	};
+
+	//	std::sort(sortedPrimitives, sortedPrimitives + primitives.size(), predicate);
+
+	//	for (int i = 0; i < primitives.size(); i++)
+	//	{
+	//		float depth = sortedPrimitives[i]->GetDepth();
+	//		if (depth < 0 || depth > 1)
+	//		{
+	//			break;
+	//		}
+	//		
+	//		const_cast<Graphics::Primitive*>(sortedPrimitives[i])->OnRender();
+	//	}
+	//}
+	
 	// Perspective Matrix
 	float fov    = 90;
 	float aspect = 16.f / 9.f;
 
 	auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+	
+	Renderer::PrepareScene({}, perspective);
 
-	for (auto& mesh : g_model.GetMeshes())
-	{
-		auto const&                 primitives       = mesh.GetPrimitives();
-		const Graphics::Primitive** sortedPrimitives = new const Graphics::Primitive*[primitives.size()];
-		for (int i = 0; i < primitives.size(); i++)
-		{
-			sortedPrimitives[i] = &primitives[i];
-			const_cast<Graphics::Primitive&>(primitives[i]).OnRenderPrepare(model, {}, perspective);
-		}
+	Renderer::Submit(g_model, g_entities[0]);
 
-		auto predicate = [](const Graphics::Primitive* a_lhs, const Graphics::Primitive* a_rhs)
-		{
-			// Depth is front-to-back 1-0
-			if (a_lhs->GetDepth() < 0 || a_lhs->GetDepth() > 1)
-			{
-				return false;
-			}
-
-			if (a_rhs->GetDepth() < 0 || a_rhs->GetDepth() > 1)
-			{
-				return true;
-			}
-			
-			return a_lhs->GetDepth() > a_rhs->GetDepth();
-		};
-
-		std::sort(sortedPrimitives, sortedPrimitives + primitives.size(), predicate);
-
-		for (int i = 0; i < primitives.size(); i++)
-		{
-			float depth = sortedPrimitives[i]->GetDepth();
-			if (depth < 0 || depth > 1)
-			{
-				break;
-			}
-			
-			const_cast<Graphics::Primitive*>(sortedPrimitives[i])->OnRender();
-		}
-	}
+	Renderer::Flush();
 
 	//------------------------------------------------------------------------
 	// Example Text.

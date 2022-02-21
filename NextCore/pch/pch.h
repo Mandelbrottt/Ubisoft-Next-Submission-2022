@@ -2,9 +2,11 @@
 
 // STL Includes
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <cstdint>
 #include <map>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <tuple>
