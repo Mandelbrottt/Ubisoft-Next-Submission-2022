@@ -115,6 +115,25 @@ namespace NextCore::Scripting
 		Component*
 		GetComponent(Reflection::StaticTypeId a_typeId);
 		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		TComponent const*
+		GetComponent() const
+		{
+			return const_cast<Component*>(this)->GetComponent<TComponent>();
+		}
+
+		Component const*
+		GetComponent(Reflection::Type const& a_type) const
+		{
+			return const_cast<Component*>(this)->GetComponent(a_type);
+		}
+
+		Component*
+		GetComponent(Reflection::StaticTypeId a_typeId) const
+		{
+			return const_cast<Component*>(this)->GetComponent(a_typeId);
+		}
+
 		/**
 		 * \brief 
 		 * \tparam TComponent 
@@ -148,6 +167,25 @@ namespace NextCore::Scripting
 		 */
 		Component**
 		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
+
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		TComponent**
+		GetComponents(int* a_outCount) const
+		{
+			return const_cast<Component*>(this)->GetComponents<TComponent>(a_outCount);
+		}
+
+		Component**
+		GetComponents(Reflection::Type const& a_type, int* a_outCount) const
+		{
+			return const_cast<Component*>(this)->GetComponents(a_type, a_outCount);
+		}
+		
+		Component**
+		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount) const
+		{
+			return const_cast<Component*>(this)->GetComponents(a_typeId, a_outCount);
+		}
 		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		int

@@ -21,7 +21,7 @@ namespace NextCore::Scripting
 {
 	// Forward declare to avoid circular include
 	class Component;
-	
+
 	/**
 	 * \brief 
 	 */
@@ -41,6 +41,15 @@ namespace NextCore::Scripting
 		GetEntityId() const
 		{
 			return m_entityId;
+		}
+
+		NextCore::Component::Transform*
+		Transform();
+
+		NextCore::Component::Transform const*
+		Transform() const
+		{
+			return const_cast<Entity*>(this)->Transform();
 		}
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
@@ -93,6 +102,25 @@ namespace NextCore::Scripting
 		Component*
 		GetComponent(Reflection::StaticTypeId a_typeId);
 		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		TComponent const*
+		GetComponent() const
+		{
+			return const_cast<Entity*>(this)->GetComponent<TComponent>();
+		}
+
+		Component const*
+		GetComponent(Reflection::Type const& a_type) const
+		{
+			return const_cast<Entity*>(this)->GetComponent(a_type);
+		}
+
+		Component*
+		GetComponent(Reflection::StaticTypeId a_typeId) const
+		{
+			return const_cast<Entity*>(this)->GetComponent(a_typeId);
+		}
+
 		/**
 		 * \brief 
 		 * \tparam TComponent 
@@ -130,7 +158,7 @@ namespace NextCore::Scripting
 		 */
 		Component**
 		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
-		
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		int
 		NumComponents() const
@@ -138,13 +166,13 @@ namespace NextCore::Scripting
 			auto static_id = Reflection::GetStaticId<TComponent>();
 			return NumComponents(static_id);
 		}
-		
+
 		int
 		NumComponents(Reflection::Type const& a_type) const
 		{
 			return NumComponents(a_type.GetStaticId());
 		}
-		
+
 		int
 		NumComponents(Reflection::StaticTypeId a_typeId) const;
 
@@ -168,17 +196,34 @@ namespace NextCore::Scripting
 
 		decltype(m_components)::iterator
 		FindComponent(Component* a_component);
+		
+		decltype(m_components)::const_iterator
+		FindComponentById(Reflection::StaticTypeId a_id) const
+		{
+			return const_cast<Entity*>(this)->FindComponentById(a_id);
+		}
+
+		decltype(m_components)::const_iterator
+		FindComponent(Component* a_component) const
+		{
+			return const_cast<Entity*>(this)->FindComponent(a_component);
+		}
 
 		bool
 		RemoveComponentByIterator(decltype(m_components)::iterator a_iter);
 
-		void OnAddComponent(ComponentListElement& a_listElement);
-		
-		void OnRemoveComponent(ComponentListElement& a_listElement);
+		void
+		OnAddComponent(ComponentListElement& a_listElement);
+
+		void
+		OnRemoveComponent(ComponentListElement& a_listElement);
 
 		template<typename T>
-		struct identity { typedef T type; };
-		
+		struct identity
+		{
+			using type = T;
+		};
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		bool
 		RemoveComponent(identity<TComponent>)
@@ -186,7 +231,7 @@ namespace NextCore::Scripting
 			auto static_id = Reflection::GetStaticId<TComponent>();
 			return RemoveComponent(static_id);
 		}
-		
+
 		/**
 		 * \brief Specialization to only allow this and friends to remove transform
 		 */
@@ -202,7 +247,7 @@ namespace NextCore::Scripting
 
 		// TODO: Convert to use a pool allocator
 		Reflection::Constructor<TComponent> constructor;
-		auto result = static_cast<TComponent*>(constructor.Construct());
+		auto                                result = static_cast<TComponent*>(constructor.Construct());
 
 		ComponentListElement element = { static_id, result };
 		OnAddComponent(element);

@@ -42,6 +42,12 @@ namespace NextCore::Scripting
 		}
 	}
 
+	NextCore::Component::Transform*
+	Entity::Transform()
+	{
+		return GetComponent<NextCore::Component::Transform>();
+	}
+
 	Component*
 	Entity::AddComponent(Reflection::StaticTypeId a_typeId)
 	{
@@ -110,7 +116,7 @@ namespace NextCore::Scripting
 
 		return result;
 	}
-
+	
 	Component**
 	Entity::GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount)
 	{
@@ -167,7 +173,7 @@ namespace NextCore::Scripting
 
 		return iter;
 	}
-
+	
 	decltype(Entity::m_components)::iterator
 	Entity::FindComponent(Component* a_component)
 	{
