@@ -85,6 +85,12 @@ namespace NextCore::Graphics
 		 */
 		Detail::Vertex
 		GetVertex(unsigned int a_index) const;
+
+		PrimitiveType
+		GetPrimitiveType() const
+		{
+			return m_primitiveType;
+		}
 		
 		/**
 		 * \brief Set the color that the texture will blend with.
