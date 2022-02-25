@@ -170,12 +170,13 @@ namespace Next::Renderer
 		g_transformationCache.clear();
 	}
 
+	static std::vector<std::size_t> g_primitivesToRaster;
+
 	void
 	TransformPrimitivesByModelMatrix(std::size_t a_offset, std::size_t a_count, Matrix4 const& a_modelMatrix)
 	{
-		// TODO: Find way to avoid allocation in thread safe way
-		std::vector<std::size_t> primitivesToRaster;
-		primitivesToRaster.reserve(a_count);
+		// TODO: Shrink-to-fit the array at some point, maybe if model's haven't been loaded recently?
+		g_primitivesToRaster.reserve(a_count);
 
 		for (std::size_t i = a_offset; i < a_offset + a_count; i++)
 		{
@@ -212,17 +213,19 @@ namespace Next::Renderer
 			if (Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 || 
 				Vector::Dot(normals[1], commonPointOnPrimitive2) < 0)
 			{
-				primitivesToRaster.push_back(i);
+				g_primitivesToRaster.push_back(i);
 			}
 		}
 
 		std::scoped_lock lock(g_rasterQueueMutex);
-		for (std::size_t i = 0; i < primitivesToRaster.size(); i++) 
+		for (std::size_t i = 0; i < g_primitivesToRaster.size(); i++) 
 		{
-			std::size_t index = primitivesToRaster[i];
+			std::size_t index = g_primitivesToRaster[i];
 			
 			g_primitiveRasterQueue.emplace_back(std::move(g_primitiveRenderQueue[index]));
 		}
+
+		g_primitivesToRaster.clear();
 	}
 
 	void
