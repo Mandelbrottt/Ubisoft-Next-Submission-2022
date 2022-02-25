@@ -6,24 +6,24 @@
 
 #include "Math/Matrix4.h"
 
-namespace NextCore::Graphics
+namespace Next
 {
 	class Model;
 	class Mesh;
-	class Primitive;
+	class RenderPrimitive;
 }
 
-namespace NextCore::Renderer
+namespace Next::Renderer
 {	
 	NEXT_CORE_EXPORT
 	extern
 	void
-    PrepareScene(Math::Matrix4 const& a_viewMatrix, Math::Matrix4 const& a_projectionMatrix);
+    PrepareScene(Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix);
 	
 	NEXT_CORE_EXPORT
 	extern
 	void
-    Submit(Graphics::Model const& a_model, Scripting::Entity const& a_entityId);
+    Submit(Model const& a_model, Entity const& a_entityId);
 	
 	NEXT_CORE_EXPORT
 	extern

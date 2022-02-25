@@ -5,7 +5,7 @@
 
 #include "Components/Transform.h"
 
-namespace NextCore::Scripting
+namespace Next
 {
 	Entity::Entity()
 		: Object({ "Entity" })
@@ -19,7 +19,7 @@ namespace NextCore::Scripting
 	void
 	Entity::OnCreate()
 	{
-		AddComponent<NextCore::Component::Transform>();
+		AddComponent<Next::Transform>();
 	}
 
 	void
@@ -42,10 +42,10 @@ namespace NextCore::Scripting
 		}
 	}
 
-	NextCore::Component::Transform*
+	Transform*
 	Entity::Transform()
 	{
-		return GetComponent<NextCore::Component::Transform>();
+		return GetComponent<Next::Transform>();
 	}
 
 	Component*
@@ -243,9 +243,9 @@ namespace NextCore::Scripting
 	}
 	
 	bool
-	Entity::RemoveComponent(identity<NextCore::Component::Transform>)
+	Entity::RemoveComponent(identity<Next::Transform>)
 	{
-		auto static_id = Reflection::GetStaticId<NextCore::Component::Transform>();
+		auto static_id = Reflection::GetStaticId<Next::Transform>();
 		return RemoveComponent(static_id);
 	}
 }

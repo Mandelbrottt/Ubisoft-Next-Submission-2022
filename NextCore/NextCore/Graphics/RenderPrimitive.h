@@ -13,9 +13,9 @@
 
 class CSimpleSprite;
 
-namespace NextCore::Graphics
+namespace Next
 {
-	enum class PrimitiveType
+	enum class RenderPrimitiveType
 	{
 		// TODO: Add support for triangles
 		Null = 0,
@@ -23,20 +23,20 @@ namespace NextCore::Graphics
 		Quad,
 	};
 	
-	class Primitive final
+	class RenderPrimitive final
 	{
 		friend class Mesh;
 		
 	public:
 		/* TODO: Find a way to have non-public constructor, and deleted / non-public copy constructors
 		         and still be able to maintain a copied list in the renderer without resorting to memcpy */
-		Primitive() = default;
-		~Primitive() = default;
-		Primitive(Primitive&& a_other) = default;
+		RenderPrimitive() = default;
+		~RenderPrimitive() = default;
+		RenderPrimitive(RenderPrimitive&& a_other) = default;
 		
-		Primitive(Primitive const& a_other) = default;
-		Primitive& 
-		operator =(Primitive const& a_other) = default;
+		RenderPrimitive(RenderPrimitive const& a_other) = default;
+		RenderPrimitive& 
+		operator =(RenderPrimitive const& a_other) = default;
 		
 		void
 		OnUpdate(float a_deltaTime);
@@ -71,7 +71,7 @@ namespace NextCore::Graphics
 		Detail::Vertex const&
 		GetVertex(unsigned int a_index) const;
 
-		PrimitiveType
+		RenderPrimitiveType
 		GetPrimitiveType() const
 		{
 			return m_primitiveType;
@@ -108,6 +108,6 @@ namespace NextCore::Graphics
 
 		Detail::Vertex m_vertices[4];
 		
-		PrimitiveType m_primitiveType;
+		RenderPrimitiveType m_primitiveType;
 	};
 }

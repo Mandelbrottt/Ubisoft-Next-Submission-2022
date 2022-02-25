@@ -18,11 +18,11 @@
 
 // TODO: Decouple Sound, Write wrapper for drawing and printing to screen
 
-using namespace NextCore;
+using namespace Next;
 
-std::vector<Scripting::Entity> g_entities;
+std::vector<Entity> g_entities;
 
-Graphics::Model g_model;
+Model g_model;
 
 void
 GameInit()
@@ -40,7 +40,7 @@ GameInit()
 	}
 	{
 		g_entities.emplace_back();
-		Scripting::Entity& cube = g_entities.back();
+		Entity& cube = g_entities.back();
 		cube.AddComponent(Cube::GetType());
 	}
 	for (int i = 0; i <= 10; i++)
@@ -51,7 +51,7 @@ GameInit()
 		float y = 8 * std::sin(angle);
 
 		g_entities.emplace_back();
-		Scripting::Entity& entity = g_entities.back();
+		Entity& entity = g_entities.back();
 
 		entity.Transform()->Position() = { x, y, 10 };
 	}
@@ -74,7 +74,7 @@ GameRender()
 	for (auto& entity : g_entities)
 	{
 		int lineRendererCount;
-		auto* lineRenderers = entity.GetComponents<Component::LineRenderer>(&lineRendererCount);
+		auto* lineRenderers = entity.GetComponents<LineRenderer>(&lineRendererCount);
 		
 		if (lineRenderers)
 		{
@@ -84,14 +84,12 @@ GameRender()
 			}
 		}
 	}
-
-	using namespace Math;
 	
 	// Perspective Matrix
 	float fov    = 90;
 	float aspect = 16.f / 9.f;
 
-	auto perspective = Perspective(fov, aspect, 0.1f, 1000.f);
+	auto perspective = Matrix::Perspective(fov, aspect, 0.1f, 1000.f);
 	
 	Renderer::PrepareScene({}, perspective);
 

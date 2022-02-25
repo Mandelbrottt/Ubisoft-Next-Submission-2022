@@ -4,7 +4,7 @@
 
 #include "NextCoreCommon.h"
 
-namespace NextCore::Application
+namespace Next::Application
 {
 	/**
 	 * \return The path to the resource directory where images and sounds can be loaded

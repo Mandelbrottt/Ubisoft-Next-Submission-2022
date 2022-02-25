@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "Primitive.h"
+#include "RenderPrimitive.h"
 
 #include <filesystem>
 #include <fstream>
@@ -12,10 +12,10 @@
 #include <string>
 #include <string_view>
 
-namespace NextCore::Graphics
+namespace Next
 {
 	void
-	Primitive::OnUpdate(float a_deltaTime)
+	RenderPrimitive::OnUpdate(float a_deltaTime)
 	{
 		m_sprite.OnUpdate(a_deltaTime);
 	}
@@ -23,7 +23,7 @@ namespace NextCore::Graphics
 	static std::unordered_set<std::string> g_processedFiles;
 	
 	bool
-	Primitive::LoadFromTexture(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
+	RenderPrimitive::LoadFromTexture(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
 	{
 		std::string filename = std::string(a_fileName);
 		
@@ -49,25 +49,25 @@ namespace NextCore::Graphics
 	}
 	
 	void
-	Primitive::OnRender()
+	RenderPrimitive::OnRender()
 	{
 		m_sprite.OnRender();
 	}
 	
 	Detail::Vertex const&
-	Primitive::GetVertex(unsigned a_index) const
+	RenderPrimitive::GetVertex(unsigned a_index) const
 	{
 		return m_vertices[a_index];
 	}
 	
 	void
-	Primitive::SetColor(Color a_color)
+	RenderPrimitive::SetColor(Color a_color)
 	{
 		m_sprite.SetColor(a_color);
 	}
 	
 	void
-	Primitive::SetVertex(unsigned a_index, Detail::Vertex a_value)
+	RenderPrimitive::SetVertex(unsigned a_index, Detail::Vertex a_value)
 	{
 		// Don't set the sprite's vertices; We maintain model space
 		// vertices that are used to calculate the sprite's vertices per frame
@@ -75,13 +75,13 @@ namespace NextCore::Graphics
 	}
 	
 	bool
-	Primitive::IsValid() const
+	RenderPrimitive::IsValid() const
 	{
 		return m_sprite.IsValid();
 	}
 
 	bool
-	Primitive::ProcessBmp(std::string_view a_filename)
+	RenderPrimitive::ProcessBmp(std::string_view a_filename)
 	{
 		std::ifstream is(a_filename, std::ios::binary);
 

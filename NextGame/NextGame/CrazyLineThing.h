@@ -2,7 +2,7 @@
 
 #include <Scripting/Behaviour.h>
 
-class CrazyLineThing : public NextCore::Scripting::Behaviour
+class CrazyLineThing : public Next::Behaviour
 {
 	GenerateConstructors(CrazyLineThing)
 

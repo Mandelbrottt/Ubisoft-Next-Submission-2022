@@ -8,17 +8,17 @@
 
 #include "Math/Vector3.h"
 
-namespace NextCore::Component
+namespace Next
 {
 	/**
 	 * \brief Component representing a source of audio in the game world.
 	 */
-	class AudioSource : public Scripting::Component
+	class AudioSource : public Component
 	{
 		GenerateConstructors(AudioSource)
 
 	public:
-		Audio::AudioClip audioClip;
+		AudioClip audioClip;
 		
 		/**
 		 * \brief Play the audio clip.

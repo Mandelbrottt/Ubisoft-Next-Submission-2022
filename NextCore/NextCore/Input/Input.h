@@ -2,7 +2,7 @@
 
 #include "InputCodes.h"
 
-namespace NextCore::Input
+namespace Next::Input
 {
 	/**
 	 * \param a_axis The axis to check for input.
@@ -13,7 +13,7 @@ namespace NextCore::Input
 	 *          See NextAPI/AppSettings.h for more info.
 	 */
 	float
-	GetAxis(Axis a_axis, uint8_t a_controller = 0);
+	GetAxis(AxisCode a_axis, uint8_t a_controller = 0);
 
 	/**
 	 * \param a_button The button to check for input.
@@ -23,7 +23,7 @@ namespace NextCore::Input
 	 *         See NextAPI/AppSettings.h for more info.
 	 */
 	bool
-	GetButton(Button a_button, uint8_t a_controller = 0);
+	GetButton(ButtonCode a_button, uint8_t a_controller = 0);
 	
 	/**
 	 * \param a_button The button to check for input.
@@ -33,7 +33,7 @@ namespace NextCore::Input
 	 *         See NextAPI/AppSettings.h for more info.
 	 */
 	bool
-	GetButtonDown(Button a_button, uint8_t a_controller = 0);
+	GetButtonDown(ButtonCode a_button, uint8_t a_controller = 0);
 	
 	/**
 	 * \param a_button The button to check for input.
@@ -43,26 +43,26 @@ namespace NextCore::Input
 	 *         See NextAPI/AppSettings.h for more info.
 	 */
 	bool
-	GetButtonUp(Button a_button, uint8_t a_controller = 0);
+	GetButtonUp(ButtonCode a_button, uint8_t a_controller = 0);
 	
 	/**
 	 * \param a_key The key to check for input.
 	 * \return True if the keyboard key is currently pressed, false otherwise.
 	 */
 	bool
-	GetKey(Key a_key);
+	GetKey(KeyCode a_key);
 	
 	/**
 	 * \param a_key The button to check for input.
 	 * \return True if the keyboard key is currently pressed, false otherwise.
 	 */
 	bool
-	GetKeyDown(Key a_key);
+	GetKeyDown(KeyCode a_key);
 	
 	/**
 	 * \param a_key The button to check for input.
 	 * \return True if the keyboard key is currently pressed, false otherwise.
 	 */
 	bool
-	GetKeyUp(Key a_key);
+	GetKeyUp(KeyCode a_key);
 }

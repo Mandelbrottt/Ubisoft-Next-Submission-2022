@@ -2,9 +2,9 @@
 
 #include "IModelLoader.h"
 
-#include "Graphics/Primitive.h"
+#include "Graphics/RenderPrimitive.h"
 
-namespace NextCore::Graphics::Detail
+namespace Next::Detail
 {
 	class WavefrontModelLoader : public IModelLoader
 	{
@@ -29,11 +29,11 @@ namespace NextCore::Graphics::Detail
 		PrimitiveTypeSanityCheck(int a_numIndicesRead);
 
 	private:
-		std::vector<Math::Vector3> m_positions;
-		std::vector<Math::Vector2> m_uvs;
-		std::vector<Math::Vector3> m_normals;
+		std::vector<Vector3> m_positions;
+		std::vector<Vector2> m_uvs;
+		std::vector<Vector3> m_normals;
 
-		PrimitiveType m_primitiveType = PrimitiveType::Null;
+		RenderPrimitiveType m_primitiveType = RenderPrimitiveType::Null;
 
 		std::vector<Vertex> m_vertices;
 	};

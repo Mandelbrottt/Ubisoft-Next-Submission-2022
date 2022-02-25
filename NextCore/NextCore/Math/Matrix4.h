@@ -2,8 +2,8 @@
 
 #include "Detail/type_Matrix4.h"
 
-namespace NextCore::Math
+namespace Next
 {
-	typedef Matrix<4, 4, float> Matrix4;
+	typedef Matrix_t<4, 4, float> Matrix4;
 	static_assert(sizeof(Matrix4) == sizeof(Matrix4::data));
 }

@@ -4,7 +4,7 @@
 
 #include <string_view>
 
-namespace NextCore::Graphics
+namespace Next
 {
 	class Model final
 	{

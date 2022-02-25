@@ -18,28 +18,28 @@
 #pragma region Reflection Macros
 	#define _REFLECT_OFFSET_OF(_type_, _field_) ((size_t) &((_type_*) 0)->_field_)
 
-	#define _REFLECT_NAMESPACE ::NextCore::Reflection::
+	#define _REFLECT_NAMESPACE ::Next::Reflection::
 
 	#define _REFLECT_DECLARE_COMMON(_class_) \
-			_REFLECT_AUTO_FORMAT_INDENT \
+			_MACRO_AUTO_FORMAT_INDENT \
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
-			typedef _REFLECT_NAMESPACE Constructor<_REFLECT_TYPE_ALIAS> ThisConstructor;\
+			typedef _REFLECT_NAMESPACE TypedFactory<_REFLECT_TYPE_ALIAS> ThisFactory;\
 			inline \
 			static \
-			_REFLECT_NAMESPACE GenericConstructor* \
-			_GetGenericConstructor() \
+			_REFLECT_NAMESPACE GenericFactory* \
+			_GetGenericFactory() \
 			{ \
-				static_assert(sizeof(ThisConstructor) == sizeof(_REFLECT_NAMESPACE GenericConstructor)); \
-				return new ThisConstructor; \
+				static_assert(sizeof(ThisFactory) == sizeof(_REFLECT_NAMESPACE GenericFactory)); \
+				return new ThisFactory; \
 			} \
 			inline \
 			static \
 			void \
-			_GetGenericConstructor(_REFLECT_NAMESPACE GenericConstructor* a_location) \
+			_GetGenericFactory(_REFLECT_NAMESPACE GenericFactory* a_location) \
 			{ \
-				new(a_location) ThisConstructor; \
+				new(a_location) ThisFactory; \
 			}\
 			\
 		public: \
@@ -71,7 +71,7 @@
 	#define REFLECT_DECLARE(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
 
 	#define REFLECT_MEMBERS(_list_) \
-		_REFLECT_AUTO_FORMAT_INDENT \
+		_MACRO_AUTO_FORMAT_INDENT \
 	private:\
 		friend class _REFLECT_NAMESPACE Type; \
 		static \

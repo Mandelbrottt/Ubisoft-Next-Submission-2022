@@ -11,7 +11,7 @@ namespace std
 	namespace fs = filesystem;
 }
 
-namespace NextCore::Graphics
+namespace Next
 {
 	using Detail::file_stream_t;
 	using Detail::mesh_container_t;

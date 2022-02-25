@@ -13,17 +13,17 @@
 
 class CSimpleSprite;
 
-namespace NextCore::Renderer
+namespace Next::Renderer
 {
 	void
 	Flush();
 }
 
-namespace NextCore::Graphics
+namespace Next
 {
 	class NEXT_CORE_EXPORT Sprite
 	{
-		friend class Primitive;
+		friend class RenderPrimitive;
 
 		friend
 		void
@@ -69,7 +69,7 @@ namespace NextCore::Graphics
 		/**
 		 * \return The size of the sprite in pixels. 
 		 */
-		Math::Vector2
+		Vector2
 		GetSize() const;
 		
 		/**

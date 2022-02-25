@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace NextCore::Scripting
+namespace Next
 {
 	/**
 	 * \brief The root base class for all objects represented in NextCore (eg. Entities, Components, etc.)

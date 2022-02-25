@@ -7,12 +7,12 @@
 
 #include "InputConversion.h"
 
-namespace NextCore::Input
+namespace Next::Input
 {
 	constexpr static Detail::InputMap g_inputMap;
 	
-	using key_underlying_t = std::underlying_type_t<Key>;
-	using button_underlying_t = std::underlying_type_t<Button>;
+	using key_underlying_t = std::underlying_type_t<KeyCode>;
+	using button_underlying_t = std::underlying_type_t<ButtonCode>;
 
 	/* TODO: We don't need this many keys, but we dont need to do additional processing
 	         to determine the largest value in the keys enum */
@@ -47,7 +47,7 @@ namespace NextCore::Input
 	}
 	
 	float
-	GetAxis(Axis a_axis, uint8_t a_controller)
+	GetAxis(AxisCode a_axis, uint8_t a_controller)
 	{
 		auto& controller = App::GetController(a_controller);
 
@@ -57,26 +57,26 @@ namespace NextCore::Input
 
 		switch (a_axis)
 		{
-			case Axis::LeftStickX:
+			case AxisCode::LeftStickX:
 				return controller.GetLeftThumbStickX();
-			case Axis::LeftStickY:
+			case AxisCode::LeftStickY:
 				// BUG: Emulated keys return the wrong-signed value for StickY, so we adjust for that here
 				result = controller.GetLeftThumbStickY();
 				emulated_key = result < 0
 					               ? APP_PAD_EMUL_LEFT_THUMB_UP
 					               : APP_PAD_EMUL_LEFT_THUMB_DOWN;
 				return g_thisFrameKeys[emulated_key] ? -result : result;
-			case Axis::RightStickX:
+			case AxisCode::RightStickX:
 				return controller.GetRightThumbStickX();
-			case Axis::RightStickY:
+			case AxisCode::RightStickY:
 				result = controller.GetRightThumbStickY();
 				emulated_key = result < 0
 					               ? APP_PAD_EMUL_RIGHT_THUMB_UP
 					               : APP_PAD_EMUL_RIGHT_THUMB_DOWN;
 				return g_thisFrameKeys[emulated_key] ? -result : result;
-			case Axis::LeftTrigger:
+			case AxisCode::LeftTrigger:
 				return controller.GetLeftTrigger();
-			case Axis::RightTrigger:
+			case AxisCode::RightTrigger:
 				return controller.GetRightTrigger();
 			default:
 				throw "Invalid Axis";
@@ -84,7 +84,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetButton(Button a_button, uint8_t a_controller)
+	GetButton(ButtonCode a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 
@@ -94,7 +94,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetButtonDown(Button a_button, uint8_t a_controller)
+	GetButtonDown(ButtonCode a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 		button_underlying_t lastButton = g_lastFrameButtons[a_controller];
@@ -105,7 +105,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetButtonUp(Button a_button, uint8_t a_controller)
+	GetButtonUp(ButtonCode a_button, uint8_t a_controller)
 	{
 		button_underlying_t thisButton = g_thisFrameButtons[a_controller];
 		button_underlying_t lastButton = g_lastFrameButtons[a_controller];
@@ -116,7 +116,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetKey(Key a_key)
+	GetKey(KeyCode a_key)
 	{
 		key_underlying_t key = g_inputMap[a_key];
 
@@ -124,7 +124,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetKeyDown(Key a_key)
+	GetKeyDown(KeyCode a_key)
 	{
 		key_underlying_t key = g_inputMap[a_key];
 
@@ -132,7 +132,7 @@ namespace NextCore::Input
 	}
 	
 	bool
-	GetKeyUp(Key a_key)
+	GetKeyUp(KeyCode a_key)
 	{
 		key_underlying_t key = g_inputMap[a_key];
 

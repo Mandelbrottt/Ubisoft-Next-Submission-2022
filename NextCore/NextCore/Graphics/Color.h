@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NextCore::Graphics
+namespace Next
 {
 	struct Color
 	{

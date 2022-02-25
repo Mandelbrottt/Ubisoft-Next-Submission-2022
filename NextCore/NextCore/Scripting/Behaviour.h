@@ -2,7 +2,7 @@
 
 #include "Scripting/Component.h"
 
-namespace NextCore::Scripting
+namespace Next
 {
 	/**
 	 * \brief The base class for all user behaviours in NextCore

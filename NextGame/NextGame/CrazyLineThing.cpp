@@ -6,8 +6,7 @@
 
 REFLECT_REGISTER(CrazyLineThing);
 
-using namespace NextCore;
-using namespace Component;
+using namespace Next;
 
 void
 CrazyLineThing::OnCreate()

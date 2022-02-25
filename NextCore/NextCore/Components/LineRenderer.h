@@ -9,7 +9,7 @@
 // TEMPORARY:
 void GameRender();
 
-namespace NextCore::Graphics
+namespace Next
 {
 	enum class LineType
 	{
@@ -19,13 +19,9 @@ namespace NextCore::Graphics
 	};
 }
 
-namespace NextCore::Component
+namespace Next
 {
-	using Graphics::Color;
-	using Graphics::LineType;
-	using Math::Vector3;
-
-	class LineRenderer : public Scripting::Component
+	class LineRenderer : public Component
 	{
 		friend void ::GameRender();
 

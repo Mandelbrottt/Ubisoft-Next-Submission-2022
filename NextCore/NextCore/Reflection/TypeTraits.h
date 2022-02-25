@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace NextCore::Reflection
+namespace Next::Reflection
 {
 	template<typename T, int N, typename Tuple>
 	struct tuple_element_index_helper;

@@ -2,8 +2,8 @@
 
 #include "Detail/type_Matrix3.h"
 
-namespace NextCore::Math
+namespace Next
 {
-	typedef Matrix<3, 3, float> Matrix3;
+	typedef Matrix_t<3, 3, float> Matrix3;
 	static_assert(sizeof(Matrix3) == sizeof(Matrix3::data));
 }

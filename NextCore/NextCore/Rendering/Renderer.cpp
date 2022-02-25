@@ -6,19 +6,15 @@
 
 #include "Graphics/Model.h"
 
-namespace NextCore::Renderer
+namespace Next::Renderer
 {
-	using Math::Vector3;
-	using Math::Vector4;
-	using Math::Matrix4;
-	
 	struct RenderQueueElement
 	{
 		explicit
-		RenderQueueElement(Graphics::Primitive const& a_primitive)
+		RenderQueueElement(RenderPrimitive const& a_primitive)
 			: primitive(a_primitive) { }
 		
-		Graphics::Primitive primitive;
+		RenderPrimitive primitive;
 
 		//Scripting::EntityId entityId;
 
@@ -28,7 +24,7 @@ namespace NextCore::Renderer
 
 		Vector3 normals[2];
 
-		Graphics::Color color;
+		Color color;
 
 		float depth = 0;
 	};
@@ -71,7 +67,7 @@ namespace NextCore::Renderer
 
 	// TODO: Add SceneSetup function that takes in a camera and sets up the view matrix
 	void
-	Submit(Graphics::Model const& a_model, Scripting::Entity const& a_entity)
+	Submit(Model const& a_model, Entity const& a_entity)
 	{
 		std::size_t numPrimitives = 0;
 
@@ -135,7 +131,7 @@ namespace NextCore::Renderer
 
 			auto* sprite = primitive.GetSprite();
 			
-			int numVerts = primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle ? 3 : 4;
+			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -149,12 +145,12 @@ namespace NextCore::Renderer
 				sprite->m_simpleSprite->SetVertex(2 * i,     positions[i].x);
 				sprite->m_simpleSprite->SetVertex(2 * i + 1, positions[i].y);
 				
-				sprite->m_simpleSprite->SetUv(2 * i,     uv.x);
-				sprite->m_simpleSprite->SetUv(2 * i + 1, uv.y);
+				sprite->m_simpleSprite->SetUv(2 * i,     uv.u);
+				sprite->m_simpleSprite->SetUv(2 * i + 1, uv.v);
 			}
 			
 			// If primitive is a triangle, fourth vertex shares values with first
-			if (primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle)
+			if (primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle)
 			{
 				auto* s = sprite->m_simpleSprite;
 				s->SetVertex(6, s->GetVertex(0));
@@ -186,7 +182,7 @@ namespace NextCore::Renderer
 			auto& element = g_primitiveRenderQueue[i];
 			auto& primitive = element.primitive;
 			
-			int numVerts = primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle ? 3 : 4;
+			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 
 			auto& positions = element.positions;
 			
@@ -205,7 +201,7 @@ namespace NextCore::Renderer
 				Vector3 line1 = Vector3(positions[j + 1]) - Vector3(positions[0]);
 				Vector3 line2 = Vector3(positions[j + 2]) - Vector3(positions[0]);
 
-				normals[j] = Normalize(Cross(line1, line2));
+				normals[j] = Vector::Normalize(Vector::Cross(line1, line2));
 			}
 
 			Vector3 cameraPosition = { 0, 0, 0 };
@@ -213,7 +209,8 @@ namespace NextCore::Renderer
 			Vector3 commonPointOnPrimitive1 = Vector3(positions[0]) - cameraPosition;
 			Vector3 commonPointOnPrimitive2 = Vector3(positions[3]) - cameraPosition;
 
-			if (Dot(normals[0], commonPointOnPrimitive1) < 0 || Dot(normals[1], commonPointOnPrimitive2) < 0)
+			if (Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 || 
+				Vector::Dot(normals[1], commonPointOnPrimitive2) < 0)
 			{
 				primitivesToRaster.push_back(i);
 			}
@@ -240,14 +237,14 @@ namespace NextCore::Renderer
 			
 			auto* sprite = primitive.GetSprite();
 			
-			int numVerts = primitive.GetPrimitiveType() == Graphics::PrimitiveType::Triangle ? 3 : 4;
+			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 			
 			Vector3 commonNormal = normals[0];
 
 			if (normals[1] != Vector3(0))
 			{
 				commonNormal += normals[1];
-				commonNormal = Normalize(commonNormal * 0.5f);
+				commonNormal = Vector::Normalize(commonNormal * 0.5f);
 			}
 			
 			for (int j = 0; j < numVerts; j++)
@@ -255,10 +252,10 @@ namespace NextCore::Renderer
 				Vector3 lightDirection = { -1, 1, 1 };
 				lightDirection.Normalize();
 
-				float dotProduct = Dot(commonNormal, -lightDirection);
+				float dotProduct = Vector::Dot(commonNormal, -lightDirection);
 				dotProduct = std::max(dotProduct, 0.f) + 0.3f;
 				
-				auto color = Graphics::Color(dotProduct, dotProduct, dotProduct);
+				auto color = Color(dotProduct, dotProduct, dotProduct);
 
 				element.color = color;
 

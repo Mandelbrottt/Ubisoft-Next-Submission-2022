@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace NextCore::Input
+namespace Next
 {
-	enum class Axis : uint8_t
+	enum class AxisCode : uint8_t
 	{
 		// [-1, 1]
 		LeftStickX,
@@ -31,7 +31,7 @@ namespace NextCore::Input
 		R2             = RightTrigger,
 	};
 
-	enum class Button : uint16_t
+	enum class ButtonCode : uint16_t
 	{
 		South,
 		Cross         = South,
@@ -63,7 +63,7 @@ namespace NextCore::Input
 		Back          = Select,
 	};
 	
-	enum class Key : uint8_t
+	enum class KeyCode : uint8_t
 	{
 		A,
 		B,

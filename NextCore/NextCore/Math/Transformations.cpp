@@ -3,7 +3,7 @@
 
 #include "Vector4.h"
 
-namespace NextCore::Math
+namespace Next::Matrix
 {
 	Matrix4 Perspective(float a_fieldOfView, float a_aspectRatio, float a_nearPlane, float a_farPlane)
 	{

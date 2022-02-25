@@ -16,6 +16,6 @@
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
 
-#ifndef NEXT_EXPLICIT_NAMESPACE
-using namespace NextCore;
+#ifdef NEXT_IMPLICIT_NAMESPACE
+using namespace Next;
 #endif

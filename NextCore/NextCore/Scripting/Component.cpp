@@ -5,7 +5,7 @@
 
 #include "Components/Transform.h"
 
-namespace NextCore::Scripting
+namespace Next
 {
 	Component::Component(ComponentConstructionArgs const& a_args)
 		: Object(a_args) {}
@@ -22,10 +22,10 @@ namespace NextCore::Scripting
 		return m_entity;
 	}
 
-	NextCore::Component::Transform*
+	Transform*
 	Component::Transform()
 	{
-		return GetComponent<NextCore::Component::Transform>();
+		return GetComponent<Next::Transform>();
 	}
 	
 	Component*

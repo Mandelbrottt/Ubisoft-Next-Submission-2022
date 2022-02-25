@@ -7,11 +7,8 @@
 #include <filesystem>
 #include <fstream>
 
-namespace NextCore::Graphics::Detail
+namespace Next::Detail
 {
-	using Math::Vector2;
-	using Math::Vector3;
-
 	bool
 	WavefrontModelLoader::LoadFromFile(
 		std::string_view  a_filename,
@@ -139,10 +136,8 @@ namespace NextCore::Graphics::Detail
 	{
 		const char* format = "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d";
 
-		Math::Vector3i indices[4];
-
-		int runningIndex = 0;
-
+		Vector3i indices[4];
+		
 		// Holy arguments, batman!
 		// Read in face data
 		// ReSharper disable CppBadListLineBreaks
@@ -182,22 +177,22 @@ namespace NextCore::Graphics::Detail
 	bool
 	WavefrontModelLoader::PrimitiveTypeSanityCheck(int a_numIndicesRead)
 	{
-		auto primitiveType = PrimitiveType::Null;
+		auto primitiveType = RenderPrimitiveType::Null;
 		
 		if (a_numIndicesRead == 9)
 		{
-			primitiveType = PrimitiveType::Triangle;
+			primitiveType = RenderPrimitiveType::Triangle;
 		} else if (a_numIndicesRead == 12)
 		{
-			primitiveType = PrimitiveType::Quad;
+			primitiveType = RenderPrimitiveType::Quad;
 		}
 
-		if (m_primitiveType == PrimitiveType::Null)
+		if (m_primitiveType == RenderPrimitiveType::Null)
 		{
 			m_primitiveType = primitiveType;
 		}
 
-		if (primitiveType == PrimitiveType::Null || primitiveType != m_primitiveType)
+		if (primitiveType == RenderPrimitiveType::Null || primitiveType != m_primitiveType)
 		{
 			return false;
 		}

@@ -8,13 +8,13 @@
 
 #include "Field.h"
 #include "TypeTraits.h"
-#include "Constructor.h"
+#include "Factory.h"
 
 #include "NextCoreCommon.h"
 
 #define DEPRECATED_WARNING_NUMBER 4996
 
-namespace NextCore::Reflection
+namespace Next::Reflection
 {
 	/**
 	 * \brief The display name of a reflected member
@@ -135,13 +135,13 @@ namespace NextCore::Reflection
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		// ReSharper disable once CppDeprecatedEntity
 		/**
-		 * \brief Get the instance of the \link GenericConstructor \endlink associated with this type.
-		 * \return A pointer to the \link GenericConstructor \endlink associated with this type.
+		 * \brief Get the instance of the \link GenericFactory \endlink associated with this type.
+		 * \return A pointer to the \link GenericFactory \endlink associated with this type.
 		 */
-		const GenericConstructor* GetConstructor()
+		const GenericFactory* GetConstructor()
 		{
 			// See https://en.cppreference.com/w/cpp/types/aligned_storage
-			auto pConstructor = std::launder(reinterpret_cast<GenericConstructor*>(m_constructorData));
+			auto pConstructor = std::launder(reinterpret_cast<GenericFactory*>(m_constructorData));
 			return pConstructor;
 		}
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
@@ -306,9 +306,9 @@ namespace NextCore::Reflection
 				// being able to reference it like a pointer and use the vtable to call overridden
 				// versions of Construct and Destruct
 				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-				auto pConstructor = reinterpret_cast<GenericConstructor*>(reflector.m_constructorData);
+				auto pConstructor = reinterpret_cast<GenericFactory*>(reflector.m_constructorData);
 				// ReSharper disable once CppDeprecatedEntity
-				T::_GetGenericConstructor(pConstructor);
+				T::_GetGenericFactory(pConstructor);
 				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 				
 				return reflector;
@@ -334,7 +334,7 @@ namespace NextCore::Reflection
 		StaticTypeId m_typeId = StaticTypeId::Null;
 
 		//std::aligned_storage_t<sizeof(GenericConstructor), alignof(GenericConstructor)> m_constructorData;
-		std::byte m_constructorData[sizeof(GenericConstructor)] { std::byte() };
+		std::byte m_constructorData[sizeof(GenericFactory)] { std::byte() };
 		
 		//GenericConstructor m_constructor;
 
@@ -399,12 +399,12 @@ namespace NextCore::Reflection
 }
 
 // Write-Only
-static NextCore::Reflection::Name r_name;
+static Next::Reflection::Name r_name;
 
 // Write-Only
-static NextCore::Reflection::Description r_description;
+static Next::Reflection::Description r_description;
 
 // Write-Only
-static NextCore::Reflection::FieldFlags r_flags;
+static Next::Reflection::FieldFlags r_flags;
 
 #undef DEPRECATED_WARNING_NUMBER

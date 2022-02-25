@@ -6,27 +6,24 @@
 #include "Reflection/Reflection.h"
 
 #define GenerateConstructors(_class_) \
-		_REFLECT_AUTO_FORMAT_INDENT \
+		_MACRO_AUTO_FORMAT_INDENT \
 	protected: \
-		friend ::NextCore::Reflection::Constructor<_class_>; \
+		friend ::Next::Reflection::TypedFactory<_class_>; \
 		\
 		_class_() \
 			: Base({ #_class_ }) { } \
 		~_class_() override = default;
 
-namespace NextCore::Reflection
+namespace Next::Reflection
 {
 	template<typename T>
-	struct Constructor;
+	struct TypedFactory;
 }
 
-namespace NextCore::Component
+namespace Next
 {
 	class Transform;
-}
 
-namespace NextCore::Scripting
-{
 	/**
 	 * \brief The base class for all components in NextCore
 	 */
@@ -49,7 +46,7 @@ namespace NextCore::Scripting
 		Entity*
 		GetEntity() const;
 
-		NextCore::Component::Transform*
+		Transform*
 		Transform();
 
 		#pragma endregion

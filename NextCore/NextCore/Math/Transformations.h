@@ -5,7 +5,7 @@
 
 #include "NextCoreCommon.h"
 
-namespace NextCore::Math
+namespace Next::Matrix
 {
 	/**
 	 * \param a_fieldOfView Horizontal Field of view in degrees 

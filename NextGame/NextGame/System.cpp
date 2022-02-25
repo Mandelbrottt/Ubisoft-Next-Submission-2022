@@ -7,7 +7,7 @@ Init()
 }
 
 // Declare System Updates manually so as to not expose it unnecessarily
-namespace NextCore
+namespace Next
 {
 	namespace Time
 	{
@@ -29,9 +29,9 @@ Update(float a_deltaTime)
 {
 	// Convert deltaTime into seconds because NextAPI uses milliseconds
 	float timeInSeconds = a_deltaTime / 1000.f;
-	NextCore::Time::Update(timeInSeconds);
+	Next::Time::Update(timeInSeconds);
 
-	NextCore::Input::Update();
+	Next::Input::Update();
 
 	GameUpdate();
 }

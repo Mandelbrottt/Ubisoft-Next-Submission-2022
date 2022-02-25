@@ -2,11 +2,7 @@
 
 #include <MinimalInclude.h>
 
-#include <NextAPI/app.h>
-
-using namespace NextCore;
-using Graphics::Sprite;
-using namespace Math;
+using namespace Next;
 
 void
 Cube::OnCreate()
@@ -26,11 +22,11 @@ Cube::OnUpdate()
 	float moveSpeed = 3;
 	float turnSpeed = 3;
 	
-	position.x += GetAxis(Input::Axis::Horizontal)   * moveSpeed * Time::DeltaTime();
-	position.y += GetAxis(Input::Axis::RightTrigger) * moveSpeed * Time::DeltaTime();
-	position.y -= GetAxis(Input::Axis::LeftTrigger)  * moveSpeed * Time::DeltaTime();
-	position.z += GetAxis(Input::Axis::Vertical)     * moveSpeed * Time::DeltaTime();
+	position.x += Input::GetAxis(AxisCode::Horizontal)   * moveSpeed * Time::DeltaTime();
+	position.y += Input::GetAxis(AxisCode::RightTrigger) * moveSpeed * Time::DeltaTime();
+	position.y -= Input::GetAxis(AxisCode::LeftTrigger)  * moveSpeed * Time::DeltaTime();
+	position.z += Input::GetAxis(AxisCode::Vertical)     * moveSpeed * Time::DeltaTime();
 
-	rotation.x += GetAxis(Input::Axis::VerticalLook)   * turnSpeed * Time::DeltaTime();
-	rotation.y += GetAxis(Input::Axis::HorizontalLook) * turnSpeed * Time::DeltaTime();
+	rotation.x += Input::GetAxis(AxisCode::VerticalLook)   * turnSpeed * Time::DeltaTime();
+	rotation.y += Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
 }

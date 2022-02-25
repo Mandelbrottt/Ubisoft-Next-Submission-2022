@@ -2,7 +2,7 @@
 
 #include "AudioSource.h"
 
-namespace NextCore::Component
+namespace Next
 {
 	REFLECT_REGISTER(AudioSource);
 	

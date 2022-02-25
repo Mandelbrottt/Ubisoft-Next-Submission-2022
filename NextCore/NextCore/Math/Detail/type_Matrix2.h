@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "common_Matrix.h"
 #include "type_Matrix.h"
 #include "type_Vector2.h"
 
@@ -11,27 +10,27 @@
 
 #define MATRIX_SIZE 2
 
-namespace NextCore::Math
+namespace Next
 {
 	template<typename TUnderlying>
-	struct Matrix<MATRIX_SIZE, MATRIX_SIZE, TUnderlying>
+	struct Matrix_t<MATRIX_SIZE, MATRIX_SIZE, TUnderlying>
 	{
 		using value_type = TUnderlying;
-		using type = Matrix<MATRIX_SIZE, MATRIX_SIZE, TUnderlying>;
+		using type = Matrix_t<MATRIX_SIZE, MATRIX_SIZE, TUnderlying>;
 
 		constexpr static int size_x = MATRIX_SIZE;
 		constexpr static int size_y = MATRIX_SIZE;
 
-		Matrix()
-			: Matrix(0) {}
+		Matrix_t()
+			: Matrix_t(0) {}
 
 		explicit
-		Matrix(TUnderlying a_value)
+		Matrix_t(TUnderlying a_value)
 			: data { a_value } { }
 
-		Matrix(
-			Vector<MATRIX_SIZE, TUnderlying> a_x,
-			Vector<MATRIX_SIZE, TUnderlying> a_y
+		Matrix_t(
+			Vector_t<MATRIX_SIZE, TUnderlying> a_x,
+			Vector_t<MATRIX_SIZE, TUnderlying> a_y
 		) : cols { a_x, a_y } {}
 
 	#pragma warning( push )
@@ -44,7 +43,7 @@ namespace NextCore::Math
 				TUnderlying m10, m11;
 			};
 
-			Vector<size_x, TUnderlying> cols[size_y];
+			Vector_t<size_x, TUnderlying> cols[size_y];
 
 			TUnderlying data[size_x * size_y];
 		};

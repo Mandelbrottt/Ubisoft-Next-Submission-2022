@@ -2,54 +2,52 @@
 
 #include "type_Vector.h"
 
-#include "common_Vector.h"
-
 #pragma warning( push )
 #pragma warning( disable : 26495 ) // Possibly uninitialized member
 
 #define VECTOR_SIZE 4
 
-namespace NextCore::Math
+namespace Next
 {
 	template<typename TUnderlying>
-	struct Vector<VECTOR_SIZE, TUnderlying>
+	struct Vector_t<VECTOR_SIZE, TUnderlying>
 	{
 		using value_type = TUnderlying;
-		using type = Vector<VECTOR_SIZE, TUnderlying>;
+		using type = Vector_t;
 		
 		constexpr static TUnderlying size = VECTOR_SIZE;
 
 		constexpr
 		explicit
-		Vector(TUnderlying a_value = 0)
+		Vector_t(TUnderlying a_value = 0)
 			: x(a_value),
 			  y(a_value),
 			  z(a_value),
 			  w(a_value) { }
 
 		constexpr
-		Vector(TUnderlying a_x, TUnderlying a_y)
+		Vector_t(TUnderlying a_x, TUnderlying a_y)
 			: x(a_x),
 			  y(a_y),
 			  z(0),
 			  w(0) { }
 
 		constexpr
-		Vector(TUnderlying a_x, TUnderlying a_y, TUnderlying a_z)
+		Vector_t(TUnderlying a_x, TUnderlying a_y, TUnderlying a_z)
 			: x(a_x),
 			  y(a_y),
 			  z(a_z),
 			  w(0) { }
 
 		constexpr
-		Vector(TUnderlying a_x, TUnderlying a_y, TUnderlying a_z, TUnderlying a_w)
+		Vector_t(TUnderlying a_x, TUnderlying a_y, TUnderlying a_z, TUnderlying a_w)
 			: x(a_x),
 			  y(a_y),
 			  z(a_z),
 			  w(a_w) { }
 		
 		constexpr
-		Vector(Vector<3, TUnderlying> a_vector, TUnderlying a_w)
+		Vector_t(Vector_t<3, TUnderlying> a_vector, TUnderlying a_w)
 			: x(a_vector.data[0]),
 			  y(a_vector.data[1]),
 			  z(a_vector.data[2]),

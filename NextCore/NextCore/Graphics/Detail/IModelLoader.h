@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-namespace NextCore::Graphics::Detail
+namespace Next::Detail
 {
 	using file_stream_t = std::ifstream;
 

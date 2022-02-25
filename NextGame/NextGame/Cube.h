@@ -2,7 +2,7 @@
 
 #include <Scripting/Behaviour.h>
 
-class Cube : public NextCore::Scripting::Behaviour
+class Cube : public Next::Behaviour
 {
 	GenerateConstructors(Cube)
 public:

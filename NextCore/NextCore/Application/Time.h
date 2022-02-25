@@ -2,7 +2,7 @@
 
 #include "NextCoreCommon.h"
 
-namespace NextCore::Time
+namespace Next::Time
 {
 	/**
 	 * \return Time in seconds since the program was started.

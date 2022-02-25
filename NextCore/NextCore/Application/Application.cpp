@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-namespace NextCore::Application
+namespace Next::Application
 {
 	std::string ResourcePath()
 	{

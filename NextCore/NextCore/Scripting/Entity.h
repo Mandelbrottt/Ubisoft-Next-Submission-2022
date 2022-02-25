@@ -4,22 +4,13 @@
 #include "Object.h"
 
 #include "Reflection/Type.h"
-#include "Reflection/Constructor.h"
+#include "Reflection/Factory.h"
 
 #include <type_traits>
-//
-//#include "Components/AudioSource.h"
-//
-//#include "Components/Transform.h"
 
-namespace NextCore::Component
+namespace Next
 {
 	class Transform;
-}
-
-namespace NextCore::Scripting
-{
-	// Forward declare to avoid circular include
 	class Component;
 
 	/**
@@ -43,10 +34,10 @@ namespace NextCore::Scripting
 			return m_entityId;
 		}
 
-		NextCore::Component::Transform*
+		Next::Transform*
 		Transform();
 
-		NextCore::Component::Transform const*
+		Next::Transform const*
 		Transform() const
 		{
 			return const_cast<Entity*>(this)->Transform();
@@ -236,7 +227,7 @@ namespace NextCore::Scripting
 		 * \brief Specialization to only allow this and friends to remove transform
 		 */
 		bool
-		RemoveComponent(identity<NextCore::Component::Transform>);
+		RemoveComponent(identity<Next::Transform>);
 	};
 
 	template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool>>
@@ -246,7 +237,7 @@ namespace NextCore::Scripting
 		auto static_id = Reflection::GetStaticId<TComponent>();
 
 		// TODO: Convert to use a pool allocator
-		Reflection::Constructor<TComponent> constructor;
+		Reflection::TypedFactory<TComponent> constructor;
 		auto                                result = static_cast<TComponent*>(constructor.Construct());
 
 		ComponentListElement element = { static_id, result };

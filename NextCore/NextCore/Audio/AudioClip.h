@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace NextCore::Audio
+namespace Next
 {
 	/**
 	 * \brief Represents an audio file that can be played and stopped. Does not support pausing.

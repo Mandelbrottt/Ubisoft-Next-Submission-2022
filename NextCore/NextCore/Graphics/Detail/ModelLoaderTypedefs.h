@@ -8,20 +8,20 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 
-namespace NextCore::Graphics
+namespace Next
 {
 	class Mesh;
-}
 
-namespace NextCore::Graphics::Detail
-{
-	struct Vertex
+	namespace Detail
 	{
-		Math::Vector3 position;
-		Math::Vector2 uv;
-		Math::Vector3 normal;
-	};
+		struct Vertex
+		{
+			Vector3 position;
+			Vector2 uv;
+			Vector3 normal;
+		};
 
-	using vertex_container_t = std::vector<Vertex>;
-	using mesh_container_t   = std::vector<Mesh>;
+		using vertex_container_t = std::vector<Vertex>;
+		using mesh_container_t = std::vector<Mesh>;
+	}
 }

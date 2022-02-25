@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace NextCore::Scripting
+namespace Next
 {
 	using entity_underlying_t = uint32_t;
 	

@@ -4,7 +4,7 @@
 
 #include "Math/Transformations.h"
 
-namespace NextCore::Component
+namespace Next
 {
 	REFLECT_REGISTER(Transform);
 
@@ -20,7 +20,7 @@ namespace NextCore::Component
 		throw "Not Implemented";
 	}
 
-	Scripting::EntityId
+	EntityId
 	Transform::GetParentId() const
 	{
 		throw "Not Implemented";
@@ -33,16 +33,14 @@ namespace NextCore::Component
 	}
 
 	void
-	Transform::SetParent(Scripting::EntityId a_parent)
+	Transform::SetParent(EntityId a_parent)
 	{
 		throw "Not Implemented";
 	}
 
-	Math::Matrix4
+	Matrix4
 	Transform::GetTransformationMatrix() const
 	{
-		using Math::Matrix4;
-
 		// TEMPORARY:
 		m_isMatrixDirty = true;
 
@@ -50,11 +48,11 @@ namespace NextCore::Component
 		{
 			// Calculate New Matrix
 			Matrix4 result = Matrix4::Identity();
-			result *= Math::Scale(m_scale);
-			result *= Math::RotateZ(m_rotation.z);
-			result *= Math::RotateY(m_rotation.y);
-			result *= Math::RotateX(m_rotation.x);
-			result *= Math::Translate(m_position);
+			result *= Matrix::Scale(m_scale);
+			result *= Matrix::RotateZ(m_rotation.z);
+			result *= Matrix::RotateY(m_rotation.y);
+			result *= Matrix::RotateX(m_rotation.x);
+			result *= Matrix::Translate(m_position);
 
 			// TODO: Implement parenting
 			//result *= GetParent()->GetTransformationMatrix();

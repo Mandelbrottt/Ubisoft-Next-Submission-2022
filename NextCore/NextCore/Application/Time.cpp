@@ -12,7 +12,7 @@ static float g_unscaledElapsedTime = 0;
 
 static float g_timeScale = 1;
 
-namespace NextCore::Time
+namespace Next::Time
 {
 	float
 	ElapsedTime()

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NextCore::Reflection
+namespace Next::Reflection
 {
 	enum FieldFlags : uint32_t
 	{

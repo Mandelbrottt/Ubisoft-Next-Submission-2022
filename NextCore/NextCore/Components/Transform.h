@@ -5,9 +5,9 @@
 
 #include "Scripting/Component.h"
 
-namespace NextCore::Component
+namespace Next
 {
-	class Transform : public Scripting::Component
+	class Transform : public Component
 	{
 		GenerateConstructors(Transform)
 
@@ -18,63 +18,63 @@ namespace NextCore::Component
 		Transform const*
 		GetParent() const;
 
-		Scripting::EntityId
+		EntityId
 		GetParentId() const;
 
 		void
 		SetParent(Transform* a_parent);
 		
 		void
-		SetParent(Scripting::EntityId a_parent);
+		SetParent(EntityId a_parent);
 
 		// TODO: Use proxy class with overloaded assignment to set dirty flag
-		Math::Vector3&
+		Vector3&
 		Position()
 		{
 			return m_position;
 		}
 		
-		Math::Vector3 const&
+		Vector3 const&
 		Position() const
 		{
 			return m_position;
 		}
 		
-		Math::Vector3&
+		Vector3&
 		Rotation()
 		{
 			return m_rotation;
 		}
 		
-		Math::Vector3 const&
+		Vector3 const&
 		Rotation() const
 		{
 			return m_rotation;
 		}
 		
-		Math::Vector3&
+		Vector3&
 		Scale()
 		{
 			return m_scale;
 		}
 
-		Math::Vector3 const&
+		Vector3 const&
 		Scale() const
 		{
 			return m_scale;
 		}
 
-		Math::Matrix4
+		Matrix4
 		GetTransformationMatrix() const;
 
 	private:
-		Math::Vector3 m_position = Math::Vector3(0);
-		Math::Vector3 m_rotation = Math::Vector3(0); // TODO: Convert to quaternion once implemented
-		Math::Vector3 m_scale    = Math::Vector3(1);
+		Vector3 m_position = Vector3(0);
+		Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
+		Vector3 m_scale    = Vector3(1);
 
-		Scripting::EntityId m_parent;
+		EntityId m_parent;
 
-		mutable Math::Matrix4 m_cachedTransformationMatrix;
+		mutable Matrix4 m_cachedTransformationMatrix;
 
 		mutable bool m_isMatrixDirty = true;
 		

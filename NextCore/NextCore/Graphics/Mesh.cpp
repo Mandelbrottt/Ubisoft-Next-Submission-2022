@@ -6,23 +6,23 @@
 
 #include "Detail/IModelLoader.h"
 
-namespace NextCore::Graphics
+namespace Next
 {
 	bool
 	Mesh::GeneratePrimitives(
 		std::string_view                  a_textureFilename,
 		Detail::vertex_container_t const& a_vertices,
-		PrimitiveType                     a_type
+		RenderPrimitiveType                     a_type
 	)
 	{
 		int numVerticesPerPrimitive;
 
 		switch (a_type)
 		{
-			case PrimitiveType::Triangle:
+			case RenderPrimitiveType::Triangle:
 				numVerticesPerPrimitive = 3;
 				break;
-			case PrimitiveType::Quad:
+			case RenderPrimitiveType::Quad:
 				numVerticesPerPrimitive = 4;
 				break;
 			default:
@@ -33,7 +33,7 @@ namespace NextCore::Graphics
 
 		for (int i = 0; i < numPrimitives; i++)
 		{
-			Primitive p;
+			RenderPrimitive p;
 			p.m_primitiveType = a_type;
 			p.LoadFromTexture(a_textureFilename);
 

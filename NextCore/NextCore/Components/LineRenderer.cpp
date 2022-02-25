@@ -4,7 +4,7 @@
 
 #include <NextAPI/app.h>
 
-namespace NextCore::Component
+namespace Next
 {
 	REFLECT_REGISTER(LineRenderer);
 

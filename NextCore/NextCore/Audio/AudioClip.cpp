@@ -9,7 +9,7 @@
 
 #include "NextAPI/app.h"
 
-namespace NextCore::Audio
+namespace Next
 {
 	AudioClip::AudioClip(const char* a_fileName, bool a_playOnLoad, bool a_loop)
 	{

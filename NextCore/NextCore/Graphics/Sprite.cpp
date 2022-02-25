@@ -1,5 +1,4 @@
 #include "pch.h"
-
 #include "Sprite.h"
 
 #include "Application/Time.h"
@@ -8,14 +7,8 @@
 
 #include "Math/Transformations.h"
 
-#include "Reflection/Constructor.h"
-
-namespace NextCore::Graphics
+namespace Next
 {
-	using Math::Vector2;
-	using Math::Vector3;
-	using Math::Vector4;
-
 	Sprite::Sprite(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
 	{
 		LoadFromTexture(a_fileName, a_nColumns, a_nRows);

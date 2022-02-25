@@ -10,7 +10,7 @@
 	#include <Xinput.h>
 #endif
 
-namespace NextCore::Input::Detail
+namespace Next::Input::Detail
 {
 	template<typename TEnum, typename TElement, int Size>
 	struct EnumIndexedArray
@@ -51,8 +51,8 @@ namespace NextCore::Input::Detail
 
 	struct InputMap
 	{
-		using key_underlying_t = std::underlying_type_t<Key>;
-		using button_underlying_t = std::underlying_type_t<Button>;
+		using key_underlying_t = std::underlying_type_t<KeyCode>;
+		using button_underlying_t = std::underlying_type_t<ButtonCode>;
 
 		constexpr static int key_size    = 256;
 		constexpr static int button_size = 16;
@@ -62,22 +62,22 @@ namespace NextCore::Input::Detail
 
 		constexpr
 		key_underlying_t
-		operator [](Key a_key) const
+		operator [](KeyCode a_key) const
 		{
 			return m_keys[a_key];
 		}
 
 		constexpr
 		button_underlying_t
-		operator [](Button a_button) const
+		operator [](ButtonCode a_button) const
 		{
 			return m_buttons[a_button];
 		}
 
 	private:
-		EnumIndexedArray<Key, key_underlying_t, key_size> m_keys;
+		EnumIndexedArray<KeyCode, key_underlying_t, key_size> m_keys;
 
-		EnumIndexedArray<Button, button_underlying_t, button_size> m_buttons;
+		EnumIndexedArray<ButtonCode, button_underlying_t, button_size> m_buttons;
 	};
 	
 	constexpr
@@ -86,27 +86,27 @@ namespace NextCore::Input::Detail
 		// TODO: Make keycodes portable
 	#ifdef _WIN32
 		// Gamepad buttons
-		m_buttons[Button::DPadUp]        = XINPUT_GAMEPAD_DPAD_UP;
-		m_buttons[Button::DPadDown]      = XINPUT_GAMEPAD_DPAD_DOWN;
-		m_buttons[Button::DPadLeft]      = XINPUT_GAMEPAD_DPAD_LEFT;
-		m_buttons[Button::DPadRight]     = XINPUT_GAMEPAD_DPAD_RIGHT;
-		m_buttons[Button::South]         = XINPUT_GAMEPAD_A;
-		m_buttons[Button::West]          = XINPUT_GAMEPAD_B;
-		m_buttons[Button::East]          = XINPUT_GAMEPAD_X;
-		m_buttons[Button::North]         = XINPUT_GAMEPAD_Y;
-		m_buttons[Button::LeftShoulder]  = XINPUT_GAMEPAD_LEFT_SHOULDER;
-		m_buttons[Button::RightShoulder] = XINPUT_GAMEPAD_RIGHT_SHOULDER;
-		m_buttons[Button::LeftStick]     = XINPUT_GAMEPAD_LEFT_THUMB;
-		m_buttons[Button::RightStick]    = XINPUT_GAMEPAD_RIGHT_THUMB;
-		m_buttons[Button::Start]         = XINPUT_GAMEPAD_START;
-		m_buttons[Button::Select]        = XINPUT_GAMEPAD_BACK;
+		m_buttons[ButtonCode::DPadUp]        = XINPUT_GAMEPAD_DPAD_UP;
+		m_buttons[ButtonCode::DPadDown]      = XINPUT_GAMEPAD_DPAD_DOWN;
+		m_buttons[ButtonCode::DPadLeft]      = XINPUT_GAMEPAD_DPAD_LEFT;
+		m_buttons[ButtonCode::DPadRight]     = XINPUT_GAMEPAD_DPAD_RIGHT;
+		m_buttons[ButtonCode::South]         = XINPUT_GAMEPAD_A;
+		m_buttons[ButtonCode::West]          = XINPUT_GAMEPAD_B;
+		m_buttons[ButtonCode::East]          = XINPUT_GAMEPAD_X;
+		m_buttons[ButtonCode::North]         = XINPUT_GAMEPAD_Y;
+		m_buttons[ButtonCode::LeftShoulder]  = XINPUT_GAMEPAD_LEFT_SHOULDER;
+		m_buttons[ButtonCode::RightShoulder] = XINPUT_GAMEPAD_RIGHT_SHOULDER;
+		m_buttons[ButtonCode::LeftStick]     = XINPUT_GAMEPAD_LEFT_THUMB;
+		m_buttons[ButtonCode::RightStick]    = XINPUT_GAMEPAD_RIGHT_THUMB;
+		m_buttons[ButtonCode::Start]         = XINPUT_GAMEPAD_START;
+		m_buttons[ButtonCode::Select]        = XINPUT_GAMEPAD_BACK;
 
 		for (int i = 0; i < 26; i++)
 		{
-			const key_underlying_t firstLetterCode  = static_cast<key_underlying_t>(Key::A);
+			const key_underlying_t firstLetterCode  = static_cast<key_underlying_t>(KeyCode::A);
 			const char             firstLetterValue = 'A';
 			
-			Key              convertedKeyCode   = static_cast<Key>(firstLetterCode + i);
+			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstLetterCode + i);
 			key_underlying_t convertedKeyValue  = firstLetterValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
@@ -115,10 +115,10 @@ namespace NextCore::Input::Detail
 		// Alphanumeric Keys
 		for (int i = 0; i < 10; i++)
 		{
-			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(Key::A);
+			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(KeyCode::A);
 			const char             firstNumberValue = '0';
 			
-			Key              convertedKeyCode   = static_cast<Key>(firstNumberCode + i);
+			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstNumberCode + i);
 			key_underlying_t convertedKeyValue  = firstNumberValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
@@ -127,42 +127,42 @@ namespace NextCore::Input::Detail
 		// Numpad Keys
 		for (int i = 0; i < 10; i++)
 		{
-			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(Key::Numpad0);
+			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(KeyCode::Numpad0);
 			const char             firstNumberValue = VK_NUMPAD0;
 			
-			Key              convertedKeyCode   = static_cast<Key>(firstNumberCode + i);
+			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstNumberCode + i);
 			key_underlying_t convertedKeyValue  = firstNumberValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
 		}
 
 		// Special Keys
-		m_keys[Key::Space]        = VK_SPACE;
-		m_keys[Key::Shift]        = VK_SHIFT;
-		m_keys[Key::LeftShift]    = VK_LSHIFT;
-		m_keys[Key::RightShift]   = VK_RSHIFT;
-		m_keys[Key::Control]      = VK_CONTROL;
-		m_keys[Key::LeftControl]  = VK_LCONTROL;
-		m_keys[Key::RightControl] = VK_RCONTROL;
-		m_keys[Key::CapsLock]     = VK_CAPITAL;
-		m_keys[Key::Tab]          = VK_TAB;
-		m_keys[Key::Escape]       = VK_ESCAPE;
-		m_keys[Key::Up]           = VK_UP;
-		m_keys[Key::Down]         = VK_DOWN;
-		m_keys[Key::Left]         = VK_LEFT;
-		m_keys[Key::Right]        = VK_RIGHT;
-		m_keys[Key::Return]       = VK_RETURN;
-		m_keys[Key::Semicolon]    = VK_OEM_1;
-		m_keys[Key::Plus]         = VK_OEM_PLUS;
-		m_keys[Key::Comma]        = VK_OEM_COMMA;
-		m_keys[Key::Minus]        = VK_OEM_MINUS;
-		m_keys[Key::Period]       = VK_OEM_PERIOD;
-		m_keys[Key::Slash]        = VK_OEM_2;
-		m_keys[Key::Grave]        = VK_OEM_3;
-		m_keys[Key::LeftBracket]  = VK_OEM_4;
-		m_keys[Key::Backslash]    = VK_OEM_5;
-		m_keys[Key::RightBracket] = VK_OEM_6;
-		m_keys[Key::Apostrophe]   = VK_OEM_7;
+		m_keys[KeyCode::Space]        = VK_SPACE;
+		m_keys[KeyCode::Shift]        = VK_SHIFT;
+		m_keys[KeyCode::LeftShift]    = VK_LSHIFT;
+		m_keys[KeyCode::RightShift]   = VK_RSHIFT;
+		m_keys[KeyCode::Control]      = VK_CONTROL;
+		m_keys[KeyCode::LeftControl]  = VK_LCONTROL;
+		m_keys[KeyCode::RightControl] = VK_RCONTROL;
+		m_keys[KeyCode::CapsLock]     = VK_CAPITAL;
+		m_keys[KeyCode::Tab]          = VK_TAB;
+		m_keys[KeyCode::Escape]       = VK_ESCAPE;
+		m_keys[KeyCode::Up]           = VK_UP;
+		m_keys[KeyCode::Down]         = VK_DOWN;
+		m_keys[KeyCode::Left]         = VK_LEFT;
+		m_keys[KeyCode::Right]        = VK_RIGHT;
+		m_keys[KeyCode::Return]       = VK_RETURN;
+		m_keys[KeyCode::Semicolon]    = VK_OEM_1;
+		m_keys[KeyCode::Plus]         = VK_OEM_PLUS;
+		m_keys[KeyCode::Comma]        = VK_OEM_COMMA;
+		m_keys[KeyCode::Minus]        = VK_OEM_MINUS;
+		m_keys[KeyCode::Period]       = VK_OEM_PERIOD;
+		m_keys[KeyCode::Slash]        = VK_OEM_2;
+		m_keys[KeyCode::Grave]        = VK_OEM_3;
+		m_keys[KeyCode::LeftBracket]  = VK_OEM_4;
+		m_keys[KeyCode::Backslash]    = VK_OEM_5;
+		m_keys[KeyCode::RightBracket] = VK_OEM_6;
+		m_keys[KeyCode::Apostrophe]   = VK_OEM_7;
 	#endif
 	}
 }

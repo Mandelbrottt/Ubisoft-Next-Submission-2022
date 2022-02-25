@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NextCore::Reflection
+namespace Next::Reflection
 {
 	/**
 	 * \brief Wrapper around construction and destruction of objects, statically evaluated
@@ -8,12 +8,12 @@ namespace NextCore::Reflection
 	 * \remark All base functions return nullptr or don't do anything instead of being pure virtual
 	 *         because then we wouldn't be able to construct this on the stack.
 	 */
-	struct GenericConstructor
+	struct GenericFactory
 	{
 		bool valid = false;
 
 		virtual
-		~GenericConstructor()
+		~GenericFactory()
 		{
 			valid = false;
 		};
@@ -38,19 +38,19 @@ namespace NextCore::Reflection
 	};
 
 	template<typename T>
-	struct Constructor final : GenericConstructor
+	struct TypedFactory final : GenericFactory
 	{
 		using value_type = T;
 
 		constexpr static int value_size = sizeof(T);
 
-		Constructor()
+		TypedFactory()
 		{
 			// valid is only set to true if GenericConstructor has been overridden
 			valid = true;
 		}
 
-		~Constructor() override = default;
+		~TypedFactory() override = default;
 
 		/**
 		 * \brief Allocates a new object and returns it
