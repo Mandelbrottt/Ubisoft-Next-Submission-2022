@@ -238,8 +238,6 @@ namespace Next::Renderer
 			auto& positions = element.positions;
 			auto& normals   = element.normals;
 			
-			auto* sprite = primitive.GetSprite();
-			
 			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 			
 			Vector3 commonNormal = normals[0];
@@ -264,8 +262,6 @@ namespace Next::Renderer
 
 				//TODO: Factor in view matrix
 				
-				auto const& [position, uv, normal] = primitive.GetVertex(j);
-
 				auto projectedVertex = g_projectionMatrix * positions[j];
 
 				projectedVertex.x /= projectedVertex.w;

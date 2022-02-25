@@ -15,6 +15,14 @@
 #include <unordered_set>
 #include <vector>
 
-// NextAPI Includes
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+
+#include <Windows.h>
+
+// Fix compiler error from including dsound.h in NextAPI/SimpleSound.h
+#include <mmsystem.h>
+
+#include <NextAPI/SimpleSound.h>
 #include <NextAPI/SimpleSprite.h>
 #include <NextAPI/app.h>

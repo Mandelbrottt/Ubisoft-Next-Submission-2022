@@ -101,14 +101,13 @@ namespace Next::Reflection
 
 		Type&
 		operator =(const Type&) = delete;
-
-		Type&
-		operator =(Type&&) = delete;
-	
+		
 	public:
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-		Type(Type&& a_other) noexcept = default;
+		Type(Type&& a_other) = default;
+		Type&
+		operator =(Type&&) = default;
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		
 		/**

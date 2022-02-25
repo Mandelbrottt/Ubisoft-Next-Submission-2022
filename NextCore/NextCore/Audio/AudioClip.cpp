@@ -2,13 +2,6 @@
 
 #include "AudioClip.h"
 
-// Fix compiler error from including dsound.h
-#include <mmsystem.h>
-
-#include <NextAPI/SimpleSound.h>
-
-#include "NextAPI/app.h"
-
 namespace Next
 {
 	AudioClip::AudioClip(const char* a_fileName, bool a_playOnLoad, bool a_loop)

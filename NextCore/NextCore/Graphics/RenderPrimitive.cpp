@@ -151,7 +151,7 @@ namespace Next
 			char b = fileBuffer[i];
 			char g = fileBuffer[i + 1];
 			char r = fileBuffer[i + 2];
-			char a = static_cast<char>(0xFF);
+			char a = static_cast<char>(0xFFu);
 
 			newColorBufIter[0] = b;
 			newColorBufIter[1] = g;
