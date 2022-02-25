@@ -37,6 +37,8 @@ namespace Next
 		
 	#pragma warning( push )
 	#pragma warning( disable : 4615 ) // Unknown user type
+		/* TODO: Nameless structs are non - standard, make portable with
+		         silent warnings / defines to make it non - anonymous */
 		union
 		{
 			struct

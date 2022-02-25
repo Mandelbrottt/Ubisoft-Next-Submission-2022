@@ -7,8 +7,9 @@ using namespace Next;
 void
 Cube::OnCreate()
 {
-	auto* transform       = Transform();
-	transform->Position() = { 0.0f, 0.0f, 5 };
+	auto* transform = Transform();
+
+	transform->SetPosition({ 0.0f, 0.0f, 5 });
 }
 
 void
@@ -16,8 +17,10 @@ Cube::OnUpdate()
 {
 	//m_timeElapsed += Time::DeltaTime();
 
-	auto& position = Transform()->Position();
-	auto& rotation = Transform()->Rotation();
+	auto transform = Transform();
+	
+	auto position = transform->GetPosition();
+	auto rotation = transform->GetRotation();
 
 	float moveSpeed = 3;
 	float turnSpeed = 3;
@@ -29,4 +32,7 @@ Cube::OnUpdate()
 
 	rotation.x += Input::GetAxis(AxisCode::VerticalLook)   * turnSpeed * Time::DeltaTime();
 	rotation.y += Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
+
+	transform->SetPosition(position);
+	transform->SetRotation(rotation);
 }

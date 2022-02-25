@@ -24,14 +24,18 @@ std::vector<Entity> g_entities;
 
 Model g_model;
 
+void Foo();
+
 void
 GameInit()
 {
+	Foo();
+	
 	g_entities.reserve(100);
 
 	g_model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
 	//g_model.LoadFromFile(Application::ResourcePath() + "complex/deer.obj");
-	
+
 	{
 		//g_entities.emplace_back();
 		//Scripting::Entity& player = g_entities.back();
@@ -53,7 +57,7 @@ GameInit()
 		g_entities.emplace_back();
 		Entity& entity = g_entities.back();
 
-		entity.Transform()->Position() = { x, y, 10 };
+		entity.Transform()->SetPosition({ x, y, 10 });
 	}
 }
 
@@ -70,12 +74,12 @@ GameUpdate()
 
 void
 GameRender()
-{	
+{
 	for (auto& entity : g_entities)
 	{
-		int lineRendererCount;
+		int   lineRendererCount;
 		auto* lineRenderers = entity.GetComponents<LineRenderer>(&lineRendererCount);
-		
+
 		if (lineRenderers)
 		{
 			for (int i = 0; i < lineRendererCount; i++)
@@ -84,13 +88,13 @@ GameRender()
 			}
 		}
 	}
-	
+
 	// Perspective Matrix
 	float fov    = 90;
 	float aspect = 16.f / 9.f;
 
 	auto perspective = Matrix::Perspective(fov, aspect, 0.1f, 1000.f);
-	
+
 	Renderer::PrepareScene({}, perspective);
 
 	static float theta = 0;
@@ -99,16 +103,16 @@ GameRender()
 	for (int i = 0; i < g_entities.size(); i++)
 	{
 		auto& entity = g_entities[i];
-		
+
 		if (entity.GetComponent<Cube>() == nullptr)
 		{
 			auto* transform = entity.Transform();
-			transform->Rotation() = { theta * 0.5f, 0, theta };
+			transform->SetRotation({ theta * 0.5f, 0, theta });
 		}
 
 		Renderer::Submit(g_model, g_entities[i]);
 	}
-	
+
 	Renderer::Flush();
 
 	//------------------------------------------------------------------------
@@ -118,6 +122,37 @@ GameRender()
 }
 
 void
-GameShutdown()
+GameShutdown() {}
+
+#define PROPERTY(t,n)  __declspec( property ( put = property__set_##n, get = property__get_##n ) ) t n;\
+	typedef t property__tmp_type_##n
+#define READONLY_PROPERTY(t,n) __declspec( property (get = property__get_##n) ) t n;\
+	typedef t property__tmp_type_##n
+#define WRITEONLY_PROPERTY(t,n) __declspec( property (put = property__set_##n) ) t n;\
+	typedef t property__tmp_type_##n
+#define GET(n) property__tmp_type_##n property__get_##n() 
+#define SET(n) void property__set_##n(const property__tmp_type_##n& value)
+
+struct Something
 {
+	PROPERTY(int, x);
+
+	GET(x)
+	{
+		return x;
+	}
+	
+	SET(x)
+	{
+		m_x = value;
+	}
+
+private:
+	int m_x = 0;
+};
+
+void Foo()
+{
+	Something s;
+	s.x = 5;
 }

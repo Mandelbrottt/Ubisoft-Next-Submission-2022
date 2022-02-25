@@ -41,9 +41,6 @@ namespace Next
 	Matrix4
 	Transform::GetTransformationMatrix() const
 	{
-		// TEMPORARY:
-		m_isMatrixDirty = true;
-
 		if (m_isMatrixDirty)
 		{
 			// Calculate New Matrix
@@ -54,13 +51,18 @@ namespace Next
 			result *= Matrix::RotateX(m_rotation.x);
 			result *= Matrix::Translate(m_position);
 
-			// TODO: Implement parenting
+			// Implement parenting
 			//result *= GetParent()->GetTransformationMatrix();
 
 			m_cachedTransformationMatrix = std::move(result);
 			m_isMatrixDirty = false;
 		}
 
-		return m_cachedTransformationMatrix;
+		/* TODO: Get parent matrix. Find way to recalculate this matrix if parent was made dirty
+		         even if it has been marked as not dirty before this calculation is done.
+		         Events / function pointers? */
+		Matrix4 parent = Matrix4::Identity();
+
+		return parent * m_cachedTransformationMatrix;
 	}
 }

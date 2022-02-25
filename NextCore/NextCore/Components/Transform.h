@@ -7,6 +7,9 @@
 
 namespace Next
 {
+	/* TODO: Find way to have single function to get and set properties.
+	         VC++ properties would be great if it was portable */
+	
 	class Transform : public Component
 	{
 		GenerateConstructors(Transform)
@@ -26,47 +29,70 @@ namespace Next
 		
 		void
 		SetParent(EntityId a_parent);
-
-		// TODO: Use proxy class with overloaded assignment to set dirty flag
-		Vector3&
-		Position()
+		
+		Vector3 const&
+		GetPosition()
 		{
 			return m_position;
 		}
 		
 		Vector3 const&
-		Position() const
+		SetPosition(Vector3 const a_position)
+		{
+			m_isMatrixDirty |= a_position != m_position;
+			
+			return m_position = a_position;
+		}
+		
+		Vector3 const&
+		GetPosition() const
 		{
 			return m_position;
 		}
 		
-		Vector3&
-		Rotation()
+		Vector3 const&
+		GetRotation()
 		{
 			return m_rotation;
 		}
 		
 		Vector3 const&
-		Rotation() const
+		SetRotation(Vector3 const a_rotation)
+		{
+			m_isMatrixDirty |= a_rotation != m_rotation;
+			
+			return m_rotation = a_rotation;
+		}
+		
+		Vector3 const&
+		GetRotation() const
 		{
 			return m_rotation;
 		}
 		
-		Vector3&
-		Scale()
+		Vector3 const&
+		GetScale()
 		{
 			return m_scale;
 		}
+		
+		Vector3 const&
+		SetScale(Vector3 const a_scale)
+		{
+			m_isMatrixDirty |= a_scale == m_scale;
+			
+			return m_scale = a_scale;
+		}
 
 		Vector3 const&
-		Scale() const
+		GetScale() const
 		{
 			return m_scale;
 		}
 
 		Matrix4
 		GetTransformationMatrix() const;
-
+		
 	private:
 		Vector3 m_position = Vector3(0);
 		Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
