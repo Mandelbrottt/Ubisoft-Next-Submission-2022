@@ -19,9 +19,8 @@ namespace Next
 	class Entity : public Object
 	{
 	public:
-		// TODO: Convert to protected when entity system is in place
 		Entity();
-
+		
 		void
 		OnCreate();
 
@@ -113,10 +112,6 @@ namespace Next
 		}
 
 		/**
-		 * \brief 
-		 * \tparam TComponent 
-		 * \param a_outCount 
-		 * \return 
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
@@ -128,10 +123,6 @@ namespace Next
 		}
 
 		/**
-		 * \brief 
-		 * \param a_type 
-		 * \param a_outCount 
-		 * \return 
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		Component**
@@ -141,10 +132,6 @@ namespace Next
 		}
 
 		/**
-		 * \brief 
-		 * \param a_typeId 
-		 * \param a_outCount 
-		 * \return
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		Component**
@@ -237,8 +224,8 @@ namespace Next
 		auto static_id = Reflection::GetStaticId<TComponent>();
 
 		// TODO: Convert to use a pool allocator
-		Reflection::TypedFactory<TComponent> constructor;
-		auto                                result = static_cast<TComponent*>(constructor.Construct());
+		Reflection::TypedFactory<TComponent> factory;
+		auto result = static_cast<TComponent*>(factory.Construct());
 
 		ComponentListElement element = { static_id, result };
 		OnAddComponent(element);

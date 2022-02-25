@@ -17,9 +17,8 @@ namespace Next
 
 		explicit
 		Object(ObjectConstructionArgs const& a_args)
-		#ifdef NEXT_DEBUG
-			:
-			m_typeName(a_args.typeName)
+		#ifndef NEXT_RELEASE
+			: m_typeName(a_args.typeName)
 		#endif
 		{ }
 
@@ -33,7 +32,7 @@ namespace Next
 	public:
 		Object(Object&& a_other) = default;
 	
-	#ifdef NEXT_DEBUG
+	#ifndef NEXT_RELEASE
 	protected:
 		const char*
 		GetName() const

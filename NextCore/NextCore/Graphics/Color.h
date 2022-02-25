@@ -17,6 +17,7 @@ namespace Next
 		float b = 0.0f;
 		float a = 1.0f;
 
+		// TODO: Add more colors
 		static Color white;
 		static Color black;
 		static Color magenta;
