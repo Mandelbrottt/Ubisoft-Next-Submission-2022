@@ -14,27 +14,23 @@ namespace Next::Detail
 
 	private:
 		void
-		ReadVertexPosition(const char* a_line);
+		ProcessVertexPositionData(const char* a_line);
 
 		void
-		ReadVertexUv(const char* a_line);
+		ProcessVertexUvData(const char* a_line);
 
 		void
-		ReadVertexNormal(const char* a_line);
+		ProcessVertexNormalData(const char* a_line);
 
 		void
-		ReadFace(const char* a_line);
-
-		bool
-		PrimitiveTypeSanityCheck(int a_numIndicesRead);
-
+		ProcessFaceData(const char* a_line);
+		
 	private:
 		std::vector<Vector3> m_positions;
 		std::vector<Vector2> m_uvs;
 		std::vector<Vector3> m_normals;
 
-		RenderPrimitiveType m_primitiveType = RenderPrimitiveType::Null;
-
-		std::vector<Vertex> m_vertices;
+		vertex_container_t       m_vertices;
+		vertex_count_container_t m_vertexCount;
 	};
 }

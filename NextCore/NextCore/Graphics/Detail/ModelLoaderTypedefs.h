@@ -21,7 +21,8 @@ namespace Next
 			Vector3 normal;
 		};
 
-		using vertex_container_t = std::vector<Vertex>;
-		using mesh_container_t = std::vector<Mesh>;
+		using vertex_container_t       = std::vector<Vertex>;
+		using vertex_count_container_t = std::vector<uint8_t>;
+		using mesh_container_t         = std::vector<Mesh>;
 	}
 }

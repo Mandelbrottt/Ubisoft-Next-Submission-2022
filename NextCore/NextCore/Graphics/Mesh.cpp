@@ -10,43 +10,36 @@ namespace Next
 {
 	bool
 	Mesh::GeneratePrimitives(
-		std::string_view                  a_textureFilename,
-		Detail::vertex_container_t const& a_vertices,
-		RenderPrimitiveType                     a_type
+		std::string_view                        a_textureFilename,
+		Detail::vertex_container_t const&       a_vertices,
+		Detail::vertex_count_container_t const& a_vertexCounts
 	)
 	{
-		int numVerticesPerPrimitive;
-
-		switch (a_type)
+		int indexIntoVertices = 0;
+		
+		for (int i = 0; i < a_vertexCounts.size(); i++)
 		{
-			case RenderPrimitiveType::Triangle:
-				numVerticesPerPrimitive = 3;
-				break;
-			case RenderPrimitiveType::Quad:
-				numVerticesPerPrimitive = 4;
-				break;
-			default:
-				throw "Invalid File";
-		}
-
-		int numPrimitives = static_cast<int>(a_vertices.size() / numVerticesPerPrimitive);
-
-		for (int i = 0; i < numPrimitives; i++)
-		{
+			// Get how many vertices are in the current primitive
+			int numVerticesPerPrimitive = a_vertexCounts[i];
+			
 			RenderPrimitive p;
-			p.m_primitiveType = a_type;
+			p.m_primitiveType = numVerticesPerPrimitive == 3
+				                    ? RenderPrimitiveType::Triangle
+				                    : RenderPrimitiveType::Quad;
 			p.LoadFromTexture(a_textureFilename);
 
-			int baseIndex = i * numVerticesPerPrimitive;
+			// Set all of the vertices
+			p.SetVertex(0, a_vertices[indexIntoVertices]);
+			p.SetVertex(1, a_vertices[indexIntoVertices + 1]);
+			p.SetVertex(2, a_vertices[indexIntoVertices + 2]);
 			
-			p.SetVertex(0, a_vertices[baseIndex]);
-			p.SetVertex(1, a_vertices[baseIndex + 1]);
-			p.SetVertex(2, a_vertices[baseIndex + 2]);
 			// If numVerticesPerPrimitive is 3, set the last vertex to the first vertex since NextAPI
 			// uses quads under the hood
-			p.SetVertex(3, a_vertices[baseIndex + 3 % numVerticesPerPrimitive]);
+			p.SetVertex(3, a_vertices[indexIntoVertices + (3 % numVerticesPerPrimitive)]);
 			
 			m_primitives.emplace_back(std::move(p));
+
+			indexIntoVertices += numVerticesPerPrimitive;
 		}
 		
 		return m_primitives.size() != 0;

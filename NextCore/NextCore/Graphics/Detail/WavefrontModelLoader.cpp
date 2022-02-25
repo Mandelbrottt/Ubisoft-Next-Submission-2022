@@ -46,17 +46,17 @@ namespace Next::Detail
 			{
 				if (secondCharacter == 't')
 				{
-					ReadVertexUv(line_c_str);
+					ProcessVertexUvData(line_c_str);
 				} else if (secondCharacter == 'n')
 				{
-					ReadVertexNormal(line_c_str);
+					ProcessVertexNormalData(line_c_str);
 				} else
 				{
-					ReadVertexPosition(line_c_str);
+					ProcessVertexPositionData(line_c_str);
 				}
 			} else if (firstCharacter == 'f')
 			{
-				ReadFace(line_c_str);
+				ProcessFaceData(line_c_str);
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace Next::Detail
 		}
 
 		Mesh mesh;
-		bool result = mesh.GeneratePrimitives(path.string(), m_vertices, m_primitiveType);
+		bool result = mesh.GeneratePrimitives(path.string(), m_vertices, m_vertexCount);
 
 		if (result)
 		{
@@ -84,7 +84,7 @@ namespace Next::Detail
 	}
 
 	void
-	WavefrontModelLoader::ReadVertexPosition(const char* a_line)
+	WavefrontModelLoader::ProcessVertexPositionData(const char* a_line)
 	{
 		const char* format = "v %f %f %f";
 		Vector3 position;
@@ -100,7 +100,7 @@ namespace Next::Detail
 	}
 
 	void
-	WavefrontModelLoader::ReadVertexUv(const char* a_line)
+	WavefrontModelLoader::ProcessVertexUvData(const char* a_line)
 	{
 		const char* format = "vt %f %f";
 		Vector2 uv;
@@ -116,7 +116,7 @@ namespace Next::Detail
 	}
 
 	void
-	WavefrontModelLoader::ReadVertexNormal(const char* a_line)
+	WavefrontModelLoader::ProcessVertexNormalData(const char* a_line)
 	{
 		const char* format = "vn %f %f %f";
 		Vector3 normal;
@@ -132,7 +132,7 @@ namespace Next::Detail
 	}
 
 	void
-	WavefrontModelLoader::ReadFace(const char* a_line)
+	WavefrontModelLoader::ProcessFaceData(const char* a_line)
 	{
 		const char* format = "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d";
 
@@ -149,12 +149,7 @@ namespace Next::Detail
 			&indices[3].x, &indices[3].y, &indices[3].z
 		);
 		// ReSharper restore CppBadListLineBreaks
-
-		if (!PrimitiveTypeSanityCheck(numIndicesRead))
-		{
-			return;
-		}
-
+		
 		const int numVertices = numIndicesRead / 3;
 		for (int i = 0; i < numVertices; i++)
 		{
@@ -172,31 +167,6 @@ namespace Next::Detail
 			
 			m_vertices.push_back(v);
 		}
-	}
-
-	bool
-	WavefrontModelLoader::PrimitiveTypeSanityCheck(int a_numIndicesRead)
-	{
-		auto primitiveType = RenderPrimitiveType::Null;
-		
-		if (a_numIndicesRead == 9)
-		{
-			primitiveType = RenderPrimitiveType::Triangle;
-		} else if (a_numIndicesRead == 12)
-		{
-			primitiveType = RenderPrimitiveType::Quad;
-		}
-
-		if (m_primitiveType == RenderPrimitiveType::Null)
-		{
-			m_primitiveType = primitiveType;
-		}
-
-		if (primitiveType == RenderPrimitiveType::Null || primitiveType != m_primitiveType)
-		{
-			return false;
-		}
-
-		return true;
+		m_vertexCount.push_back(numVertices);
 	}
 }
