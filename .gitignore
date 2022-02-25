@@ -1,8 +1,10 @@
 .vs/
 .vscode/
 Build/
+packages/
 
 *.sln
 *.vcxproj
 *.filters
 *.user
+packages.config

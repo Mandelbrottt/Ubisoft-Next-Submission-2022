@@ -1,21 +1,23 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/%{prj.name}"
-    kind          "StaticLib"
+    location      "%{wks.location}/Tests/%{prj.name}"
+    kind          "ConsoleApp"
     language      "C++"
     cppdialect    "C++17"
     staticruntime "off"
     floatingpoint "fast"
     rtti          "on"
+
+    nuget { "Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn:1.8.1.4" }
     
     flags {
         "FatalWarnings",
         "MultiProcessorCompile"
     }
     
-    targetdir(user_config.output_dir .. "/%{prj.name}/")
-    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
+    targetdir(user_config.output_dir .. "/Tests/%{prj.name}/")
+    objdir   (user_config.obj_dir    .. "/Tests/%{prj.name}/")
 
     pchheader "pch.h"
     pchsource "pch/pch.cpp"
@@ -29,24 +31,33 @@ project(project_name)
     includedirs {
         "%{prj.location}/",
         "%{prj.location}/pch/",
-        "%{prj.location}/NextCore/",
-        "%{wks.location}/NextAPI/",
+        "%{prj.location}/%{prj.name}/",
+        "%{wks.location}/NextCore/",
+        "%{wks.location}/NextCore/NextCore/",
+        "%{wks.location}/NextGUI/",
     }
 
     links {
-        "NextAPI",
+        "NextCore",
+        "NextGUI",
     }
 
     libdirs {
-        user_config.output_dir .. "/NextAPI/",
+        user_config.output_dir .. "/NextCore/",
+        user_config.output_dir .. "/NextGUI/",
     }
 
     defines {
-        "NEXT_CORE",
+        "NEXT_TESTS",
         "MMNOSOUND",
         "NEXT_RESOURCE_DIR=\"./Resources/\""
     }
-    
+
+    postbuildcommands {
+        -- user_config.output_dir .. "/Tests/%{prj.name}/%{cfg.buildtarget.name}",
+        "\"%{cfg.buildtarget.abspath}\""
+    }
+
     filter "system:windows"
         systemversion "latest"
     

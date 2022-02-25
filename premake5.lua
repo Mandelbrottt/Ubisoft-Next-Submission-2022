@@ -48,12 +48,24 @@ workspace "NextSubmission"
 
     startproject "NextBootstrap"
 
-    include "NextAPI"
-    
-    include "NextCore"
-    
-    include "NextGUI"
-    
-    include "NextBootstrap"
+    group "Vendor"
 
-    include "NextGame"
+        include "NextAPI"
+    
+    group "Engine"
+
+        include "NextCore"
+
+        include "NextGUI"
+
+        include "NextBootstrap"
+
+    group "User Modules"
+
+        include "NextGame"
+
+    group "Unit Tests"
+    
+       include "Tests/NextCoreTests"
+
+    group ""
