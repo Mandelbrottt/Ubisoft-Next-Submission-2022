@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Reflection/Reflection.h"
+
 namespace Next
 {
 	/**
@@ -43,5 +45,7 @@ namespace Next
 	private:
 		const char* m_typeName;
 	#endif
+
+		REFLECT_DECLARE(Object)
 	};
 }

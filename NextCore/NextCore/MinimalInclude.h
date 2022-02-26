@@ -12,6 +12,8 @@
 #include <Reflection/Field.h>
 #include <Reflection/Reflection.h>
 #include <Reflection/Type.h>
+#include <Reflection/TypeId.h>
+#include <Reflection/TypeTraits.h>
 
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>

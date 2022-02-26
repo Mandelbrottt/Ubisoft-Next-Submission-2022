@@ -1,3 +1,7 @@
+#include <Components/Transform.h>
+
+#include <Reflection/TypeId.h>
+
 #include "Game.h"
 
 void

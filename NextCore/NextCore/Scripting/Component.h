@@ -209,5 +209,7 @@ namespace Next
 		EntityId m_entityId = EntityId::Null;
 
 		Entity* m_entity = nullptr;
+
+		REFLECT_DECLARE(Component, Object)
 	};
 }

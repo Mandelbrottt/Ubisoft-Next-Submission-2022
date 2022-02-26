@@ -18,5 +18,7 @@ namespace Next
 
 		~Behaviour() override = default;
 	public:
+	private:
+		REFLECT_DECLARE(Behaviour, Component)
 	};
 }

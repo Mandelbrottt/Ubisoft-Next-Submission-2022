@@ -201,7 +201,7 @@ namespace Next
 		// If component exists and it's type is registered with reflection, destruct it
 		if (result)
 		{
-			auto& [id, component] = *a_iter;
+			auto [id, component] = *a_iter;
 			ComponentListElement element { id,  component };
 			OnRemoveComponent(element);
 			

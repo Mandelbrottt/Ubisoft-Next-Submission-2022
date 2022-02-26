@@ -32,7 +32,7 @@ namespace Next::Reflection
 			template<typename T>
 			friend
 			TypeId
-			GetDecayedTypeId() noexcept;
+			GetRawTypeId() noexcept;
 
 		private:
 			static TypeId& StaticIdCounter()
@@ -47,9 +47,9 @@ namespace Next::Reflection
 		template<typename T>
 		static
 		TypeId
-		GetDecayedTypeId() noexcept
+		GetRawTypeId() noexcept
 		{
-			static TypeId result = [&]()
+			static TypeId result = []()
 			{
 				auto& static_id_counter = static_type_id_helper::StaticIdCounter();
 				
@@ -80,6 +80,7 @@ namespace Next::Reflection
 	TypeId
 	GetTypeId() noexcept
 	{
-		return Detail::GetDecayedTypeId<std::decay_t<T>>();
+		typedef std::remove_pointer_t<std::decay_t<T>> raw_t;
+		return Detail::GetRawTypeId<raw_t>();
 	}
 }

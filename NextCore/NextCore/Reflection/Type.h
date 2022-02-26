@@ -1,17 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <map>
 #include <typeinfo>
 #include <type_traits>
 #include <unordered_map>
 
 #include "Field.h"
-#include "TypeTraits.h"
 #include "Factory.h"
 #include "TypeId.h"
-
-#include "NextCoreCommon.h"
 
 #define DEPRECATED_WARNING_NUMBER 4996
 
@@ -74,6 +70,12 @@ namespace Next::Reflection
 		
 		bool
 		IsConvertibleFrom(TypeId a_typeId) const;
+		
+		bool
+		IsConvertibleTo(Type const* a_type) const;
+		
+		bool
+		IsConvertibleFrom(Type const* a_type) const;
 
 		/**
 		 * \brief Retrieve the value returned by sizeof for the type class represented by
@@ -188,7 +190,8 @@ namespace Next::Reflection
 		TryGet(TypeId a_id) noexcept
 		{
 			Type* result = nullptr;
-			if (auto iter = Types().find(a_id); iter != Types().end())
+			auto& types = Types();
+			if (auto iter = types.find(a_id); iter != types.end())
 			{
 				result = &iter->second;
 			}
@@ -245,31 +248,40 @@ namespace Next::Reflection
 		// We need this helper because you can't partially specialize functions to make sfinae work in
 		// the way we want it to here, so do the reflection work in the static reflect function
 		template<typename TReflected, typename = void>
-		struct reflect_helper
+		struct reflect_type_helper
 		{
-			static Type Reflect()
-			{
-				Type reflector(typeid(TReflected));
-				
-				PopulateFactory<TReflected>(reflector);
-
-				return reflector;
-			}
+			static
+			void
+			Reflect(Type& a_type) { }
 		};
 		
 		template<typename TReflected>
-		struct reflect_helper<TReflected, std::void_t<decltype(sizeof(&TReflected::_Reflect))>>
+		struct reflect_type_helper<TReflected, std::void_t<decltype(sizeof(&TReflected::_ReflectType))>>
 		{
-			static Type Reflect()
-			{
-				// Reflect type T and get information on members
-				Type reflector(typeid(TReflected));
-				
-				TReflected::_Reflect(reflector);
-				
-				PopulateFactory<TReflected>(reflector);
-				
-				return reflector;
+			static
+			void
+			Reflect(Type& a_type)
+			{	
+				TReflected::_ReflectType(a_type);
+			}
+		};
+		
+		template<typename TReflected, typename = void>
+		struct reflect_members_helper
+		{
+			static
+			void
+			Reflect(Type& a_type) { }
+		};
+		
+		template<typename TReflected>
+		struct reflect_members_helper<TReflected, std::void_t<decltype(sizeof(&TReflected::_ReflectMembers))>>
+		{
+			static
+			void
+			Reflect(Type& a_type)
+			{	
+				TReflected::_ReflectMembers(a_type);
 			}
 		};
 		
@@ -296,9 +308,17 @@ namespace Next::Reflection
 		Type
 		Reflect() noexcept
 		{
-			return reflect_helper<TReflected>::Reflect();
+			Type reflector(typeid(TReflected));
+				
+			reflect_type_helper<TReflected>::Reflect(reflector);
+			
+			reflect_members_helper<TReflected>::Reflect(reflector);
+			
+			PopulateFactory<TReflected>(reflector);
+			
+			return reflector;
 		}
-
+		
 		void
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{

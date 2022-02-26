@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Type.h"
+#include "TypeTraits.h"
 
 #include "NextCoreCommon.h"
 
@@ -25,6 +26,16 @@
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
+			\
+			static \
+			void \
+			_ReflectType(_REFLECT_NAMESPACE Type& r) \
+			{ \
+				if constexpr (_REFLECT_NAMESPACE is_complete_type_v<Base>) \
+				{ \
+					r.operator()<Base, This>(); \
+				} \
+			} \
 			\
 		public: \
 			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
@@ -57,17 +68,11 @@
 	#define REFLECT_MEMBERS(_list_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	private:\
-		friend class _REFLECT_NAMESPACE Type; \
 		static \
 		void \
-		_Reflect(_REFLECT_NAMESPACE Type& r) \
+		_ReflectMembers(_REFLECT_NAMESPACE Type& r) \
 		{ \
 			r _list_; \
-			\
-			if constexpr (_REFLECT_NAMESPACE is_complete_type_v<Base>) \
-			{ \
-				r.operator()<Base, This>(); \
-			} \
 		}
 
 	#pragma region Reflect Field Overloads
@@ -110,7 +115,7 @@
 
 	#pragma endregion
 	#define REFLECT_REGISTER(_type_) \
-		static _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
+		static volatile _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetTypeId<_type_>(); \

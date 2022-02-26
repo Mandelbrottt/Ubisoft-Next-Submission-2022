@@ -56,12 +56,14 @@ namespace Next::Reflection
 			/*, std::enable_if_t<!std::is_pointer_v<std::remove_pointer_t<TContaining>>, bool> = true*/>
 		const void* GetValue(TContaining const& a_obj) const
 		{
-			const TypeId incomingTypeId = GetTypeId<TContaining>();
+			Type& containingType     = Type::Get<TContaining>();
+			Type* thisContainingType = Type::TryGet(this->containingTypeId);
+
+			bool notNull = thisContainingType;
+			bool isConvertible = thisContainingType->IsConvertibleTo(&containingType);
+			bool isVoid = containingType.GetTypeId() == GetTypeId<void>();
 			
-			assert(
-				incomingTypeId == this->containingTypeId
-				|| incomingTypeId == GetTypeId<void>()
-			);
+			assert(notNull && (isConvertible || isVoid));
 
 			uintptr_t ptrToMember;
 
@@ -85,8 +87,10 @@ namespace Next::Reflection
 		template<typename TField, typename TContaining>
 		TField const& GetValue(TContaining const& a_obj) const
 		{
-			const TypeId incomingTypeId = GetTypeId<TField>();
-			assert(incomingTypeId == this->fieldTypeId);
+			Type& incomingType = Type::Get<TField>();
+			Type* thisType     = Type::TryGet(this->fieldTypeId);
+
+			assert(thisType && thisType->IsConvertibleTo(&incomingType));
 
 			const void* result = Field::GetValue(a_obj);
 
@@ -106,14 +110,16 @@ namespace Next::Reflection
 			/*, std::enable_if_t<!std::is_pointer_v<std::remove_pointer_t<TContaining>>, bool> = true*/>
 		void SetValue(TContaining const& a_obj, const void* a_incomingValue, size_t a_incomingSize) const
 		{
-			const TypeId incomingTypeId = GetTypeId<TContaining>();
-			assert(
-				incomingTypeId == this->containingTypeId
-				|| incomingTypeId == GetTypeId<void>()
-			);
+			Type& containingType     = Type::Get<TContaining>();
+			Type* thisContainingType = Type::TryGet(this->containingTypeId);
 
-			assert(a_incomingSize == size);
-
+			bool notNull = thisContainingType;
+			bool isConvertible = thisContainingType->IsConvertibleTo(&containingType);
+			bool isVoid = containingType.GetTypeId() == GetTypeId<void>();
+			bool sizeEqual = a_incomingSize == size;
+			
+			assert(notNull && (isConvertible || isVoid) && sizeEqual);
+			
 			uintptr_t ptrToMember;
 
 			if constexpr (std::is_pointer_v<TContaining>)
@@ -136,11 +142,17 @@ namespace Next::Reflection
 		template<typename TContaining, typename TField>
 		void SetValue(TContaining const& a_obj, TField const& a_value) const
 		{
-			const TypeId incomingTypeId = GetTypeId<TContaining>();
-			assert(
-				incomingTypeId == this->containingTypeId
-				|| incomingTypeId == GetTypeId<void>()
-			);
+			Type& containingType     = Type::Get<TContaining>();
+			Type* thisContainingType = Type::TryGet(this->containingTypeId);
+
+			bool notNull = thisContainingType;
+			bool isConvertible = thisContainingType->IsConvertibleTo(&containingType);
+			bool isVoid = containingType.GetTypeId() == GetTypeId<void>();
+
+			// TODO: Do more elaborate type checks
+			bool sizeEqual = sizeof(TField) == size;
+			
+			assert(notNull && (isConvertible || isVoid) && sizeEqual);
 			
 			uintptr_t ptrToMember;
 

@@ -2,16 +2,18 @@
 
 #include <MinimalInclude.h>
 #include <algorithm>
+#include <functional>
 
+#include <Components/AudioSource.h>
 #include <Components/LineRenderer.h>
 
 #include <Graphics/Model.h>
 
 #include <Math/Transformations.h>
 
-#include <NextAPI/app.h>
-
 #include <Rendering/Renderer.h>
+
+#include <NextAPI/app.h>
 
 #include "CrazyLineThing.h"
 #include "Cube.h"
@@ -124,35 +126,99 @@ GameRender()
 void
 GameShutdown() {}
 
-#define PROPERTY(t,n)  __declspec( property ( put = property__set_##n, get = property__get_##n ) ) t n;\
-	typedef t property__tmp_type_##n
-#define READONLY_PROPERTY(t,n) __declspec( property (get = property__get_##n) ) t n;\
-	typedef t property__tmp_type_##n
-#define WRITEONLY_PROPERTY(t,n) __declspec( property (put = property__set_##n) ) t n;\
-	typedef t property__tmp_type_##n
-#define GET(n) property__tmp_type_##n property__get_##n() 
-#define SET(n) void property__set_##n(const property__tmp_type_##n& value)
-
-struct Something
+class Something : public Behaviour
 {
-	PROPERTY(int, x);
+	GenerateConstructors(Something)
 
-	GET(x)
-	{
-		return x;
-	}
+public:
+	AudioSource* 
+	GetAudioSource() const { return m_audioSource; }
+
+	void
+	SetAudioSource(AudioSource* a_value) { m_audioSource = a_value; }
+
+public:
+	AudioSource* m_audioSource = nullptr;
 	
-	SET(x)
-	{
-		m_x = value;
-	}
+	REFLECT_DECLARE(Something, Behaviour)
 
-private:
-	int m_x = 0;
+	REFLECT_MEMBERS(
+		REFLECT_FIELD(m_audioSource)
+	)
+};
+
+REFLECT_REGISTER(Something);
+
+struct ComponentReference
+{
+	using StaticTypeId = Reflection::TypeId;
+	
+	Entity* owningId;
+	Entity* referenceId;
+
+	StaticTypeId componentTypeId;
+
+	Reflection::Field* field;
+
+	void const* referenceValue;
 };
 
 void Foo()
-{
-	Something s;
-	s.x = 5;
+{	
+	Entity entitySomething;
+	Something* something = entitySomething.AddComponent<Something>();
+	
+	Entity entityAudio1;
+	auto* source1 = entityAudio1.AddComponent<AudioSource>();
+	source1->Load(Application::ResourcePath() + "Test.wav");
+	
+	Entity entityAudio2;
+	auto* source2 = entityAudio2.AddComponent<AudioSource>();
+	source2->Load(Application::ResourcePath() + "Test 2.wav");
+
+	something->SetAudioSource(source1);
+	
+	auto& somethingType = Something::GetType();
+	
+	std::vector<ComponentReference> compRefs;
+	
+	for (auto& [name, field] : somethingType.instanceFields)
+	{
+		auto fieldId = field.fieldTypeId;
+		auto fieldType = Reflection::Type::TryGet(fieldId);
+
+		Reflection::TypeId componentTypeId = Reflection::GetTypeId<Component>();
+
+		if (fieldType->IsConvertibleTo(componentTypeId))
+		{
+			Component* comp = field.GetValue<Component*>(something);
+
+			ComponentReference ref;
+			ref.owningId        = something->GetEntity();
+			ref.referenceId     = comp->GetEntity();
+			ref.componentTypeId = fieldId;
+			ref.field           = &field;
+			ref.referenceValue  = comp;
+			
+			compRefs.push_back(std::move(ref));
+		}
+	}
+
+	entityAudio1.AddComponent<Something>();
+	entityAudio1.RemoveComponent<AudioSource>();
+	entityAudio1.AddComponent<AudioSource>();
+	
+	for (auto& [owningId, referenceId, componentTypeId, field, referenceValue] : compRefs)
+	{
+		Component* comp = owningId->GetComponent(somethingType);
+
+		void const* cachedValue = field->GetValue<Component*, Component*>(comp);
+
+		void const* currentValue = referenceId->GetComponent(componentTypeId);
+		
+		if (cachedValue != currentValue)
+		{
+			field->SetValue(comp, currentValue);
+		}
+	}
 }

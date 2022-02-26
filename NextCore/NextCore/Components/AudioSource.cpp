@@ -4,7 +4,11 @@
 
 namespace Next
 {
-	REFLECT_REGISTER(AudioSource);
+	static _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_AudioSource = []()
+	{
+		_REFLECT_NAMESPACE Type::Register<AudioSource>();
+		return _REFLECT_NAMESPACE GetTypeId<AudioSource>();
+	}();
 	
 	bool
 	AudioSource::Play(bool a_loop)

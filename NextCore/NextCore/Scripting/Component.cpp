@@ -7,6 +7,8 @@
 
 namespace Next
 {
+	REFLECT_REGISTER(Component);
+	
 	Component::Component(ComponentConstructionArgs const& a_args)
 		: Object(a_args) {}
 
