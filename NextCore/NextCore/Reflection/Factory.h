@@ -37,19 +37,53 @@ namespace Next::Reflection
 		Destruct(void* a_location, bool a_deallocate = true) const { };
 	};
 
-	template<typename T>
-	struct TypedFactory final : GenericFactory
+	namespace Detail
 	{
+		// Break normal sfinae convention here
+		// Both values have to be in the same struct since types will friend the struct, and we can't
+		// check if we can construct T in the struct's template parameters because the parameters
+		// are technically outside the struct
+		struct typed_factory_friend_helper
+		{
+			template<typename T, typename = void>
+			constexpr static bool value = false;
+
+			template<typename T>
+			constexpr static bool value<T, std::void_t<decltype(sizeof(T {}))>> = true;
+		};
+		
+		template<typename T>
+		constexpr static bool typed_factory_friend_helper_v = typed_factory_friend_helper::value<T>;
+	}
+
+	template<typename T, bool = Detail::typed_factory_friend_helper_v<T>>
+	struct TypedFactory;
+
+	template<typename T>
+	struct TypedFactory<T, false> final : GenericFactory
+	{
+		static_assert(Detail::typed_factory_friend_helper_v<T> == false);
+		
 		using value_type = T;
 
 		constexpr static int value_size = sizeof(T);
+	};
+	
+	template<typename T>
+	struct TypedFactory<T, true> final : GenericFactory
+	{
+		static_assert(Detail::typed_factory_friend_helper_v<T> == true);
 
+		using value_type = T;
+
+		constexpr static int value_size = sizeof(T);
+		
 		TypedFactory()
 		{
 			// valid is only set to true if GenericConstructor has been overridden
 			valid = true;
 		}
-
+		
 		~TypedFactory() override = default;
 
 		/**

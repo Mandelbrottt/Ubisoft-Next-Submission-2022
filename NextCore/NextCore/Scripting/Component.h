@@ -8,7 +8,8 @@
 #define GenerateConstructors(_class_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	protected: \
-		friend ::Next::Reflection::TypedFactory<_class_>; \
+		template<typename T, bool>\
+		friend struct ::Next::Reflection::TypedFactory; \
 		friend ::Next::Reflection::Detail::typed_factory_friend_helper; \
 		\
 		_class_() \
@@ -17,7 +18,7 @@
 
 namespace Next::Reflection
 {
-	template<typename T, bool IsConstructible>
+	template<typename T, bool>
 	struct TypedFactory;
 
 	namespace Detail
