@@ -17,7 +17,6 @@ namespace Next
 {
 	enum class RenderPrimitiveType
 	{
-		// TODO: Add support for triangles
 		Null = 0,
 		Triangle,
 		Quad,

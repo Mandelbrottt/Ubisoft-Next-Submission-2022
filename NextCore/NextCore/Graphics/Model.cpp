@@ -53,7 +53,7 @@ namespace Next
 
 		bool result;
 		
-		// TODO: Add more support
+		// TODO: Add more model file support
 		if ((result = TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", &m_meshes))) {}
 
 		return result;

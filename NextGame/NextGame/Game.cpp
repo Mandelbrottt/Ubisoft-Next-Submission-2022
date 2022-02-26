@@ -1,28 +1,17 @@
-#include "Game.h"
-
 #include <MinimalInclude.h>
-#include <algorithm>
-#include <functional>
-
-#include <Components/AudioSource.h>
-#include <Components/LineRenderer.h>
-
-#include <Graphics/Model.h>
-
-#include <Math/Transformations.h>
-
-#include <Rendering/Renderer.h>
-
-#include <NextAPI/app.h>
-
-#include "CrazyLineThing.h"
-#include "Cube.h"
 
 #include <Application/Init.h>
 
+#include <Components/AudioSource.h>
+
+#include <Graphics/Model.h>
+
+#include <Rendering/Renderer.h>
+
+#include "Cube.h"
 #include "RotateOverTime.h"
 
-// TODO: Decouple Sound, Write wrapper for drawing and printing to screen
+// TODO: Write wrapper printing to screen
 
 using namespace Next;
 
@@ -30,7 +19,7 @@ void
 Application_Init()
 {
 	Entity cube = Entity::Create();
-	cube.AddComponent(Cube::GetType());
+	cube.AddComponent<Cube>();
 	auto* modelRenderer = cube.AddComponent<ModelRenderer>();
 
 	modelRenderer->model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");

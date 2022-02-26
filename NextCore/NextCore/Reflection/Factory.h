@@ -119,8 +119,6 @@ namespace Next::Reflection
 		void
 		Destruct(void* a_location, bool a_deallocate = true) const override
 		{
-			// TODO: Come up with a better way (preferably compile time) to evaluate lifetime (Wrapper types?)
-
 			// Call the destructor
 			value_type* p = static_cast<value_type*>(a_location);
 			p->~value_type();
