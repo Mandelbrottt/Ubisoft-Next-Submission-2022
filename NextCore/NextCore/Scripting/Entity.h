@@ -8,19 +8,65 @@
 
 #include <type_traits>
 
+void
+Update(float a_deltaTime);
+
 namespace Next
 {
 	class Transform;
 	class Component;
 
+	namespace Detail
+	{
+		struct ComponentListElement
+		{
+			Reflection::TypeId id;
+
+			Component* component;
+		};
+
+		struct EntityRepresentation
+		{
+			std::vector<ComponentListElement> components;
+
+			std::vector<Reflection::TypeId> needsFirstUpdate;
+		};
+	}
+
 	/**
 	 * \brief 
 	 */
-	class Entity : public Object
+	class Entity
 	{
-	public:
+		friend void
+		::Update(float a_deltaTime);
+
 		Entity();
-		
+
+		static
+		void
+		Update();
+
+	public:
+		Entity(Entity const& a_other) = default;
+		Entity&
+		operator =(Entity const& a_other) = default;
+
+		Entity(Entity&& a_other) = default;
+		Entity&
+		operator =(Entity&& a_other) = default;
+
+		static
+		Entity
+		Create();
+
+		static
+		void
+		Destroy(Entity const& a_entity);
+
+		void
+		Destroy();
+
 		void
 		OnCreate();
 
@@ -42,10 +88,29 @@ namespace Next
 			return const_cast<Entity*>(this)->Transform();
 		}
 
+		std::string const&
+		GetName() const
+		{
+			return m_name;
+		}
+
+		std::string const&
+		SetName(std::string_view a_name)
+		{
+			return (m_name = a_name);
+		}
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
 		AddComponent()
 		{
+			auto* rep = GetCurrentEntityRepresentation();
+
+			if (!rep)
+			{
+				return {};
+			}
+
 			auto static_id = Reflection::GetTypeId<TComponent>();
 
 			// TODO: Convert to use a pool allocator
@@ -53,8 +118,8 @@ namespace Next
 
 			auto result = static_cast<TComponent*>(factory.Construct());
 
-			ComponentListElement element = { static_id, result };
-			OnAddComponent(element);
+			Detail::ComponentListElement element = { static_id, result };
+			OnAddComponent(rep, element);
 
 			return result;
 		}
@@ -104,7 +169,7 @@ namespace Next
 
 		Component*
 		GetComponent(Reflection::TypeId a_typeId);
-		
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent const*
 		GetComponent() const
@@ -170,44 +235,37 @@ namespace Next
 	private:
 		EntityId m_entityId;
 
-		struct ComponentListElement
-		{
-			Reflection::TypeId id;
-
-			Component* component;
-		};
-
-		std::vector<ComponentListElement> m_components;
-
-		std::vector<Reflection::TypeId> m_needsFirstUpdate;
+		std::string m_name;
 
 	private:
-		decltype(m_components)::iterator
-		FindComponentById(Reflection::TypeId a_id);
+		Detail::EntityRepresentation*
+		GetCurrentEntityRepresentation();
 
-		decltype(m_components)::iterator
-		FindComponent(Component* a_component);
-		
-		decltype(m_components)::const_iterator
-		FindComponentById(Reflection::TypeId a_id) const
-		{
-			return const_cast<Entity*>(this)->FindComponentById(a_id);
-		}
+		Detail::EntityRepresentation const*
+		GetCurrentEntityRepresentation() const;
 
-		decltype(m_components)::const_iterator
-		FindComponent(Component* a_component) const
-		{
-			return const_cast<Entity*>(this)->FindComponent(a_component);
-		}
+		static
+		decltype(Detail::EntityRepresentation::components)::iterator
+		FindComponentById(Detail::EntityRepresentation* a_rep, Reflection::TypeId a_id);
 
+		static
+		decltype(Detail::EntityRepresentation::components)::iterator
+		FindComponent(Detail::EntityRepresentation* a_rep, Component* a_component);
+
+		static
 		bool
-		RemoveComponentByIterator(decltype(m_components)::iterator a_iter);
+		RemoveComponentByIterator(
+			Detail::EntityRepresentation*                                  a_rep,
+			decltype(Detail::EntityRepresentation::components)::iterator a_iter
+		);
 
+		static
 		void
-		OnAddComponent(ComponentListElement& a_listElement);
+		OnAddComponent(EntityId a_id, Detail::EntityRepresentation* a_rep, Detail::ComponentListElement& a_listElement);
 
+		static
 		void
-		OnRemoveComponent(ComponentListElement& a_listElement);
+		OnRemoveComponent(Detail::EntityRepresentation* a_rep, Detail::ComponentListElement& a_listElement);
 
 		template<typename T>
 		struct identity
@@ -228,5 +286,20 @@ namespace Next
 		 */
 		bool
 		RemoveComponent(identity<Next::Transform>);
+
+		static
+		void
+		OnUpdate(Detail::EntityRepresentation& a_rep);
+
+		static
+		void
+		OnDestroy(Detail::EntityRepresentation& a_rep);
+
+	private:
+		//static std::unordered_set<EntityId> s_entityIds;
+
+		static std::unordered_map<EntityId, Detail::EntityRepresentation> s_entityRepresentations;
+
+		static std::unordered_set<EntityId> s_entityIdDestroyBuffer;
 	};
 }

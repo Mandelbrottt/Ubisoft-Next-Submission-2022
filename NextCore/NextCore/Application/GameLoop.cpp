@@ -1,13 +1,13 @@
-#include <Components/Transform.h>
+#include "pch.h"
 
-#include <Reflection/TypeId.h>
+#include "Init.h"
 
-#include "Game.h"
+#include "Scripting/Entity.h"
 
 void
 Init()
 {
-	GameInit();
+	Application_Init();
 }
 
 // Declare System Updates manually so as to not expose it unnecessarily
@@ -37,17 +37,17 @@ Update(float a_deltaTime)
 
 	Next::Input::Update();
 
-	GameUpdate();
+	Next::Entity::Update();
 }
 
 void
 Render()
 {
-	GameRender();
+	
 }
 
 void
 Shutdown()
 {
-	GameShutdown();
+	
 }
