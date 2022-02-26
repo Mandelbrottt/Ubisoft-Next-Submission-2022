@@ -7,9 +7,20 @@
 #include "Reflection/Factory.h"
 
 #include <type_traits>
+#include <unordered_set>
+#include <unordered_map>
+
+void
+Init();
+
+void
+Render();
 
 void
 Update(float a_deltaTime);
+
+void
+Shutdown();
 
 namespace Next
 {
@@ -38,10 +49,12 @@ namespace Next
 	 */
 	class Entity
 	{
-		friend void
-		::Update(float a_deltaTime);
+		friend void ::Init();
+		friend void ::Update(float a_deltaTime);
+		friend void ::Render();
+		friend void ::Shutdown();
 
-		Entity();
+		Entity() = default;
 
 		static
 		void
@@ -56,6 +69,9 @@ namespace Next
 		Entity&
 		operator =(Entity&& a_other) = default;
 
+		explicit
+		Entity(EntityId a_id);
+
 		static
 		Entity
 		Create();
@@ -69,10 +85,7 @@ namespace Next
 
 		void
 		OnCreate();
-
-		void
-		OnUpdate();
-
+		
 		EntityId
 		GetEntityId() const
 		{
@@ -119,7 +132,7 @@ namespace Next
 			auto result = static_cast<TComponent*>(factory.Construct());
 
 			Detail::ComponentListElement element = { static_id, result };
-			OnAddComponent(rep, element);
+			OnAddComponent(m_entityId, rep, element);
 
 			return result;
 		}
@@ -296,8 +309,6 @@ namespace Next
 		OnDestroy(Detail::EntityRepresentation& a_rep);
 
 	private:
-		//static std::unordered_set<EntityId> s_entityIds;
-
 		static std::unordered_map<EntityId, Detail::EntityRepresentation> s_entityRepresentations;
 
 		static std::unordered_set<EntityId> s_entityIdDestroyBuffer;

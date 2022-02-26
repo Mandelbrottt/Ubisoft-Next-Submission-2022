@@ -26,20 +26,22 @@ namespace Next
 		return result;
 	}
 
-	Entity::Entity()
+	Entity::Entity(EntityId a_id)
 	{
-		m_entityId = GetNextEntityId();
-
-		// TODO: Will eventually be implemented by the registry when a new entity is created
-		OnCreate();
+		m_entityId = a_id;
 	}
 
 	Entity
 	Entity::Create()
 	{
+		// TODO: Will eventually be implemented by the registry when a new entity is created
+		
 		Entity entity;
+		entity.m_entityId = GetNextEntityId();
 
 		s_entityRepresentations.emplace(entity.m_entityId, Detail::EntityRepresentation {});
+
+		entity.OnCreate();
 
 		return entity;
 	}

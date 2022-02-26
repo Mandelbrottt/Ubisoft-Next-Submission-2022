@@ -64,16 +64,15 @@ namespace Next::Renderer
 		g_viewMatrix       = a_viewMatrix;
 		g_projectionMatrix = a_projectionMatrix;
 	}
-
-	// TODO: Add SceneSetup function that takes in a camera and sets up the view matrix
+	
 	void
-	Submit(Model const& a_model, Entity const& a_entity)
+	Submit(ModelRenderer const* a_modelRenderer, Transform const* a_transform)
 	{
 		std::size_t numPrimitives = 0;
 
 		std::size_t offset = g_primitiveRenderQueue.size();
 		
-		for (auto const& mesh : a_model.GetMeshes())
+		for (auto const& mesh : a_modelRenderer->model.GetMeshes())
 		{
 			auto const& primitives = mesh.GetPrimitives();
 			
@@ -90,7 +89,7 @@ namespace Next::Renderer
 			numPrimitives += primitives.size();
 		}
 		
-		TransformationCacheElement element = { numPrimitives, a_entity.Transform()->GetTransformationMatrix() };
+		TransformationCacheElement element = { numPrimitives, a_transform->GetTransformationMatrix() };
 
 		// TODO: Add to transformation cache and call TransformPrimitivesByModelMatrix on separate thread(s)
 		//g_transformationCache.emplace_back(std::move(element));

@@ -50,7 +50,7 @@ namespace Next
 		EntityId
 		GetEntityId() const;
 
-		Entity*
+		Entity
 		GetEntity() const;
 
 		Transform*
@@ -81,7 +81,7 @@ namespace Next
 		TComponent*
 		AddComponent()
 		{
-			return m_entity->AddComponent<TComponent>();
+			return GetEntity().AddComponent<TComponent>();
 		}
 
 		Component*
@@ -94,7 +94,7 @@ namespace Next
 		bool
 		RemoveComponent()
 		{
-			return m_entity->RemoveComponent<TComponent>();
+			return GetEntity().RemoveComponent<TComponent>();
 		}
 
 		bool
@@ -110,7 +110,7 @@ namespace Next
 		TComponent*
 		GetComponent()
 		{
-			return m_entity->GetComponent<TComponent>();
+			return GetEntity().GetComponent<TComponent>();
 		}
 
 		Component*
@@ -149,7 +149,7 @@ namespace Next
 		TComponent**
 		GetComponents(int* a_outCount)
 		{
-			return m_entity->GetComponents<TComponent>(a_outCount);
+			return GetEntity().GetComponents<TComponent>(a_outCount);
 		}
 
 		/**
@@ -195,7 +195,7 @@ namespace Next
 		int
 		NumComponents() const
 		{
-			return m_entity->NumComponents<TComponent>();
+			return GetEntity().NumComponents<TComponent>();
 		}
 		
 		int
@@ -207,9 +207,7 @@ namespace Next
 
 	private:
 		EntityId m_entityId = EntityId::Null;
-
-		Entity* m_entity = nullptr;
-
+		
 		REFLECT_DECLARE(Component, Object)
 	};
 }

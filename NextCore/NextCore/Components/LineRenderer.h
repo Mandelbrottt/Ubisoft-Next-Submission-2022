@@ -6,8 +6,7 @@
 
 #include "Scripting/Component.h"
 
-// TEMPORARY:
-void GameRender();
+void Render();
 
 namespace Next
 {
@@ -23,7 +22,7 @@ namespace Next
 {
 	class LineRenderer : public Component
 	{
-		friend void ::GameRender();
+		friend void ::Render();
 
 		GenerateConstructors(LineRenderer)
 

@@ -2,6 +2,13 @@
 
 #include "Init.h"
 
+#include "Components/LineRenderer.h"
+#include "Components/ModelRenderer.h"
+
+#include "Math/Transformations.h"
+
+#include "Rendering/Renderer.h"
+
 #include "Scripting/Entity.h"
 
 void
@@ -43,11 +50,41 @@ Update(float a_deltaTime)
 void
 Render()
 {
+	using namespace Next;
 	
+	auto& entityReps = Entity::s_entityRepresentations;
+
+	// Perspective Matrix
+	float fov    = 90;
+	float aspect = 16.f / 9.f;
+
+	auto perspective = Matrix::Perspective(fov, aspect, 0.1f, 1000.f);
+	
+	Renderer::PrepareScene({}, perspective);
+
+	for (auto& [id, rep] : entityReps)
+	{
+		for (auto& element : rep.components)
+		{
+			if (element.id == Reflection::GetTypeId<LineRenderer>())
+			{
+				LineRenderer* lineRenderer = static_cast<LineRenderer*>(element.component);
+				
+				//lineRenderer->OnRender();
+			} else if (element.id == Reflection::GetTypeId<ModelRenderer>())
+			{
+				ModelRenderer* modelRenderer = static_cast<ModelRenderer*>(element.component);
+
+				Renderer::Submit(modelRenderer, modelRenderer->Transform());
+			}
+		}
+	}
+	
+	Renderer::Flush();
 }
 
 void
 Shutdown()
 {
-	
+	// TODO: cleanup entities
 }

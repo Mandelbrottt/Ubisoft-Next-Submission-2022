@@ -2,6 +2,8 @@
 
 #include "NextCoreCommon.h"
 
+#include "Components/ModelRenderer.h"
+
 #include "Scripting/Entity.h"
 
 #include "Math/Matrix4.h"
@@ -24,16 +26,15 @@ namespace Next::Renderer
 	void
     PrepareScene(Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix);
 	
-	// TODO: Add Submit overload for the component containing the model
 	/**
-	 * \brief Submit a model for rendering at the given entity's Transform
-	 * \param a_model The model to render
-	 * \param a_entity The entity who's transform to use
+	 * \brief Submit a ModelRenderer for rendering at the given Transform
+	 * \param a_modelRenderer The ModelRenderer to render
+	 * \param a_transform The transform to use
 	 */
 	NEXT_CORE_EXPORT
 	extern
 	void
-    Submit(Model const& a_model, Entity const& a_entity);
+    Submit(ModelRenderer const* a_modelRenderer, Transform const* a_transform);
 	
 	/**
 	 * \brief Flush the rasterization buffer and render all pending RenderPrimitives
