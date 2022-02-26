@@ -44,16 +44,29 @@ namespace Next
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
-		AddComponent();
+		AddComponent()
+		{
+			auto static_id = Reflection::GetTypeId<TComponent>();
+
+			// TODO: Convert to use a pool allocator
+			Reflection::TypedFactory<TComponent> factory;
+
+			auto result = static_cast<TComponent*>(factory.Construct());
+
+			ComponentListElement element = { static_id, result };
+			OnAddComponent(element);
+
+			return result;
+		}
 
 		Component*
 		AddComponent(Reflection::Type const& a_type)
 		{
-			return AddComponent(a_type.GetStaticId());
+			return AddComponent(a_type.GetTypeId());
 		}
 
 		Component*
-		AddComponent(Reflection::StaticTypeId a_typeId);
+		AddComponent(Reflection::TypeId a_typeId);
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		bool
@@ -66,11 +79,11 @@ namespace Next
 		bool
 		RemoveComponent(Reflection::Type const& a_type)
 		{
-			return RemoveComponent(a_type.GetStaticId());
+			return RemoveComponent(a_type.GetTypeId());
 		}
 
 		bool
-		RemoveComponent(Reflection::StaticTypeId a_typeId);
+		RemoveComponent(Reflection::TypeId a_typeId);
 
 		bool
 		RemoveComponent(Component* a_component);
@@ -79,18 +92,18 @@ namespace Next
 		TComponent*
 		GetComponent()
 		{
-			auto static_id = Reflection::GetStaticId<TComponent>();
+			auto static_id = Reflection::GetTypeId<TComponent>();
 			return static_cast<TComponent*>(GetComponent(static_id));
 		}
 
 		Component*
 		GetComponent(Reflection::Type const& a_type)
 		{
-			return GetComponent(a_type.GetStaticId());
+			return GetComponent(a_type.GetTypeId());
 		}
 
 		Component*
-		GetComponent(Reflection::StaticTypeId a_typeId);
+		GetComponent(Reflection::TypeId a_typeId);
 		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent const*
@@ -106,7 +119,7 @@ namespace Next
 		}
 
 		Component*
-		GetComponent(Reflection::StaticTypeId a_typeId) const
+		GetComponent(Reflection::TypeId a_typeId) const
 		{
 			return const_cast<Entity*>(this)->GetComponent(a_typeId);
 		}
@@ -118,7 +131,7 @@ namespace Next
 		TComponent**
 		GetComponents(int* a_outCount)
 		{
-			auto static_id = Reflection::GetStaticId<TComponent>();
+			auto static_id = Reflection::GetTypeId<TComponent>();
 			return reinterpret_cast<TComponent**>(GetComponents(static_id, a_outCount));
 		}
 
@@ -128,55 +141,55 @@ namespace Next
 		Component**
 		GetComponents(Reflection::Type const& a_type, int* a_outCount)
 		{
-			return GetComponents(a_type.GetStaticId(), a_outCount);
+			return GetComponents(a_type.GetTypeId(), a_outCount);
 		}
 
 		/**
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		Component**
-		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
+		GetComponents(Reflection::TypeId a_typeId, int* a_outCount);
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		int
 		NumComponents() const
 		{
-			auto static_id = Reflection::GetStaticId<TComponent>();
+			auto static_id = Reflection::GetTypeId<TComponent>();
 			return NumComponents(static_id);
 		}
 
 		int
 		NumComponents(Reflection::Type const& a_type) const
 		{
-			return NumComponents(a_type.GetStaticId());
+			return NumComponents(a_type.GetTypeId());
 		}
 
 		int
-		NumComponents(Reflection::StaticTypeId a_typeId) const;
+		NumComponents(Reflection::TypeId a_typeId) const;
 
 	private:
 		EntityId m_entityId;
 
 		struct ComponentListElement
 		{
-			Reflection::StaticTypeId id;
+			Reflection::TypeId id;
 
 			Component* component;
 		};
 
 		std::vector<ComponentListElement> m_components;
 
-		std::vector<Reflection::StaticTypeId> m_needsFirstUpdate;
+		std::vector<Reflection::TypeId> m_needsFirstUpdate;
 
 	private:
 		decltype(m_components)::iterator
-		FindComponentById(Reflection::StaticTypeId a_id);
+		FindComponentById(Reflection::TypeId a_id);
 
 		decltype(m_components)::iterator
 		FindComponent(Component* a_component);
 		
 		decltype(m_components)::const_iterator
-		FindComponentById(Reflection::StaticTypeId a_id) const
+		FindComponentById(Reflection::TypeId a_id) const
 		{
 			return const_cast<Entity*>(this)->FindComponentById(a_id);
 		}
@@ -206,7 +219,7 @@ namespace Next
 		bool
 		RemoveComponent(identity<TComponent>)
 		{
-			auto static_id = Reflection::GetStaticId<TComponent>();
+			auto static_id = Reflection::GetTypeId<TComponent>();
 			return RemoveComponent(static_id);
 		}
 
@@ -216,20 +229,4 @@ namespace Next
 		bool
 		RemoveComponent(identity<Next::Transform>);
 	};
-
-	template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool>>
-	TComponent*
-	Entity::AddComponent()
-	{
-		auto static_id = Reflection::GetStaticId<TComponent>();
-
-		// TODO: Convert to use a pool allocator
-		Reflection::TypedFactory<TComponent> factory;
-		auto result = static_cast<TComponent*>(factory.Construct());
-
-		ComponentListElement element = { static_id, result };
-		OnAddComponent(element);
-
-		return result;
-	}
 }

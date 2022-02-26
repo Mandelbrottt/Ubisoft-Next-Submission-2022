@@ -25,22 +25,6 @@
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
-			typedef _REFLECT_NAMESPACE TypedFactory<_REFLECT_TYPE_ALIAS> ThisFactory;\
-			inline \
-			static \
-			_REFLECT_NAMESPACE GenericFactory* \
-			_GetGenericFactory() \
-			{ \
-				static_assert(sizeof(ThisFactory) == sizeof(_REFLECT_NAMESPACE GenericFactory)); \
-				return new ThisFactory; \
-			} \
-			inline \
-			static \
-			void \
-			_GetGenericFactory(_REFLECT_NAMESPACE GenericFactory* a_location) \
-			{ \
-				new(a_location) ThisFactory; \
-			}\
 			\
 		public: \
 			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
@@ -94,8 +78,8 @@
 				/*.fieldDescription =*/ _REFLECT_NAMESPACE Pick<_REFLECT_NAMESPACE Description>(__VA_ARGS__, _REFLECT_NAMESPACE Description("")).c_str,\
 				/*.offset           =*/ (uint32_t) _REFLECT_OFFSET_OF(_REFLECT_TYPE_ALIAS, _field_), \
 				/*.size             =*/ (uint32_t) sizeof(_field_), \
-				/*.fieldType        =*/ typeid(decltype(_field_)), \
-				/*.containingType   =*/ typeid(_REFLECT_TYPE_ALIAS),\
+				/*.fieldType        =*/ _REFLECT_NAMESPACE GetTypeId<decltype(_field_)>(), \
+				/*.containingType   =*/ _REFLECT_NAMESPACE GetTypeId<_REFLECT_TYPE_ALIAS>(),\
 				/*.flags            =*/ _REFLECT_NAMESPACE Pick<_REFLECT_NAMESPACE FieldFlags>(__VA_ARGS__, _REFLECT_NAMESPACE FfNone)\
 			})
 
@@ -126,9 +110,9 @@
 
 	#pragma endregion
 	#define REFLECT_REGISTER(_type_) \
-		static _REFLECT_NAMESPACE StaticTypeId _REFLECT_REGISTER_##_type_ = []() \
+		static _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
-			return _REFLECT_NAMESPACE GetStaticId<_type_>(); \
+			return _REFLECT_NAMESPACE GetTypeId<_type_>(); \
 		}()
 #pragma endregion

@@ -49,9 +49,9 @@ namespace Next
 	}
 
 	Component*
-	Entity::AddComponent(Reflection::StaticTypeId a_typeId)
+	Entity::AddComponent(Reflection::TypeId a_typeId)
 	{
-		if (a_typeId == Reflection::StaticTypeId::Null)
+		if (a_typeId == Reflection::TypeId::Null)
 		{
 			return nullptr;
 		}
@@ -74,9 +74,9 @@ namespace Next
 	}
 
 	bool
-	Entity::RemoveComponent(Reflection::StaticTypeId a_typeId)
+	Entity::RemoveComponent(Reflection::TypeId a_typeId)
 	{
-		if (a_typeId == Reflection::StaticTypeId::Null)
+		if (a_typeId == Reflection::TypeId::Null)
 		{
 			return false;
 		}
@@ -100,9 +100,9 @@ namespace Next
 	}
 
 	Component*
-	Entity::GetComponent(Reflection::StaticTypeId a_typeId)
+	Entity::GetComponent(Reflection::TypeId a_typeId)
 	{
-		if (a_typeId == Reflection::StaticTypeId::Null)
+		if (a_typeId == Reflection::TypeId::Null)
 		{
 			return nullptr;
 		}
@@ -118,9 +118,9 @@ namespace Next
 	}
 	
 	Component**
-	Entity::GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount)
+	Entity::GetComponents(Reflection::TypeId a_typeId, int* a_outCount)
 	{
-		if (a_typeId == Reflection::StaticTypeId::Null || !a_outCount)
+		if (a_typeId == Reflection::TypeId::Null || !a_outCount)
 		{
 			return nullptr;
 		}
@@ -143,7 +143,7 @@ namespace Next
 	}
 
 	int
-	Entity::NumComponents(Reflection::StaticTypeId a_typeId) const
+	Entity::NumComponents(Reflection::TypeId a_typeId) const
 	{
 		auto predicate = [&](ComponentListElement const& a_value)
 		{
@@ -156,7 +156,7 @@ namespace Next
 	}
 
 	decltype(Entity::m_components)::iterator
-	Entity::FindComponentById(Reflection::StaticTypeId a_id)
+	Entity::FindComponentById(Reflection::TypeId a_id)
 	{		
 		auto iter = m_components.begin();
 		auto end  = m_components.end();
@@ -245,7 +245,7 @@ namespace Next
 	bool
 	Entity::RemoveComponent(identity<Next::Transform>)
 	{
-		auto static_id = Reflection::GetStaticId<Next::Transform>();
+		auto static_id = Reflection::GetTypeId<Next::Transform>();
 		return RemoveComponent(static_id);
 	}
 }

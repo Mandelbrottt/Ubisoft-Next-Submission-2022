@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cassert>
+
+#include "TypeId.h"
+
 namespace Next::Reflection
 {
 	enum FieldFlags : uint32_t
@@ -33,11 +37,11 @@ namespace Next::Reflection
 		// The size returned by sizeof of the field.
 		const uint32_t size;
 
-		// The type_info of the field.
-		type_info const& fieldType;
+		// The StaticTypeId of the field.
+		TypeId const fieldTypeId;
 
-		// The type_info of the object that the field is contained in.
-		type_info const& containingType;
+		// The StaticTypeId of the object that the field is contained in.
+		TypeId const containingTypeId;
 
 		// Flags that provide additional information about the field.
 		const FieldFlags flags = FfNone;
@@ -52,10 +56,11 @@ namespace Next::Reflection
 			/*, std::enable_if_t<!std::is_pointer_v<std::remove_pointer_t<TContaining>>, bool> = true*/>
 		const void* GetValue(TContaining const& a_obj) const
 		{
-			const type_info& incomingType = typeid(std::remove_pointer_t<std::remove_cv_t<TContaining>>);
+			const TypeId incomingTypeId = GetTypeId<TContaining>();
+			
 			assert(
-				incomingType == this->containingType
-				|| incomingType == typeid(void)
+				incomingTypeId == this->containingTypeId
+				|| incomingTypeId == GetTypeId<void>()
 			);
 
 			uintptr_t ptrToMember;
@@ -67,7 +72,7 @@ namespace Next::Reflection
 
 			ptrToMember += offset;
 
-			return std::launder(reinterpret_cast<void*>(ptrToMember));
+			return reinterpret_cast<void*>(ptrToMember);
 		}
 		
 		/**
@@ -77,11 +82,11 @@ namespace Next::Reflection
 		 * \param a_obj The object to get the value for.
 		 * \return A pointer to the instance of the field on object obj.
 		 */
-		template<typename TContaining, typename TField>
+		template<typename TField, typename TContaining>
 		TField const& GetValue(TContaining const& a_obj) const
 		{
-			const type_info& incomingType = typeid(TField);
-			assert(incomingType == this->fieldType);
+			const TypeId incomingTypeId = GetTypeId<TField>();
+			assert(incomingTypeId == this->fieldTypeId);
 
 			const void* result = Field::GetValue(a_obj);
 
@@ -101,11 +106,10 @@ namespace Next::Reflection
 			/*, std::enable_if_t<!std::is_pointer_v<std::remove_pointer_t<TContaining>>, bool> = true*/>
 		void SetValue(TContaining const& a_obj, const void* a_incomingValue, size_t a_incomingSize) const
 		{
-			const type_info& incomingType = typeid(std::remove_pointer_t<TContaining>);
+			const TypeId incomingTypeId = GetTypeId<TContaining>();
 			assert(
-				incomingType == this->containingType
-				|| incomingType == typeid(void)
-				|| incomingType == typeid(const void)
+				incomingTypeId == this->containingTypeId
+				|| incomingTypeId == GetTypeId<void>()
 			);
 
 			assert(a_incomingSize == size);
@@ -132,11 +136,10 @@ namespace Next::Reflection
 		template<typename TContaining, typename TField>
 		void SetValue(TContaining const& a_obj, TField const& a_value) const
 		{
-			const type_info& incomingType = typeid(std::remove_pointer_t<TContaining>);
+			const TypeId incomingTypeId = GetTypeId<TContaining>();
 			assert(
-				incomingType == this->containingType
-				|| incomingType == typeid(void)
-				|| incomingType == typeid(const void)
+				incomingTypeId == this->containingTypeId
+				|| incomingTypeId == GetTypeId<void>()
 			);
 			
 			uintptr_t ptrToMember;
@@ -153,5 +156,37 @@ namespace Next::Reflection
 			// Do this instead of calling other SetValue function to call copy constructor
 			refToMember = a_value;
 		}
+	};
+	
+	/**
+	 * \brief The display name of a reflected member
+	 */
+	struct Name
+	{
+		constexpr
+		Name()
+			: c_str("") {}
+
+		constexpr
+		Name(const char* a_value)
+			: c_str(a_value) {}
+
+		const char* c_str;
+	};
+
+	/**
+	 * \brief The description of a reflected member
+	 */
+	struct Description
+	{
+		constexpr
+		Description()
+			: c_str("") {}
+
+		constexpr
+		Description(const char* a_value)
+			: c_str(a_value) {}
+
+		const char* c_str;
 	};
 }

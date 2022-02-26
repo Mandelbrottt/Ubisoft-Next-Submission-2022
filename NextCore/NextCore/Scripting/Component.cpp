@@ -35,7 +35,7 @@ namespace Next
 	}
 
 	Component*
-	Component::AddComponent(Reflection::StaticTypeId a_typeId)
+	Component::AddComponent(Reflection::TypeId a_typeId)
 	{
 		return m_entity->AddComponent(a_typeId);
 	}
@@ -43,11 +43,11 @@ namespace Next
 	bool
 	Component::RemoveComponent(Reflection::Type const& a_type)
 	{
-		return m_entity->RemoveComponent(a_type.GetStaticId());
+		return m_entity->RemoveComponent(a_type.GetTypeId());
 	}
 
 	bool
-	Component::RemoveComponent(Reflection::StaticTypeId a_typeId)
+	Component::RemoveComponent(Reflection::TypeId a_typeId)
 	{
 		return m_entity->RemoveComponent(a_typeId);
 	}
@@ -61,11 +61,11 @@ namespace Next
 	Component*
 	Component::GetComponent(Reflection::Type const& a_type)
 	{
-		return m_entity->GetComponent(a_type.GetStaticId());
+		return m_entity->GetComponent(a_type.GetTypeId());
 	}
 
 	Component*
-	Component::GetComponent(Reflection::StaticTypeId a_typeId)
+	Component::GetComponent(Reflection::TypeId a_typeId)
 	{
 		return m_entity->GetComponent(a_typeId);
 	}
@@ -77,7 +77,7 @@ namespace Next
 	}
 
 	Component**
-	Component::GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount)
+	Component::GetComponents(Reflection::TypeId a_typeId, int* a_outCount)
 	{
 		return m_entity->GetComponents(a_typeId, a_outCount);
 	}
@@ -89,7 +89,7 @@ namespace Next
 	}
 
 	int
-	Component::NumComponents(Reflection::StaticTypeId a_typeId) const
+	Component::NumComponents(Reflection::TypeId a_typeId) const
 	{
 		return m_entity->NumComponents(a_typeId);
 	}

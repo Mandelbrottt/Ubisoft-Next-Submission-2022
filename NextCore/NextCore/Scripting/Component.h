@@ -9,6 +9,7 @@
 		_MACRO_AUTO_FORMAT_INDENT \
 	protected: \
 		friend ::Next::Reflection::TypedFactory<_class_>; \
+		friend ::Next::Reflection::Detail::typed_factory_friend_helper; \
 		\
 		_class_() \
 			: Base({ #_class_ }) { } \
@@ -16,8 +17,13 @@
 
 namespace Next::Reflection
 {
-	template<typename T>
+	template<typename T, bool IsConstructible>
 	struct TypedFactory;
+
+	namespace Detail
+	{
+		struct typed_factory_friend_helper;
+	}
 }
 
 namespace Next
@@ -81,7 +87,7 @@ namespace Next
 		AddComponent(Reflection::Type const& a_type);
 
 		Component*
-		AddComponent(Reflection::StaticTypeId a_typeId);
+		AddComponent(Reflection::TypeId a_typeId);
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		bool
@@ -94,7 +100,7 @@ namespace Next
 		RemoveComponent(Reflection::Type const& a_type);
 
 		bool
-		RemoveComponent(Reflection::StaticTypeId a_typeId);
+		RemoveComponent(Reflection::TypeId a_typeId);
 
 		bool
 		RemoveComponent(Component* a_component);
@@ -110,7 +116,7 @@ namespace Next
 		GetComponent(Reflection::Type const& a_type);
 
 		Component*
-		GetComponent(Reflection::StaticTypeId a_typeId);
+		GetComponent(Reflection::TypeId a_typeId);
 		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent const*
@@ -126,7 +132,7 @@ namespace Next
 		}
 
 		Component*
-		GetComponent(Reflection::StaticTypeId a_typeId) const
+		GetComponent(Reflection::TypeId a_typeId) const
 		{
 			return const_cast<Component*>(this)->GetComponent(a_typeId);
 		}
@@ -163,7 +169,7 @@ namespace Next
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		Component**
-		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount);
+		GetComponents(Reflection::TypeId a_typeId, int* a_outCount);
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent**
@@ -179,7 +185,7 @@ namespace Next
 		}
 		
 		Component**
-		GetComponents(Reflection::StaticTypeId a_typeId, int* a_outCount) const
+		GetComponents(Reflection::TypeId a_typeId, int* a_outCount) const
 		{
 			return const_cast<Component*>(this)->GetComponents(a_typeId, a_outCount);
 		}
@@ -195,7 +201,7 @@ namespace Next
 		NumComponents(Reflection::Type const& a_type) const;
 		
 		int
-		NumComponents(Reflection::StaticTypeId a_typeId) const;
+		NumComponents(Reflection::TypeId a_typeId) const;
 		#pragma endregion
 
 	private:

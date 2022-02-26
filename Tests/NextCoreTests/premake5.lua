@@ -54,7 +54,6 @@ project(project_name)
     }
 
     postbuildcommands {
-        -- user_config.output_dir .. "/Tests/%{prj.name}/%{cfg.buildtarget.name}",
         "\"%{cfg.buildtarget.abspath}\""
     }
 

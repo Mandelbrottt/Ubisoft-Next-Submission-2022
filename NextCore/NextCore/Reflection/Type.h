@@ -9,6 +9,7 @@
 #include "Field.h"
 #include "TypeTraits.h"
 #include "Factory.h"
+#include "TypeId.h"
 
 #include "NextCoreCommon.h"
 
@@ -17,75 +18,12 @@
 namespace Next::Reflection
 {
 	/**
-	 * \brief The display name of a reflected member
-	 */
-	struct Name
-	{
-		constexpr
-		Name()
-			: c_str("") {}
-
-		constexpr
-		Name(const char* a_value)
-			: c_str(a_value) {}
-
-		const char* c_str;
-	};
-	
-	/**
-	 * \brief The description of a reflected member
-	 */
-	struct Description
-	{
-		constexpr
-		Description()
-			: c_str("") {}
-
-		constexpr
-		Description(const char* a_value)
-			: c_str(a_value) {}
-
-		const char* c_str;
-	};
-
-	using static_type_id_underlying_t = uint32_t;
-
-	enum class StaticTypeId : static_type_id_underlying_t { Null = 0, FirstValid = 1 };
-
-	constexpr
-	bool
-	operator ==(StaticTypeId a_lhs, StaticTypeId a_rhs)
-	{
-		auto lhs = static_cast<static_type_id_underlying_t>(a_lhs);
-		auto rhs = static_cast<static_type_id_underlying_t>(a_rhs);
-
-		return lhs == rhs;
-	}
-
-	constexpr
-	bool
-	operator !=(StaticTypeId a_lhs, StaticTypeId a_rhs)
-	{
-		return a_lhs == a_rhs;
-	}
-
-	template<typename T>
-	StaticTypeId
-	GetStaticId() noexcept;
-	
-	/**
 	 * \brief A runtime structure that represents a reflected data type.
 	 *        Contains information about member fields, functions, and other type information. 
 	 */
 	class Type
 	{
-		using types_container_t = std::unordered_map<StaticTypeId, class Type>;
-
-		static StaticTypeId& StaticIdCounter()
-		{
-			static StaticTypeId staticIdCounter { StaticTypeId::FirstValid };
-			return staticIdCounter;
-		}
+		using types_container_t = std::unordered_map<TypeId, class Type>;
 
 		static types_container_t& Types()
 		{			
@@ -94,13 +32,13 @@ namespace Next::Reflection
 		}
 
 		explicit
-		Type(std::string a_name) noexcept
-			: name(a_name) {}
+		Type(std::type_info const& a_info) noexcept
+			: name(a_info.name()), m_typeInfo(&a_info) {}
 
-		Type(const Type& a_other) = default;
+		Type(Type const& a_other) = default;
 
 		Type&
-		operator =(const Type&) = delete;
+		operator =(Type const&) = delete;
 		
 	public:
 		// Warning because move constructor is public?
@@ -114,12 +52,29 @@ namespace Next::Reflection
 		 * \brief Retrieve the statically assigned type id for the type represented by the current \link Type \endlink.
 		 * \return The non-zero static type id if the current type is valid, zero otherwise.
 		 */
-		StaticTypeId
-		GetStaticId() const
+		TypeId
+		GetTypeId() const
 		{
 			return m_typeId;
 		}
 		
+		/**
+		 * \brief Retrieve the statically assigned type id for the base type of the type represented
+		 *        by the current \link Type \endlink.
+		 * \return The non-zero static type id if the current type is valid, zero otherwise.
+		 */
+		TypeId
+		GetBaseTypeId() const
+		{
+			return m_baseTypeId;
+		}
+
+		bool
+		IsConvertibleTo(TypeId a_typeId) const;
+		
+		bool
+		IsConvertibleFrom(TypeId a_typeId) const;
+
 		/**
 		 * \brief Retrieve the value returned by sizeof for the type class represented by
 		 *        the current \link Type \endlink.
@@ -129,6 +84,12 @@ namespace Next::Reflection
 		GetSize() const
 		{
 			return m_size;
+		}
+
+		std::type_info const&
+		GetTypeInfo() const
+		{
+			return *m_typeInfo;
 		}
 		
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
@@ -140,7 +101,7 @@ namespace Next::Reflection
 		const GenericFactory* GetConstructor()
 		{
 			// See https://en.cppreference.com/w/cpp/types/aligned_storage
-			auto pConstructor = std::launder(reinterpret_cast<GenericFactory*>(m_constructorData));
+			auto pConstructor = std::launder(reinterpret_cast<GenericFactory*>(m_factoryData));
 			return pConstructor;
 		}
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
@@ -156,9 +117,7 @@ namespace Next::Reflection
 		types_container_t::iterator
 		Register() noexcept
 		{
-			static_assert(is_complete_type_v<typename T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS>);
-			
-			StaticTypeId id = Reflection::GetStaticId<T>();
+			TypeId id = Reflection::GetTypeId<T>();
 
 			auto& types = Types();
 			
@@ -188,7 +147,7 @@ namespace Next::Reflection
 		Type&
 		Get() noexcept
 		{
-			StaticTypeId id = Reflection::GetStaticId<T>();
+			TypeId id = Reflection::GetTypeId<T>();
 
 			auto iter = Types().find(id);
 			if (iter == Types().end())
@@ -211,7 +170,7 @@ namespace Next::Reflection
 		Type*
 		TryGet() noexcept
 		{
-			StaticTypeId id = Reflection::GetStaticId<T>();
+			TypeId id = Reflection::GetTypeId<T>();
 			
 			return TryGet(id);
 		}
@@ -226,7 +185,7 @@ namespace Next::Reflection
 		 */
 		static
 		Type*
-		TryGet(StaticTypeId a_id) noexcept
+		TryGet(TypeId a_id) noexcept
 		{
 			Type* result = nullptr;
 			if (auto iter = Types().find(a_id); iter != Types().end())
@@ -262,9 +221,14 @@ namespace Next::Reflection
 		{
 			static_assert(std::is_base_of_v<TBase, TDerived>, "Second argument of REFLECT_DECLARE MUST be derived from the first!");
 
-			if (auto* baseType = TryGet<TBase>(); baseType && !baseType->instanceFields.empty())
+			// Don't need to use TryGet here because this function can only be called if there is a base class
+			auto& baseType = Get<TBase>();
+
+			m_baseTypeId = baseType.GetTypeId();
+			
+			if (!baseType.instanceFields.empty())
 			{
-				auto& baseFields = baseType->instanceFields;
+				auto& baseFields = baseType.instanceFields;
 				
 				instanceFields.insert(baseFields.begin(), baseFields.end());
 			}
@@ -280,47 +244,59 @@ namespace Next::Reflection
 	private:
 		// We need this helper because you can't partially specialize functions to make sfinae work in
 		// the way we want it to here, so do the reflection work in the static reflect function
-		template<typename T, typename = void>
+		template<typename TReflected, typename = void>
 		struct reflect_helper
 		{
 			static Type Reflect()
 			{
-				Type reflector(typeid(T).name());
+				Type reflector(typeid(TReflected));
+				
+				PopulateFactory<TReflected>(reflector);
+
 				return reflector;
 			}
 		};
 		
-		template<typename T>
-		struct reflect_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
+		template<typename TReflected>
+		struct reflect_helper<TReflected, std::void_t<decltype(sizeof(&TReflected::_Reflect))>>
 		{
 			static Type Reflect()
 			{
 				// Reflect type T and get information on members
-				Type reflector(typeid(T).name());
-				T::_Reflect(reflector);
+				Type reflector(typeid(TReflected));
 				
-				// Generate the constructor/destructor and use placement new under the hood
-				// We use vtable shenanigans to make this work, so the data represented
-				// by reflector.m_constructorData is stored "on the stack" inside this type while
-				// being able to reference it like a pointer and use the vtable to call overridden
-				// versions of Construct and Destruct
-				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-				auto pConstructor = reinterpret_cast<GenericFactory*>(reflector.m_constructorData);
-				// ReSharper disable once CppDeprecatedEntity
-				T::_GetGenericFactory(pConstructor);
-				#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+				TReflected::_Reflect(reflector);
+				
+				PopulateFactory<TReflected>(reflector);
 				
 				return reflector;
 			}
 		};
 		
+		template<typename TReflected>
+		static
+		void
+		PopulateFactory(Type& a_type)
+		{
+			// Generate the constructor/destructor and use placement new under the hood
+			// We use vtable shenanigans to make this work, so the data represented
+			// by reflector.m_constructorData is stored "on the stack" inside this type while
+			// being able to reference it like a pointer and use the vtable to call overridden
+			// versions of Construct and Destruct
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+			auto pConstructor = reinterpret_cast<GenericFactory*>(a_type.m_factoryData);
+			// ReSharper disable once CppDeprecatedEntity
+			new(pConstructor) TypedFactory<TReflected>;
+			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+		}
+		
 		// Called by Type::Register
-		template<class T>
+		template<class TReflected>
 		static
 		Type
 		Reflect() noexcept
 		{
-			return reflect_helper<T>::Reflect();
+			return reflect_helper<TReflected>::Reflect();
 		}
 
 		void
@@ -330,71 +306,19 @@ namespace Next::Reflection
 		}
 
 	private:
-		StaticTypeId m_typeId = StaticTypeId::Null;
+		TypeId m_typeId = TypeId::Null;
+
+		TypeId m_baseTypeId = TypeId::Null;
+
+		std::type_info const* m_typeInfo;
 
 		//std::aligned_storage_t<sizeof(GenericConstructor), alignof(GenericConstructor)> m_constructorData;
-		std::byte m_constructorData[sizeof(GenericFactory)] { std::byte() };
+		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
 		
 		//GenericConstructor m_constructor;
 
 		int m_size = 0;
-		
-	private:
-		template<typename T>
-		friend
-		StaticTypeId
-		GetStaticId() noexcept;
 	};
-
-	namespace Detail
-	{
-		// We need this helper because you can't partially specialize functions to make sfinae work in
-		// the way we want it to here, so pass in a reference to the static type id and increment it here
-		template<typename T, typename = void>
-		struct static_id_helper
-		{
-			static StaticTypeId Increment(StaticTypeId& a_id)
-			{
-				return StaticTypeId::Null;
-			}
-		};
-		
-		template<typename T>
-		struct static_id_helper<T, std::void_t<decltype(sizeof(T::_REFLECT_VALID_REFLECTION_TYPE_ALIAS))>>
-		{
-			static StaticTypeId Increment(StaticTypeId& a_id)
-			{
-				// Emulate pre-increment because id doesn't start at 0
-				auto result = a_id;
-
-				// Can't cast to reference and pre-increment, so write to temp var and reassign
-				auto underlying_id = static_cast<static_type_id_underlying_t>(a_id);
-				underlying_id++;
-
-				a_id = static_cast<StaticTypeId>(underlying_id);
-				
-				return result;
-			}
-		};
-	}
-	
-	/**
-	 * \brief  Retrieve the statically assigned type id for the given type
-	 * \tparam T The type who's Id to retrieve
-	 * \return A non-zero type id for a valid reflection type, zero otherwise
-	 */
-	template<typename T>
-	StaticTypeId
-	GetStaticId() noexcept
-	{
-		static StaticTypeId result = [&]()
-		{
-			auto& static_id_counter = Type::StaticIdCounter();
-			return Detail::static_id_helper<T>::Increment(static_id_counter);
-		}();
-
-		return result;
-	}
 }
 
 // Write-Only
