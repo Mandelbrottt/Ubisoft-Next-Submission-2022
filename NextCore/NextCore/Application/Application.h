@@ -4,6 +4,8 @@
 
 #include "NextCoreCommon.h"
 
+#include "Math/Vector2.h"
+
 namespace Next::Application
 {
 	/**
@@ -13,4 +15,19 @@ namespace Next::Application
 	extern
 	std::string
 	ResourcePath();
+
+	NEXT_CORE_EXPORT
+	extern
+	Vector2
+	ScreenSize();
+
+	NEXT_CORE_EXPORT
+	extern
+	float
+	ScreenWidth();
+
+	NEXT_CORE_EXPORT
+	extern
+	float
+	ScreenHeight();
 }
