@@ -24,7 +24,7 @@ Application_Init()
 	Entity cube = Entity::Create();
 	cube.AddComponent<Cube>();
 	
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i <= 10; i++)
 	{
 		float angle = 360.f * i / 10.f;
 

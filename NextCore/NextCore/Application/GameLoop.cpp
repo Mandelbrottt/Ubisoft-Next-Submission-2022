@@ -54,7 +54,7 @@ void
 Render()
 {
 	using namespace Next;
-	
+
 	auto& entityReps = Entity::s_entityRepresentations;
 
 	float fov  = 90;
@@ -62,8 +62,8 @@ Render()
 	float far  = 1000.0f;
 
 	Vector3 cameraPosition { 0 };
-	Matrix4 viewMatrix     = Matrix4::Identity();
-	
+	Matrix4 viewMatrix = Matrix4::Identity();
+
 	for (auto& [entityId, rep] : entityReps)
 	{
 		for (auto& [typeId, component] : rep.components)
@@ -89,12 +89,12 @@ Render()
 	}
 
 Render_Main_Camera_Found:
-	
+
 	float aspect = Application::ScreenHeight() / Application::ScreenWidth();
 
 	// Perspective Matrix
 	auto perspective = Matrix::Perspective(fov, aspect, near, far);
-	
+
 	Renderer::PrepareScene(cameraPosition, viewMatrix, perspective);
 
 	for (auto& [id, rep] : entityReps)
@@ -104,7 +104,7 @@ Render_Main_Camera_Found:
 			if (element.id == Reflection::GetTypeId<LineRenderer>())
 			{
 				LineRenderer* lineRenderer = static_cast<LineRenderer*>(element.component);
-				
+
 				//lineRenderer->OnRender();
 			} else if (element.id == Reflection::GetTypeId<ModelRenderer>())
 			{
@@ -114,7 +114,7 @@ Render_Main_Camera_Found:
 			}
 		}
 	}
-	
+
 	Renderer::Flush();
 }
 
