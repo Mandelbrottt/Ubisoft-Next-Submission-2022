@@ -18,11 +18,13 @@ using namespace Next;
 void
 Application_Init()
 {
+	Model model;
+	model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+
 	Entity cube = Entity::Create();
 	cube.AddComponent<Cube>();
-	auto* modelRenderer = cube.AddComponent<ModelRenderer>();
-
-	modelRenderer->model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+	//auto* modelRenderer = cube.AddComponent<ModelRenderer>();
+	//modelRenderer->model = model;
 	
 	for (int i = 0; i <= 10; i++)
 	{
@@ -35,7 +37,7 @@ Application_Init()
 		entity.AddComponent<RotateOverTime>();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 
-		innerModelRenderer->model = modelRenderer->model;
+		innerModelRenderer->model = model;
 
 		entity.Transform()->SetPosition({ x, y, 10 });
 	}

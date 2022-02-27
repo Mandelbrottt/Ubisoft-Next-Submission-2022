@@ -9,7 +9,9 @@ Cube::OnCreate()
 {
 	auto* transform = Transform();
 
-	transform->SetPosition({ 0.0f, 0.0f, 5 });
+	transform->SetPosition({ 0.0f, 0.0f, 0 });
+
+	AddComponent<Camera>();
 }
 
 void

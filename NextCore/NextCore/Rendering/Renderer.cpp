@@ -44,6 +44,7 @@ namespace Next::Renderer
 	static std::mutex g_rasterQueueMutex;
 	static std::vector<RenderQueueElement> g_primitiveRasterQueue;
 
+	static Vector3 g_cameraPosition;
 	static Matrix4 g_viewMatrix;
 	static Matrix4 g_projectionMatrix;
 	
@@ -59,8 +60,9 @@ namespace Next::Renderer
 	TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count);
 	
 	void
-	PrepareScene(Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix)
+	PrepareScene(Vector3 const& a_cameraPosition, Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix)
 	{
+		g_cameraPosition   = a_cameraPosition;
 		g_viewMatrix       = a_viewMatrix;
 		g_projectionMatrix = a_projectionMatrix;
 	}
@@ -174,7 +176,7 @@ namespace Next::Renderer
 	void
 	TransformPrimitivesByModelMatrix(std::size_t a_offset, std::size_t a_count, Matrix4 const& a_modelMatrix)
 	{
-		// TODO: Shrink-to-fit the array at some point, maybe if model's haven't been loaded recently?
+		// TODO: Shrink-to-fit the array at some point, maybe if models haven't been loaded recently?
 		g_primitivesToRaster.reserve(a_count);
 
 		for (std::size_t i = a_offset; i < a_offset + a_count; i++)
@@ -204,7 +206,7 @@ namespace Next::Renderer
 				normals[j] = Vector::Normalize(Vector::Cross(line1, line2));
 			}
 
-			Vector3 cameraPosition = { 0, 0, 0 };
+			Vector3 const& cameraPosition = g_cameraPosition;
 
 			Vector3 commonPointOnPrimitive1 = Vector3(positions[0]) - cameraPosition;
 			Vector3 commonPointOnPrimitive2 = Vector3(positions[3]) - cameraPosition;
@@ -259,9 +261,8 @@ namespace Next::Renderer
 
 				element.color = color;
 
-				//TODO: Factor in view matrix
-				
-				auto projectedVertex = g_projectionMatrix * positions[j];
+				auto viewVertex      = g_viewMatrix * positions[j];
+				auto projectedVertex = g_projectionMatrix * viewVertex;
 
 				projectedVertex.x /= projectedVertex.w;
 				projectedVertex.y /= projectedVertex.w;

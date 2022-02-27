@@ -4,6 +4,7 @@
 #include <Application/Time.h>
 
 #include <Components/Transform.h>
+#include <Components/Camera.h>
 
 #include <Graphics/Sprite.h>
 

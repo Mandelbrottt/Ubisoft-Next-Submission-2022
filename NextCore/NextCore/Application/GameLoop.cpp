@@ -1,9 +1,12 @@
 #include "pch.h"
 
+#include "Application.h"
 #include "Init.h"
 
+#include "Components/Camera.h"
 #include "Components/LineRenderer.h"
 #include "Components/ModelRenderer.h"
+#include "Components/Transform.h"
 
 #include "Math/Transformations.h"
 
@@ -54,13 +57,45 @@ Render()
 	
 	auto& entityReps = Entity::s_entityRepresentations;
 
-	// Perspective Matrix
-	float fov    = 90;
-	float aspect = 16.f / 9.f;
+	float fov  = 90;
+	float near = 0.1f;
+	float far  = 1000.0f;
 
-	auto perspective = Matrix::Perspective(fov, aspect, 0.1f, 1000.f);
+	Vector3 cameraPosition { 0 };
+	Matrix4 viewMatrix     = Matrix4::Identity();
 	
-	Renderer::PrepareScene({}, perspective);
+	for (auto& [entityId, rep] : entityReps)
+	{
+		for (auto& [typeId, component] : rep.components)
+		{
+			if (typeId != Reflection::GetTypeId<Camera>())
+			{
+				continue;
+			}
+
+			auto* camera = static_cast<Camera*>(component);
+
+			fov  = camera->GetFov();
+			near = camera->GetNearClippingPlane();
+			far  = camera->GetFarClippingPlane();
+
+			cameraPosition = camera->Transform()->GetPosition();
+
+			viewMatrix = camera->Transform()->GetTransformationMatrix();
+			viewMatrix = Matrix::ViewInverse(viewMatrix);
+
+			goto Render_Main_Camera_Found;
+		}
+	}
+
+Render_Main_Camera_Found:
+	
+	float aspect = Application::ScreenHeight() / Application::ScreenWidth();
+
+	// Perspective Matrix
+	auto perspective = Matrix::Perspective(fov, aspect, near, far);
+	
+	Renderer::PrepareScene(cameraPosition, viewMatrix, perspective);
 
 	for (auto& [id, rep] : entityReps)
 	{

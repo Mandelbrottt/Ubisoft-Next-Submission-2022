@@ -24,7 +24,7 @@ namespace Next::Renderer
 	NEXT_CORE_EXPORT
 	extern
 	void
-    PrepareScene(Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix);
+    PrepareScene(Vector3 const& a_cameraPosition, Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix);
 	
 	/**
 	 * \brief Submit a ModelRenderer for rendering at the given Transform
