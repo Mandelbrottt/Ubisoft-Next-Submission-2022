@@ -73,19 +73,7 @@ namespace Next
 	{
 		return GetEntity().GetComponent(a_typeId);
 	}
-
-	Component**
-	Component::GetComponents(Reflection::Type const& a_type, int* a_outCount)
-	{
-		return GetEntity().GetComponents(a_type, a_outCount);
-	}
-
-	Component**
-	Component::GetComponents(Reflection::TypeId a_typeId, int* a_outCount)
-	{
-		return GetEntity().GetComponents(a_typeId, a_outCount);
-	}
-
+	
 	int
 	Component::NumComponents(Reflection::Type const& a_type) const
 	{

@@ -43,7 +43,7 @@ namespace Next
 			std::vector<Reflection::TypeId> needsFirstUpdate;
 		};
 	}
-
+	
 	/**
 	 * \brief 
 	 */
@@ -201,32 +201,56 @@ namespace Next
 		{
 			return const_cast<Entity*>(this)->GetComponent(a_typeId);
 		}
-
-		/**
-		 * \remark It is the callers responsibility to call delete[] on the array.
-		 */
+		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		TComponent**
-		GetComponents(int* a_outCount)
+		void
+		GetComponents(std::vector<TComponent*>& a_outComponents) const
 		{
+			// TODO: Find a way to avoid allocation in GetComponents. Copy body over?
+			std::vector<Component*> result;
 			auto static_id = Reflection::GetTypeId<TComponent>();
-			return reinterpret_cast<TComponent**>(GetComponents(static_id, a_outCount));
+			GetComponents(static_id, result);
+			a_outComponents.clear();
+			a_outComponents.reserve(result.size());
+			for (int i = 0; i < result.size(); i++)
+			{
+				a_outComponents.push_back(static_cast<TComponent*>(result[i]));
+			}
 		}
-
-		/**
-		 * \remark It is the callers responsibility to call delete[] on the array.
-		 */
-		Component**
-		GetComponents(Reflection::Type const& a_type, int* a_outCount)
+	
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		std::vector<TComponent*>
+		GetComponents() const
 		{
-			return GetComponents(a_type.GetTypeId(), a_outCount);
+			std::vector<TComponent*> result;
+			GetComponents<TComponent>(result);
+			return result;
 		}
-
-		/**
-		 * \remark It is the callers responsibility to call delete[] on the array.
-		 */
-		Component**
-		GetComponents(Reflection::TypeId a_typeId, int* a_outCount);
+	
+		void
+		GetComponents(Reflection::Type const& a_type, std::vector<Component*>& a_outComponents) const
+		{
+			return GetComponents(a_type.GetTypeId(), a_outComponents);
+		}
+		
+		std::vector<Component*>
+		GetComponents(Reflection::Type const& a_type) const
+		{
+			std::vector<Component*> result;
+			GetComponents(a_type.GetTypeId(), result);
+			return result;
+		}
+		
+		void
+		GetComponents(Reflection::TypeId a_typeId, std::vector<Component*>& a_outComponents) const;
+		
+		std::vector<Component*>
+		GetComponents(Reflection::TypeId a_typeId) const
+		{
+			std::vector<Component*> result;
+			GetComponents(a_typeId, result);
+			return result;
+		}
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		int

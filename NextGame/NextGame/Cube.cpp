@@ -26,14 +26,14 @@ Cube::OnUpdate()
 
 	float moveSpeed = 3;
 	float turnSpeed = 3;
-	
-	position.x += Input::GetAxis(AxisCode::Horizontal)   * moveSpeed * Time::DeltaTime();
-	position.y += Input::GetAxis(AxisCode::RightTrigger) * moveSpeed * Time::DeltaTime();
-	position.y -= Input::GetAxis(AxisCode::LeftTrigger)  * moveSpeed * Time::DeltaTime();
-	position.z += Input::GetAxis(AxisCode::Vertical)     * moveSpeed * Time::DeltaTime();
 
+	position += transform->Forward() * Input::GetAxis(AxisCode::Vertical)     * moveSpeed * Time::DeltaTime();
+	position += transform->Right()   * Input::GetAxis(AxisCode::Horizontal)   * moveSpeed * Time::DeltaTime();
+	position += transform->Up()      * Input::GetAxis(AxisCode::RightTrigger) * moveSpeed * Time::DeltaTime();
+	position -= transform->Up()      * Input::GetAxis(AxisCode::LeftTrigger)  * moveSpeed * Time::DeltaTime();
+	
 	rotation.x += Input::GetAxis(AxisCode::VerticalLook)   * turnSpeed * Time::DeltaTime();
-	rotation.y += Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
+	rotation.y -= Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
 
 	transform->SetPosition(position);
 	transform->SetRotation(rotation);

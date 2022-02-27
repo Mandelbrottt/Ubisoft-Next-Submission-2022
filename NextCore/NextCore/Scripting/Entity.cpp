@@ -90,7 +90,7 @@ namespace Next
 			return nullptr;
 		}
 
-		auto*      constructor = componentType->GetConstructor();
+		auto*      constructor = componentType->GetFactory();
 		void*      p           = constructor->Construct();
 		Component* result      = static_cast<Component*>(p);
 
@@ -167,36 +167,34 @@ namespace Next
 		return result;
 	}
 
-	Component**
-	Entity::GetComponents(Reflection::TypeId a_typeId, int* a_outCount)
+	void
+	Entity::GetComponents(Reflection::TypeId a_typeId, std::vector<Component*>& a_outComponents) const
 	{
-		if (a_typeId == Reflection::TypeId::Null || !a_outCount)
+		if (a_typeId == Reflection::TypeId::Null)
 		{
-			return nullptr;
+			return;
 		}
 
 		auto* rep = GetCurrentEntityRepresentation();
 
 		if (!rep)
 		{
-			return nullptr;
+			return;
 		}
 
-		*a_outCount = NumComponents(a_typeId);
+		a_outComponents.clear();
 
-		Component** components = new Component*[*a_outCount];
+		int count = NumComponents(a_typeId);
 
-		int count = 0;
+		a_outComponents.reserve(count);
+		
 		for (const auto& [id, component] : rep->components)
 		{
 			if (id == a_typeId)
 			{
-				components[count] = component;
-				count++;
+				a_outComponents.push_back(component);
 			}
 		}
-
-		return components;
 	}
 
 	int
@@ -323,7 +321,7 @@ namespace Next
 
 			if (auto* componentType = Reflection::Type::TryGet(id); componentType != nullptr)
 			{
-				auto* constructor = componentType->GetConstructor();
+				auto* constructor = componentType->GetFactory();
 				constructor->Destruct(component);
 			}
 		}

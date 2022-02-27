@@ -45,7 +45,7 @@ namespace Next
 
 		~Component() override = default;
 
-	public:
+	public:		
 		#pragma region Getters and Setters
 		EntityId
 		GetEntityId() const;
@@ -141,54 +141,66 @@ namespace Next
 		/**
 		 * \brief 
 		 * \tparam TComponent 
-		 * \param a_outCount 
+		 * \param a_outComponents 
 		 * \return 
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		TComponent**
-		GetComponents(int* a_outCount)
+		void
+		GetComponents(std::vector<TComponent*>& a_outComponents) const
 		{
-			return GetEntity().GetComponents<TComponent>(a_outCount);
+			return GetEntity().GetComponents<TComponent>(a_outComponents);
+		}
+		
+		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
+		std::vector<TComponent*>
+		GetComponents() const
+		{
+			std::vector<TComponent*> result;
+			GetEntity().GetComponents<TComponent>(result);
+			return result;
 		}
 
 		/**
 		 * \brief 
 		 * \param a_type 
-		 * \param a_outCount 
+		 * \param a_outComponents 
 		 * \return 
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
-		Component**
-		GetComponents(Reflection::Type const& a_type, int* a_outCount);
+		void
+		GetComponents(Reflection::Type const& a_type, std::vector<Component*>& a_outComponents) const
+		{
+			return GetEntity().GetComponents(a_type, a_outComponents);
+		}
+
+		std::vector<Component*>
+		GetComponents(Reflection::Type const& a_type) const
+		{
+			std::vector<Component*> result;
+			GetComponents(a_type, result);
+			return result;
+		}
 
 		/**
 		 * \brief 
 		 * \param a_typeId 
-		 * \param a_outCount 
+		 * \param a_outComponents 
 		 * \return 
 		 * \remark It is the callers responsibility to call delete[] on the array.
 		 */
-		Component**
-		GetComponents(Reflection::TypeId a_typeId, int* a_outCount);
-
-		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		TComponent**
-		GetComponents(int* a_outCount) const
+		void
+		GetComponents(Reflection::TypeId a_typeId, std::vector<Component*>& a_outComponents) const
 		{
-			return const_cast<Component*>(this)->GetComponents<TComponent>(a_outCount);
+			return GetEntity().GetComponents(a_typeId, a_outComponents);
 		}
 
-		Component**
-		GetComponents(Reflection::Type const& a_type, int* a_outCount) const
+		std::vector<Component*>
+		GetComponents(Reflection::TypeId a_typeId) const
 		{
-			return const_cast<Component*>(this)->GetComponents(a_type, a_outCount);
-		}
-		
-		Component**
-		GetComponents(Reflection::TypeId a_typeId, int* a_outCount) const
-		{
-			return const_cast<Component*>(this)->GetComponents(a_typeId, a_outCount);
+			std::vector<Component*> result;
+			GetComponents(a_typeId, result);
+			return result;
 		}
 		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
