@@ -178,7 +178,11 @@ namespace Next
 	Vector_t<SizeShared, TUnderlying>
 	operator *(Matrix_t<SizeShared, SizeLhsY, TUnderlying> a_lhs, Vector_t<SizeShared, TUnderlying> a_rhs)
 	{
-		std::size_t sizeof_data = sizeof(TUnderlying) * sizeof(SizeShared);
+		constexpr int size_shared = SizeShared;
+		constexpr int size_lhs_y  = SizeLhsY;
+
+		// Don't use SizeShared directly, causes stack corruptions on some systems
+		std::size_t sizeof_data = sizeof(TUnderlying) * size_shared;
 
 		Matrix_t<1, SizeShared, TUnderlying> rhsMatrix;
 		std::memcpy(rhsMatrix.data, a_rhs.data, sizeof_data);

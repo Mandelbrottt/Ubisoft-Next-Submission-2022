@@ -9,7 +9,7 @@ namespace Next::Matrix
 {
 	/**
 	 * \param a_fieldOfView Horizontal Field of view in degrees 
-	 * \param a_aspectRatio The aspect ratio (x / y) of the screen
+	 * \param a_aspectRatio The vertical aspect ratio (y / x) of the screen
 	 * \param a_nearPlane The near plane in units
 	 * \param a_farPlane The far plane in units
 	 * \return A 4x4 row-major perspective matrix
@@ -63,4 +63,14 @@ namespace Next::Matrix
 	extern
 	Matrix4
 	Translate(Vector3 a_position);
+
+	/**
+	 * \brief A quick algorithm for computing the view matrix given a loc-rot matrix
+	 * \param a_locRot The Model matrix for the object that represents a camera in 3D space
+	 * \return A 4x4 row-major matrix representing an inverse view matrix
+	 */
+	NEXT_CORE_EXPORT
+	extern
+	Matrix4
+	ViewInverse(Matrix4 a_locRot);
 }

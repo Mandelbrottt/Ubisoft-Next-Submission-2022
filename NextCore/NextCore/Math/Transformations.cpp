@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Transformations.h"
 
+#include "Matrix3.h"
 #include "Vector4.h"
 
 namespace Next::Matrix
@@ -10,10 +11,8 @@ namespace Next::Matrix
 		Matrix4 result { 0 };
 		
 		float fovRadians = 1.f / std::tan(a_fieldOfView * 0.5f / 180.f * PI);
-
-		float verticalAspectRatio = 1 / a_aspectRatio;
 		
-		result[0][0] = verticalAspectRatio * fovRadians;
+		result[0][0] = a_aspectRatio * fovRadians;
 		result[1][1] = fovRadians;
 		result[2][2] = a_farPlane / (a_farPlane - a_nearPlane);
 		result[3][2] = (-a_farPlane * a_nearPlane) / (a_farPlane - a_nearPlane);
@@ -89,6 +88,31 @@ namespace Next::Matrix
 		result[3][1] = a_position.y;
 		result[3][2] = a_position.z;
 		
+		return result;
+	}
+
+	Matrix4
+	ViewInverse(Matrix4 a_locRot)
+	{
+		Matrix4 result { 0 };
+
+		Matrix3 rotation = {
+			Vector3(a_locRot[0]),
+			Vector3(a_locRot[1]),
+			Vector3(a_locRot[2]),
+		};
+
+		rotation.Transpose();
+		
+		// Negate the position vector
+		Vector3 position = Vector3(a_locRot[3]);
+		position = -(rotation * position);
+		
+		result[0] = Vector4(rotation[0], 0);
+		result[1] = Vector4(rotation[1], 0);
+		result[2] = Vector4(rotation[2], 0);
+		result[3] = Vector4(position, 1.0f);
+
 		return result;
 	}
 }
