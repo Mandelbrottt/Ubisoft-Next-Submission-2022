@@ -11,6 +11,8 @@
 
 #define DEPRECATED_WARNING_NUMBER 4996
 
+//#define IN_PLACE_FACTORY
+
 namespace Next::Reflection
 {
 	/**
@@ -100,11 +102,15 @@ namespace Next::Reflection
 		 * \brief Get the instance of the \link GenericFactory \endlink associated with this type.
 		 * \return A pointer to the \link GenericFactory \endlink associated with this type.
 		 */
-		const GenericFactory* GetConstructor()
+		const GenericFactory* GetFactory() const
 		{
+		#ifndef IN_PLACE_FACTORY
 			// See https://en.cppreference.com/w/cpp/types/aligned_storage
-			auto pConstructor = std::launder(reinterpret_cast<GenericFactory*>(m_factoryData));
+			auto pConstructor = std::launder(reinterpret_cast<GenericFactory const*>(m_factoryData));
 			return pConstructor;
+		#else
+			return &m_factory;
+		#endif
 		}
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 
@@ -296,9 +302,18 @@ namespace Next::Reflection
 			// being able to reference it like a pointer and use the vtable to call overridden
 			// versions of Construct and Destruct
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+		#ifndef IN_PLACE_FACTORY
 			auto pConstructor = reinterpret_cast<GenericFactory*>(a_type.m_factoryData);
+		#else
+			GenericFactory* pConstructor = &a_type.m_factory;
+		#endif
+
+			static_assert(sizeof(*pConstructor) == sizeof(TypedFactory<TReflected>));
+			
 			// ReSharper disable once CppDeprecatedEntity
 			new(pConstructor) TypedFactory<TReflected>;
+
 			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		}
 		
@@ -331,10 +346,14 @@ namespace Next::Reflection
 		TypeId m_baseTypeId = TypeId::Null;
 
 		std::type_info const* m_typeInfo;
-
-		//std::aligned_storage_t<sizeof(GenericConstructor), alignof(GenericConstructor)> m_constructorData;
-		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
 		
+	#ifndef IN_PLACE_FACTORY
+		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
+	#else
+		/* TODO: Using placement new on stack-allocated type to manipulate the vtable
+		         works in test scenarios but isn't working in practice. Figure out why */
+		GenericFactory m_factory;
+	#endif	
 		//GenericConstructor m_constructor;
 
 		int m_size = 0;
