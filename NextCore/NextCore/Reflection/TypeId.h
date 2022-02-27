@@ -22,7 +22,7 @@ namespace Next::Reflection
 	bool
 	operator !=(TypeId a_lhs, TypeId a_rhs)
 	{
-		return a_lhs == a_rhs;
+		return !(a_lhs == a_rhs);
 	}
 	
 	namespace Detail
