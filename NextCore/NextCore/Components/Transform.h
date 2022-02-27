@@ -90,6 +90,24 @@ namespace Next
 			return m_scale;
 		}
 
+		Vector3 Right() const
+		{
+			auto transformationMatrix = GetTransformationMatrix();
+			return Vector3(transformationMatrix[0]);
+		}
+		
+		Vector3 Up() const
+		{
+			auto transformationMatrix = GetTransformationMatrix();
+			return Vector3(transformationMatrix[1]);
+		}
+		
+		Vector3 Forward() const
+		{
+			auto transformationMatrix = GetTransformationMatrix();
+			return Vector3(transformationMatrix[2]);
+		}
+
 		Matrix4
 		GetTransformationMatrix() const;
 		
@@ -98,7 +116,7 @@ namespace Next
 		Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
 		Vector3 m_scale    = Vector3(1);
 
-		EntityId m_parent;
+		EntityId m_parent = EntityId::Null;
 
 		mutable Matrix4 m_cachedTransformationMatrix;
 
