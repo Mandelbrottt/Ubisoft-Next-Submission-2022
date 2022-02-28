@@ -15,7 +15,7 @@ namespace Next
 		GenerateConstructors(Camera)
 	public:
 		float
-		GetFov(FovType a_type = FovType::Horizontal) const;
+		GetFov(FovType a_type = FovType::Vertical) const;
 
 		float
 		GetNearClippingPlane() const
@@ -30,7 +30,7 @@ namespace Next
 		}
 
 		void
-		SetFov(float a_fov, FovType a_type = FovType::Horizontal);
+		SetFov(float a_fov, FovType a_type = FovType::Vertical);
 
 		void
 		SetNearClippingPlane(float a_near)
@@ -45,15 +45,15 @@ namespace Next
 		}
 
 	private:
-		float m_horizontalFov = 60;
-
+		float m_verticalFov = 60;
+		
 		float m_nearClippingPlane = 0.1f;
 		float m_farClippingPlane  = 1000.f;
 
 		REFLECT_DECLARE(Camera, Component)
 
 		REFLECT_MEMBERS(
-			REFLECT_FIELD(m_horizontalFov)
+			REFLECT_FIELD(m_verticalFov)
 			REFLECT_FIELD(m_nearClippingPlane)
 			REFLECT_FIELD(m_farClippingPlane)
 		)

@@ -10,29 +10,29 @@ namespace Next
 	float
 	Camera::GetFov(FovType a_type) const
 	{
-		if (a_type == FovType::Horizontal)
+		if (a_type == FovType::Vertical)
 		{
-			return m_horizontalFov;
+			return m_verticalFov;
 		}
 
 		// Convert outgoing horizontal fov to vertical
-		float y_on_x_aspect = Application::ScreenHeight() / Application::ScreenWidth();
+		float x_on_y_aspect = Application::ScreenWidth() / Application::ScreenHeight();
 
-		return m_horizontalFov * y_on_x_aspect;
+		return m_verticalFov * x_on_y_aspect;
 	}
 
 	void
 	Camera::SetFov(float a_fov, FovType a_type)
 	{
-		if (a_type == FovType::Horizontal)
+		if (a_type == FovType::Vertical)
 		{
-			m_horizontalFov = a_fov;
+			m_verticalFov = a_fov;
 			return;
 		}
 
 		// Convert incoming vertical fov to horizontal
-		float x_on_y_aspect = Application::ScreenWidth() / Application::ScreenHeight();
+		float y_on_x_aspect = Application::ScreenHeight() / Application::ScreenWidth();
 
-		m_horizontalFov = a_fov * x_on_y_aspect;
+		m_verticalFov = a_fov * y_on_x_aspect;
 	}
 }
