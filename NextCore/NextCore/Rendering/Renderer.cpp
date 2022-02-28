@@ -281,9 +281,11 @@ namespace Next::Renderer
 		}
 	}
 
+	// Determine if a transformed and projected primitive is should be rendered or culled
 	bool
 	IsValidPrimitive(RenderQueueElement const& a_element)
 	{
+		// Cull primitives outside of clip-space
 		if (a_element.depth < 0 || a_element.depth > 1)
 		{
 			return false;
@@ -291,6 +293,7 @@ namespace Next::Renderer
 
 		auto& positions = a_element.positions;
 
+		// Cull off-screen primitives
 		bool isAnyInbounds = false;
 		for (int i = 0; i < sizeof(positions) / sizeof(*positions); i++)
 		{
@@ -310,7 +313,7 @@ namespace Next::Renderer
 		auto const& lhsDepth = a_lhs.depth;
 		auto const& rhsDepth = a_rhs.depth;
 
-		// Depth is front-to-back 1-0
+		// Depth is front-to-back [1, 0]
 		if (!IsValidPrimitive(a_lhs))
 		{
 			return false;

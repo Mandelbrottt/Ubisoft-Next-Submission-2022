@@ -27,42 +27,26 @@ namespace Next::Reflection
 	
 	namespace Detail
 	{
-		struct static_type_id_helper
-		{
-			template<typename T>
-			friend
-			TypeId
-			GetRawTypeId() noexcept;
-
-		private:
-			static TypeId& StaticIdCounter()
-			{
-				// Maintain a local static variable to control order of initialization
-				// A static in a translation unit wouldn't have a guaranteed construction order
-				static TypeId staticIdCounter { TypeId::FirstValid };
-				return staticIdCounter;
-			}
-		};
-
 		template<typename T>
 		static
 		TypeId
 		GetRawTypeId() noexcept
 		{
+			// We used to use an incrementing counter to determine types, but we had
+			// an issue where calls from different compilation targets (libraries) would
+			// result in different values with the same type at some levels of optimization.
+			// We now use a hashing function which is much more consistent
 			static TypeId result = []()
 			{
-				auto& static_id_counter = static_type_id_helper::StaticIdCounter();
-				
-				// Emulate pre-increment because id doesn't start at 0
-				auto innerResult = static_id_counter;
+				// Compute hash based on the typename
+				std::hash<std::string> hashFn;
 
-				// Can't cast to reference and pre-increment, so write to temp var and reassign
-				auto underlying_id = static_cast<type_id_underlying_t>(static_id_counter);
-				underlying_id++;
+				auto& type = typeid(T);
+				std::size_t hash = hashFn(type.name());
 
-				static_id_counter = static_cast<TypeId>(underlying_id);
+				assert(hash != 0);
 				
-				return innerResult;
+				return static_cast<TypeId>(hash);
 			}();
 
 			return result;
