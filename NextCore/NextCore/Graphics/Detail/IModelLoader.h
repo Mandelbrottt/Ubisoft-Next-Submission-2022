@@ -1,13 +1,11 @@
 #pragma once
 
-#include "ModelLoaderTypedefs.h"
+#include "Graphics/ModelLoaderTypedefs.h"
 
 #include <fstream>
 
 namespace Next::Detail
 {
-	using file_stream_t = std::ifstream;
-
 	class IModelLoader
 	{
 	protected:
@@ -17,6 +15,6 @@ namespace Next::Detail
 	public:
 		virtual
 		bool
-		LoadFromFile(std::string_view a_filename, file_stream_t& a_fileStream, mesh_container_t* a_container) = 0;
+		LoadFromFile(std::string_view a_filename, model_file_stream_t& a_fileStream, mesh_container_t* a_container) = 0;
 	};
 }

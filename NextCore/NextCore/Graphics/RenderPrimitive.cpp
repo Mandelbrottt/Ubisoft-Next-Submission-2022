@@ -12,6 +12,8 @@
 #include <string>
 #include <string_view>
 
+#include "ModelLoaderTypedefs.h"
+
 namespace Next
 {
 	void
@@ -54,7 +56,7 @@ namespace Next
 		m_sprite.OnRender();
 	}
 	
-	Detail::Vertex const&
+	ModelVertex const&
 	RenderPrimitive::GetVertex(unsigned a_index) const
 	{
 		return m_vertices[a_index];
@@ -67,7 +69,7 @@ namespace Next
 	}
 	
 	void
-	RenderPrimitive::SetVertex(unsigned a_index, Detail::Vertex a_value)
+	RenderPrimitive::SetVertex(unsigned a_index, ModelVertex a_value)
 	{
 		// Don't set the sprite's vertices; We maintain model space
 		// vertices that are used to calculate the sprite's vertices per frame
@@ -81,7 +83,7 @@ namespace Next
 	}
 
 	bool
-	RenderPrimitive::ProcessBmp(std::string_view a_filename)
+	RenderPrimitive::ProcessBmp(std::string_view a_filename) const
 	{
 		std::ifstream is(a_filename, std::ios::binary);
 

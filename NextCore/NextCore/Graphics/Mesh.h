@@ -12,6 +12,8 @@ namespace Next
 {
 	class Mesh final
 	{
+		friend class Model;
+
 	public:
 		using primitive_container_t = std::vector<RenderPrimitive>;
 
@@ -26,19 +28,20 @@ namespace Next
 		 */
 		bool
 		GeneratePrimitives(
-			std::string_view                        a_textureFilename,
-			Detail::vertex_container_t const&       a_vertices,
-			Detail::vertex_count_container_t const& a_vertexCounts
+			std::string_view                a_textureFilename,
+			vertex_container_t const&       a_vertices,
+			vertex_count_container_t const& a_vertexCounts
 		);
 
-		void
-		OnUpdate();
-		
 		primitive_container_t const&
 		GetPrimitives() const
 		{
 			return m_primitives;
 		}
+
+	private:
+		void
+		OnUpdate();
 
 	private:
 		primitive_container_t m_primitives;

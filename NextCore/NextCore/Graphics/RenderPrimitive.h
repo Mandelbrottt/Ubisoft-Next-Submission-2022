@@ -1,15 +1,11 @@
 #pragma once
 
 // Keep to avoid errors when included
-#include <string_view>
 
 #include "Color.h"
 #include "Sprite.h"
 
-#include "Detail/ModelLoaderTypedefs.h"
-
-#include "Math/Vector.h"
-#include "Math/Matrix4.h"
+#include "ModelLoaderTypedefs.h"
 
 class CSimpleSprite;
 
@@ -67,7 +63,7 @@ namespace Next
 		 * \param a_index The index of quad or triangle's vertex in the range [0, 3] or [0, 2] respectively
 		 * \return The value of the vertex
 		 */
-		Detail::Vertex const&
+		ModelVertex const&
 		GetVertex(unsigned int a_index) const;
 
 		RenderPrimitiveType
@@ -89,7 +85,7 @@ namespace Next
 		 * \param a_value The value of the vertex
 		 */
 		void
-		SetVertex(unsigned int a_index, Detail::Vertex a_value);
+		SetVertex(unsigned int a_index, ModelVertex a_value);
 		
 		bool
 		IsValid() const;
@@ -100,12 +96,12 @@ namespace Next
 		 * \param a_filename The name of the file to process
 		 */
 		bool
-		ProcessBmp(std::string_view a_filename);
+		ProcessBmp(std::string_view a_filename) const;
 	
 	private:
 		Sprite m_sprite;
 
-		Detail::Vertex m_vertices[4];
+		ModelVertex m_vertices[4];
 		
 		RenderPrimitiveType m_primitiveType;
 	};

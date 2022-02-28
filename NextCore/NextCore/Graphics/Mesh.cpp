@@ -11,8 +11,8 @@ namespace Next
 	bool
 	Mesh::GeneratePrimitives(
 		std::string_view                        a_textureFilename,
-		Detail::vertex_container_t const&       a_vertices,
-		Detail::vertex_count_container_t const& a_vertexCounts
+		vertex_container_t const&       a_vertices,
+		vertex_count_container_t const& a_vertexCounts
 	)
 	{
 		int indexIntoVertices = 0;

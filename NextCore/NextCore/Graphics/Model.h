@@ -6,11 +6,11 @@
 
 namespace Next
 {
-	class Model final
+	class Model final : Object
 	{
 	public:
 		using mesh_container_t = std::vector<Mesh>;
-
+		
 		/**
 		 * \brief Loads a model from file, and automatically detects textures and sub-meshes if possible
 		 * \param a_filename The path to the model file to be loaded
@@ -19,7 +19,7 @@ namespace Next
 		 */
 		bool
 		LoadFromFile(std::string_view a_filename);
-
+		
 		mesh_container_t const&
 		GetMeshes() const
 		{

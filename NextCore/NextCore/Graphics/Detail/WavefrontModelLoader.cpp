@@ -11,9 +11,9 @@ namespace Next::Detail
 {
 	bool
 	WavefrontModelLoader::LoadFromFile(
-		std::string_view  a_filename,
-		file_stream_t&    a_fileStream,
-		mesh_container_t* a_container
+		std::string_view        a_filename,
+		model_file_stream_t&    a_fileStream,
+		mesh_container_t*       a_container
 	)
 	{
 		std::string line;
@@ -153,7 +153,7 @@ namespace Next::Detail
 		const int numVertices = numIndicesRead / 3;
 		for (int i = 0; i < numVertices; i++)
 		{
-			Vertex v;
+			ModelVertex v;
 
 			// Subtract 1 from all indices because obj is one-base indexed
 			int positionIndex = indices[i].x - 1;

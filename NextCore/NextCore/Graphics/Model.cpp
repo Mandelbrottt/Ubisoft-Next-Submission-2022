@@ -1,10 +1,11 @@
 #include "pch.h"
-
 #include "Model.h"
 
-#include "Detail/WavefrontModelLoader.h"
-
 #include <filesystem>
+
+#include "ModelLoaderTypedefs.h"
+
+#include "Detail/WavefrontModelLoader.h"
 
 namespace std
 {
@@ -13,9 +14,6 @@ namespace std
 
 namespace Next
 {
-	using Detail::file_stream_t;
-	using Detail::mesh_container_t;
-
 	template<typename TModelLoader>
 	bool
 	TryLoadModelFile(
@@ -29,7 +27,7 @@ namespace Next
 
 		if (a_extension == a_checkExtension)
 		{
-			file_stream_t fileStream(a_filename);
+			model_file_stream_t fileStream(a_filename);
 
 			TModelLoader loader;
 			
