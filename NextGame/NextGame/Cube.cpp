@@ -11,14 +11,13 @@ Cube::OnCreate()
 
 	transform->SetPosition({ 0.0f, 0.0f, 0 });
 
-	AddComponent<Camera>();
+	auto* camera = AddComponent<Camera>();
+	camera->SetFov(105, FovType::Horizontal);
 }
 
 void
 Cube::OnUpdate()
 {
-	//m_timeElapsed += Time::DeltaTime();
-
 	auto transform = Transform();
 	
 	auto position = transform->GetPosition();

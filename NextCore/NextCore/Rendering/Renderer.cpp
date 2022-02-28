@@ -45,6 +45,7 @@ namespace Next::Renderer
 	static std::vector<RenderQueueElement> g_primitiveRasterQueue;
 
 	static Vector3 g_cameraPosition;
+	static Vector3 g_cameraForward;
 	static Matrix4 g_viewMatrix;
 	static Matrix4 g_projectionMatrix;
 
@@ -60,9 +61,15 @@ namespace Next::Renderer
 	TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count);
 
 	void
-	PrepareScene(Vector3 const& a_cameraPosition, Matrix4 const& a_viewMatrix, Matrix4 const& a_projectionMatrix)
+	PrepareScene(
+		Vector3 const& a_cameraPosition,
+		Vector3 const& a_cameraForward,
+		Matrix4 const& a_viewMatrix,
+		Matrix4 const& a_projectionMatrix
+	)
 	{
 		g_cameraPosition   = a_cameraPosition;
+		g_cameraForward    = a_cameraForward;
 		g_viewMatrix       = a_viewMatrix;
 		g_projectionMatrix = a_projectionMatrix;
 	}
@@ -164,6 +171,17 @@ namespace Next::Renderer
 				s->SetUv(7, s->GetUv(1));
 			}
 
+			bool isStretched = [&]()->bool
+			{
+				bool lessX = false, moreX = false;
+				for (int i = 0; i < 4; i++)
+				{
+					if (positions[i].x < -1) lessX = true;
+					if (positions[i].x > 1)  moreX = true;
+				}
+				return lessX && moreX;
+			}();
+
 			element.primitive.OnRender();
 		}
 
@@ -215,8 +233,18 @@ namespace Next::Renderer
 			Vector3 commonPointOnPrimitive1 = Vector3(positions[0]) - cameraPosition;
 			Vector3 commonPointOnPrimitive2 = Vector3(positions[3]) - cameraPosition;
 
-			if (Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 ||
-			    Vector::Dot(normals[1], commonPointOnPrimitive2) < 0)
+			// Only render the primitive if it is in front of the camera
+			// This can't be handled with vertex depth testing alone because of the edge case
+			// where some vertices are behind the camera and some are in front such that the average depth
+			// is positive, but the primitive doesn't intersect with the camera frustum
+			bool isInFrontOfCamera = Vector::Dot(g_cameraForward, normals[0]) < 0 &&
+			                         Vector::Dot(g_cameraForward, normals[1]) < 0;
+
+			// Back-face culling
+			bool isFrontFace = Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 ||
+			                   Vector::Dot(normals[1], commonPointOnPrimitive2) < 0;
+			
+			if (isFrontFace && isInFrontOfCamera)
 			{
 				g_primitivesToRaster.push_back(i);
 			}
@@ -280,7 +308,7 @@ namespace Next::Renderer
 			element.depth = element.depth / numVerts;
 		}
 	}
-
+	
 	// Determine if a transformed and projected primitive is should be rendered or culled
 	bool
 	IsValidPrimitive(RenderQueueElement const& a_element)
@@ -290,7 +318,7 @@ namespace Next::Renderer
 		{
 			return false;
 		}
-
+		
 		auto& positions = a_element.positions;
 
 		// Cull off-screen primitives

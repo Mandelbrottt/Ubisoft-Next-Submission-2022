@@ -62,6 +62,7 @@ Render()
 	float far  = 1000.0f;
 
 	Vector3 cameraPosition { 0 };
+	Vector3 cameraForward { 0, 0, 1 };
 	Matrix4 viewMatrix = Matrix4::Identity();
 
 	for (auto& [entityId, rep] : entityReps)
@@ -79,9 +80,12 @@ Render()
 			near = camera->GetNearClippingPlane();
 			far  = camera->GetFarClippingPlane();
 
-			cameraPosition = camera->Transform()->GetPosition();
+			auto* transform = camera->Transform();
 
-			viewMatrix = camera->Transform()->GetTransformationMatrix();
+			cameraPosition = transform->GetPosition();
+			cameraForward = transform->Forward();
+
+			viewMatrix = transform->GetTransformationMatrix();
 			viewMatrix = Matrix::ViewInverse(viewMatrix);
 
 			goto Render_Main_Camera_Found;
@@ -95,7 +99,7 @@ Render_Main_Camera_Found:
 	// Perspective Matrix
 	auto perspective = Matrix::Perspective(fov, aspect, near, far);
 
-	Renderer::PrepareScene(cameraPosition, viewMatrix, perspective);
+	Renderer::PrepareScene(cameraPosition, cameraForward, viewMatrix, perspective);
 
 	for (auto& [id, rep] : entityReps)
 	{

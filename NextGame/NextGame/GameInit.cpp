@@ -18,13 +18,15 @@ using namespace Next;
 void
 Application_Init()
 {
-	Model model;
-	//model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
-	//model.LoadFromFile(Application::ResourcePath() + "complex/deer.obj");
-	model.LoadFromFile(Application::ResourcePath() + "complex/suzanne.obj");
+	Model cube;
+	cube.LoadFromFile(Application::ResourcePath() + "cube/plane.obj");
 
-	Entity cube = Entity::Create();
-	cube.AddComponent<Cube>();
+	Model suzanne;
+	suzanne.LoadFromFile(Application::ResourcePath() + "complex/suzanne.obj");
+
+	Entity cubeEntity = Entity::Create();
+	cubeEntity.AddComponent<Cube>();
+	cubeEntity.Transform()->SetPosition({ 0, 0, 0 });
 
 	for (int i = 0; i <= 10; i++)
 	{
@@ -34,10 +36,10 @@ Application_Init()
 		float y = 4 * std::sin(angle);
 
 		Entity entity = Entity::Create();
-		entity.AddComponent<RotateOverTime>();
+		//entity.AddComponent<RotateOverTime>();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 
-		innerModelRenderer->model = model;
+		innerModelRenderer->model = suzanne;
 
 		entity.Transform()->SetPosition({ x, y, 10 });
 	}
