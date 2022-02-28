@@ -4,6 +4,19 @@
 
 #include "Reflection/Reflection.h"
 
+#define GenerateObjectConstructors(_class_) \
+		_MACRO_AUTO_FORMAT_INDENT \
+	protected: \
+		explicit \
+		_class_(const char* a_name) \
+			: Base({ a_name }) { } \
+		~_class_() override = default; \
+	public: \
+		_class_() \
+			: _class_( #_class_ ) {} \
+	private: \
+		_MACRO_AUTO_FORMAT_INDENT
+
 namespace Next
 {
 	/**
@@ -49,3 +62,7 @@ namespace Next
 		REFLECT_DECLARE(Object)
 	};
 }
+
+#ifndef NEXT_CORE
+	#undef GenerateObjectConstructors
+#endif
