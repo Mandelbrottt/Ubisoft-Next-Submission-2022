@@ -19,17 +19,19 @@ void
 Application_Init()
 {
 	Model model;
-	model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+	//model.LoadFromFile(Application::ResourcePath() + "cube/cube.obj");
+	//model.LoadFromFile(Application::ResourcePath() + "complex/deer.obj");
+	model.LoadFromFile(Application::ResourcePath() + "complex/suzanne.obj");
 
 	Entity cube = Entity::Create();
 	cube.AddComponent<Cube>();
-	
+
 	for (int i = 0; i <= 10; i++)
 	{
 		float angle = 360.f * i / 10.f;
 
-		float x = 8 * std::cos(angle);
-		float y = 8 * std::sin(angle);
+		float x = 4 * std::cos(angle);
+		float y = 4 * std::sin(angle);
 
 		Entity entity = Entity::Create();
 		entity.AddComponent<RotateOverTime>();

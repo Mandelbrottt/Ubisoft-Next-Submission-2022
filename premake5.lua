@@ -6,6 +6,7 @@ user_config = {
     
     -- Project settings
     do_release_symbols = "on",
+    do_release_console = true,
     
     -- Build locations
     output_dir = "%{wks.location}/Build/Bin/%{cfg.architecture}/%{cfg.buildcfg}",

@@ -93,10 +93,14 @@ project(project_name)
         defines  { "NEXT_RELEASE" }
         runtime  "release"
         optimize "speed"
-        symbols  (do_release_symbols)
-        debugdir (user_config.exe_output_dir) -- Why doesn't this work?
+        symbols   (user_config.do_release_symbols)
+        debugdir  (user_config.exe_output_dir)
+        
+        debugargs {
+            user_config.do_release_console and "--console" or ""
+        }
     
         -- Only copy game resources in Release because we use the resources in-place otherwise
-        postbuildcommands {
+        prebuildcommands {
             "{COPY} \"%{wks.location}Resources/\" \"" .. user_config.exe_output_dir .. "/Resources/\"",
         }

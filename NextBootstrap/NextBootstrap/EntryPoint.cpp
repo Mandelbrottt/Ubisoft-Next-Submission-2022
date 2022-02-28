@@ -12,6 +12,41 @@ NextAPI_wWinMain(
 	_In_ int           nShowCmd
 );
 
+struct RaiiConsole
+{
+	explicit
+	RaiiConsole(bool a_allocateConsole)
+		: m_allocateConsole(a_allocateConsole)
+	{
+		const char* file_out = "CONOUT$";
+
+		if (a_allocateConsole)
+		{
+			if (!AttachConsole(ATTACH_PARENT_PROCESS))
+			{
+				AllocConsole();
+			}
+		} else
+		{
+			file_out = "log.txt";
+		}
+
+		FILE* dummy;
+
+		freopen_s(&dummy, file_out, "w", stdout);
+		freopen_s(&dummy, file_out, "w", stderr);
+	}
+
+	~RaiiConsole()
+	{
+		// Not entirely necessary, but nice to do anyway
+		FreeConsole();
+	}
+
+private:
+	bool m_allocateConsole;
+};
+
 int
 APIENTRY
 wWinMain(
@@ -21,27 +56,21 @@ wWinMain(
 	_In_ int           nShowCmd
 )
 {
-	const char* file_out = "CONOUT$";
+	std::wstring commandLine = lpCmdLine;
 
-#ifndef NEXT_RELEASE
-	if (!AttachConsole(ATTACH_PARENT_PROCESS))
-        AllocConsole();
-#else
-	file_out = "log.txt";
-#endif
-	
-	FILE* dummy;
-	
-    freopen_s(&dummy, file_out, "w", stdout);
-    freopen_s(&dummy, file_out, "w", stderr);
+	bool doAllocateConsole =
+	#ifdef NEXT_RELEASE
+		// There's definitely better ways to detect command line args, but i'm lazy and this works
+		commandLine.find(L"-c") != std::wstring::npos ||
+		commandLine.find(L"--console") != std::wstring::npos;
+	#else
+		true;
+	#endif
+
+	RaiiConsole raiiConsole { doAllocateConsole };
 
 	// TODO: Find easy way to mimic posix dlsym on windows to have duplicate declarations of wWinMain in different libs
 	int result = NextAPI_wWinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 
-#ifndef NEXT_RELEASE
-	// Not entirely necessary, but nice to do anyway
-	FreeConsole();
-#endif
-	
 	return result;
 }
