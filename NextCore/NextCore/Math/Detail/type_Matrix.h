@@ -194,7 +194,24 @@ namespace Next
 
 		return result;
 	}
-
+	
+	#define _MATRIX_GENERATE_CONSTRUCTORS() \
+		template<int SizeX, int SizeY> \
+		constexpr \
+		explicit \
+		Matrix_t(Matrix_t<SizeX, SizeY, TUnderlying> const& a_other) \
+		{ \
+			constexpr int min_x = SizeX < size_x ? SizeX : size_x; \
+			constexpr int min_y = SizeY < size_y ? SizeY : size_y; \
+			\
+			for (int y = 0; y < min_y; y++)  \
+				for (int x = 0; x < min_x; x++) \
+				{ \
+					data[y * size_x + x] = a_other.data[y * SizeX + x]; \
+				}  \
+		} \
+		_MACRO_REQUIRE_SEMICOLON
+		
 	#define _MATRIX_GENERATE_MEMBER_FUNCTIONS() \
 		constexpr\
 		Matrix_t& \

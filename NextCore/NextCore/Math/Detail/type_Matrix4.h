@@ -21,13 +21,16 @@ namespace Next
 		constexpr static int size_x = MATRIX_SIZE;
 		constexpr static int size_y = MATRIX_SIZE;
 
+		constexpr
 		Matrix_t()
 			: Matrix_t(0) {}
 
+		constexpr
 		explicit
 		Matrix_t(TUnderlying a_value)
 			: data { a_value } { }
 
+		constexpr
 		Matrix_t(
 			Vector_t<MATRIX_SIZE, TUnderlying> a_x,
 			Vector_t<MATRIX_SIZE, TUnderlying> a_y,
@@ -35,6 +38,8 @@ namespace Next
 			Vector_t<MATRIX_SIZE, TUnderlying> a_w
 		) : cols { a_x, a_y, a_z, a_w } {}
 
+		_MATRIX_GENERATE_CONSTRUCTORS();
+		
 	#pragma warning( push )
 	#pragma warning( push )
 	#pragma warning( disable : 4615 ) // Unknown user type

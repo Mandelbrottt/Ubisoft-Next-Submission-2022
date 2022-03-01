@@ -33,6 +33,8 @@ namespace Next
 			Vector_t<MATRIX_SIZE, TUnderlying> a_y
 		) : cols { a_x, a_y } {}
 
+		_MATRIX_GENERATE_CONSTRUCTORS();
+
 	#pragma warning( push )
 	#pragma warning( disable : 4615 ) // Unknown user type
 		union

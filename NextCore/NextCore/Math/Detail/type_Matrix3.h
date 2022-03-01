@@ -34,6 +34,8 @@ namespace Next
 			Vector_t<MATRIX_SIZE, TUnderlying> a_z
 		) : cols { a_x, a_y, a_z } {}
 
+		_MATRIX_GENERATE_CONSTRUCTORS();
+		
 	#pragma warning( push )
 	#pragma warning( push )
 	#pragma warning( disable : 4615 ) // Unknown user type
