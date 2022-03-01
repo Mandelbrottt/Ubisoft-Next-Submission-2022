@@ -43,13 +43,17 @@
 			\
 		public: \
 			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
-			static _REFLECT_NAMESPACE Type& GetType() \
+			static \
+			_REFLECT_NAMESPACE Type& \
+			GetStaticType() \
 			{ \
 				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
 			} \
-			static _REFLECT_NAMESPACE Type* TryGetType() \
+			virtual \
+			_REFLECT_NAMESPACE Type& \
+			GetType() \
 			{ \
-				return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_TYPE_ALIAS>();\
+				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
 			}
 
 	#define _REFLECT_DECLARE_NO_CTOR_1(_class_) \
