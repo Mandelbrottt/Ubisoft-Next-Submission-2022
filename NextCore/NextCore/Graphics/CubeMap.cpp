@@ -12,7 +12,7 @@ namespace Next
 		for (int i = 0; i < 6; i++)
 		{
 			auto const& descriptor = a_descriptors[i];
-			if (std::filesystem::exists(descriptor.filename))
+			if (!std::filesystem::exists(descriptor.filename))
 			{
 				return false;
 			}
@@ -40,12 +40,12 @@ namespace Next
 	{
 		// Declare same order as CubeMapFaceDirection is declared
 		Vector3 directions[6] = {
-			Vector3::forward,
-			Vector3::backward,
-			Vector3::up,
-			Vector3::down,
-			Vector3::right,
-			Vector3::left,
+			Vector3::Forward(),
+			Vector3::Backward(),
+			Vector3::Up(),
+			Vector3::Down(),
+			Vector3::Right(),
+			Vector3::Left(),
 		};
 
 		constexpr auto face_direction_cast = [](uint8_t a_index)
@@ -56,12 +56,13 @@ namespace Next
 		for (int i = 0; i < 6; i++)
 		{
 			auto& face = m_faces[i];
-			auto& [position, uv, normal] = face.m_vertices[0];
 
 			for (int j = 0; j < 4; j++)
 			{
-				float x = j == 1 || j == 2 ? -1 : 1;
-				float y = j == 0 || j == 1 ? -1 : 1;
+				auto& [position, uv, normal] = face.m_vertices[j];
+
+				float x = j == 0 || j == 3 ? -1.0f : 1.0f;
+				float y = j == 0 || j == 1 ? -1.0f : 1.0f;
 
 				auto faceDirection = face_direction_cast(i);
 				switch (faceDirection)

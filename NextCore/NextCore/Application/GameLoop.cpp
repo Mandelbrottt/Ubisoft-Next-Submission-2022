@@ -65,6 +65,8 @@ Render()
 	Vector3 cameraForward { 0, 0, 1 };
 	Matrix4 viewMatrix = Matrix4::Identity();
 
+	CubeMap skybox;
+
 	for (auto& [entityId, rep] : entityReps)
 	{
 		for (auto& [typeId, component] : rep.components)
@@ -88,6 +90,8 @@ Render()
 			viewMatrix = transform->GetTransformationMatrix();
 			viewMatrix = Matrix::ViewInverse(viewMatrix);
 
+			skybox = camera->GetSkybox();
+
 			goto Render_Main_Camera_Found;
 		}
 	}
@@ -99,7 +103,15 @@ Render_Main_Camera_Found:
 	// Perspective Matrix
 	auto perspective = Matrix::Perspective(fov, aspect, near, far);
 
-	Renderer::PrepareScene(cameraPosition, cameraForward, viewMatrix, perspective);
+	Renderer::PrepareSceneDescriptor descriptor = {
+		cameraPosition,
+		cameraForward,
+		viewMatrix,
+		perspective,
+		std::move(skybox)
+	};
+	
+	PrepareScene(descriptor);
 
 	for (auto& [id, rep] : entityReps)
 	{

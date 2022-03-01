@@ -18,15 +18,15 @@ using namespace Next;
 void
 Application_Init()
 {
-	Model* cube = Model::Create(Application::ResourcePath() + "cube/plane.obj");
-
+	Model* cube = Model::Create(Application::ResourcePath() + "cube/cube.obj");
+	
 	Model* suzanne = Model::Create(Application::ResourcePath() + "complex/suzanne.obj");
 
 	Entity cubeEntity = Entity::Create();
 	cubeEntity.AddComponent<Cube>();
 	cubeEntity.Transform()->SetPosition({ 0, 0, 0 });
 
-	for (int i = 0; i <= 10; i++)
+	for (int i = 0; i <= -1; i++)
 	{
 		float angle = 360.f * i / 10.f;
 
@@ -34,7 +34,7 @@ Application_Init()
 		float y = 4 * std::sin(angle);
 
 		Entity entity = Entity::Create();
-		//entity.AddComponent<RotateOverTime>();
+		entity.AddComponent<RotateOverTime>();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 
 		innerModelRenderer->model = suzanne;

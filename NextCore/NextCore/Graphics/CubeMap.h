@@ -26,7 +26,7 @@ namespace Next
 	{
 		CubeMapFaceDirection direction;
 
-		std::string_view filename;
+		std::string filename;
 	};
 
 	class CubeMap final

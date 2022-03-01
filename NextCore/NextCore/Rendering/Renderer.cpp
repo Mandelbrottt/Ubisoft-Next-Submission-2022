@@ -6,6 +6,8 @@
 
 #include "Graphics/Model.h"
 
+#include "Math/Matrix3.h"
+
 namespace Next::Renderer
 {
 	struct RenderQueueElement
@@ -24,7 +26,7 @@ namespace Next::Renderer
 
 		Vector3 normals[2];
 
-		Color color;
+		Color color = Color::white;
 
 		float depth = 0;
 	};
@@ -46,8 +48,11 @@ namespace Next::Renderer
 
 	static Vector3 g_cameraPosition;
 	static Vector3 g_cameraForward;
+
 	static Matrix4 g_viewMatrix;
 	static Matrix4 g_projectionMatrix;
+
+	static CubeMap g_skybox;
 
 	// If capacity is under recent max for X number of frames, shrink to fit next smallest maximum
 	static int g_shrinkToFitCounter = 0;
@@ -58,20 +63,27 @@ namespace Next::Renderer
 
 	static
 	void
-	TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count);
+	TransformPrimitivesByViewProjectionMatrix(
+		std::size_t    a_offset,
+		std::size_t    a_count,
+		Matrix4 const& a_view,
+		Matrix4 const& a_projection
+	);
+
+	static
+	void
+	RenderSkybox(CubeMap const& a_skybox, Matrix4 const& a_view, Matrix4 const& a_projection);
 
 	void
-	PrepareScene(
-		Vector3 const& a_cameraPosition,
-		Vector3 const& a_cameraForward,
-		Matrix4 const& a_viewMatrix,
-		Matrix4 const& a_projectionMatrix
-	)
+	PrepareScene(PrepareSceneDescriptor& a_descriptor)
 	{
-		g_cameraPosition   = a_cameraPosition;
-		g_cameraForward    = a_cameraForward;
-		g_viewMatrix       = a_viewMatrix;
-		g_projectionMatrix = a_projectionMatrix;
+		g_cameraPosition = a_descriptor.cameraPosition;
+		g_cameraForward  = a_descriptor.cameraForward;
+
+		g_viewMatrix       = a_descriptor.viewMatrix;
+		g_projectionMatrix = a_descriptor.projectionMatrix;
+
+		g_skybox = std::move(a_descriptor.skybox);
 	}
 
 	void
@@ -122,8 +134,12 @@ namespace Next::Renderer
 	void
 	Flush()
 	{
-		TransformPrimitivesByViewProjectionMatrix(0, g_primitiveRasterQueue.size());
+		TransformPrimitivesByViewProjectionMatrix(0, g_primitiveRasterQueue.size(), g_viewMatrix, g_projectionMatrix);
 
+		/* TODO: Fix skybox and make it work
+		         Not sure if the math is off somewhere, or what but it is not rendering properly */
+		//RenderSkybox(g_skybox, g_viewMatrix, g_projectionMatrix);
+		
 		// We use the painter's algorithm (https://en.wikipedia.org/wiki/Painter%27s_algorithm)
 		// This is because there is no depth buffer in NextAPI, and so this is a simple solution, albeit with
 		// some artifacting.
@@ -132,7 +148,6 @@ namespace Next::Renderer
 
 		for (auto& element : g_primitiveRasterQueue)
 		{
-			float depth = element.depth;
 			if (!IsValidPrimitive(element))
 			{
 				break;
@@ -170,17 +185,6 @@ namespace Next::Renderer
 				s->SetUv(6, s->GetUv(0));
 				s->SetUv(7, s->GetUv(1));
 			}
-
-			bool isStretched = [&]()->bool
-			{
-				bool lessX = false, moreX = false;
-				for (int i = 0; i < 4; i++)
-				{
-					if (positions[i].x < -1) lessX = true;
-					if (positions[i].x > 1)  moreX = true;
-				}
-				return lessX && moreX;
-			}();
 
 			element.primitive.OnRender();
 		}
@@ -243,7 +247,7 @@ namespace Next::Renderer
 			// Back-face culling
 			bool isFrontFace = Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 ||
 			                   Vector::Dot(normals[1], commonPointOnPrimitive2) < 0;
-			
+
 			if (isFrontFace && isInFrontOfCamera)
 			{
 				g_primitivesToRaster.push_back(i);
@@ -262,7 +266,12 @@ namespace Next::Renderer
 	}
 
 	void
-	TransformPrimitivesByViewProjectionMatrix(std::size_t a_offset, std::size_t a_count)
+	TransformPrimitivesByViewProjectionMatrix(
+		std::size_t    a_offset,
+		std::size_t    a_count,
+		Matrix4 const& a_view,
+		Matrix4 const& a_projection
+	)
 	{
 		for (std::size_t i = a_offset; i < a_count; i++)
 		{
@@ -293,8 +302,8 @@ namespace Next::Renderer
 
 				element.color = color;
 
-				auto viewVertex      = g_viewMatrix * positions[j];
-				auto projectedVertex = g_projectionMatrix * viewVertex;
+				auto viewVertex      = a_view * positions[j];
+				auto projectedVertex = a_projection * viewVertex;
 
 				projectedVertex.x /= projectedVertex.w;
 				projectedVertex.y /= projectedVertex.w;
@@ -308,7 +317,74 @@ namespace Next::Renderer
 			element.depth = element.depth / numVerts;
 		}
 	}
-	
+
+	static
+	void
+	RenderSkybox(CubeMap const& a_skybox, Matrix4 const& a_view, Matrix4 const& a_projection)
+	{
+		for (auto const& p : a_skybox.GetFaces())
+		{
+			if (!p.IsValid())
+			{
+				continue;
+			}
+			
+			RenderQueueElement element { p };
+			
+			auto& primitive = element.primitive;
+			auto& positions = element.positions;
+			auto& normals   = element.normals;
+
+			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
+
+			for (int i = 0; i < numVerts; i++)
+			{
+				auto const& position = primitive.GetVertex(i).position;
+				positions[i] = Vector4(position);
+			}
+
+			for (int j = 0; j < numVerts - 2; j++)
+			{
+				Vector3 line1 = Vector3(positions[j + 1]) - Vector3(positions[0]);
+				Vector3 line2 = Vector3(positions[j + 2]) - Vector3(positions[0]);
+
+				normals[j] = Vector::Normalize(Vector::Cross(line1, line2));
+			}
+			
+			// Only render the primitive if it is in front of the camera
+			// This can't be handled with vertex depth testing alone because of the edge case
+			// where some vertices are behind the camera and some are in front such that the average depth
+			// is positive, but the primitive doesn't intersect with the camera frustum
+			bool isInFrontOfCamera = Vector::Dot(g_cameraForward, -normals[0]) < 0 ||
+			                         Vector::Dot(g_cameraForward, -normals[1]) < 0;
+
+			if (!isInFrontOfCamera)
+			{
+				continue;
+			}
+			
+			// Extract only rotation information from view matrix
+			auto adjustedViewMatrix = Matrix4(Matrix3(a_view));
+			adjustedViewMatrix[3][3] = 1;
+			
+			for (int j = 0; j < numVerts; j++)
+			{
+				auto viewVertex      = adjustedViewMatrix * positions[j];
+				auto projectedVertex = a_projection * viewVertex;
+
+				projectedVertex.x /= projectedVertex.w;
+				projectedVertex.y /= projectedVertex.w;
+				projectedVertex.z /= projectedVertex.w;
+				
+				positions[j] = projectedVertex;
+			}
+
+			element.depth = 1;
+
+			g_primitiveRasterQueue.push_back(element);
+		}
+	}
+
 	// Determine if a transformed and projected primitive is should be rendered or culled
 	bool
 	IsValidPrimitive(RenderQueueElement const& a_element)
@@ -318,10 +394,11 @@ namespace Next::Renderer
 		{
 			return false;
 		}
-		
+
 		auto& positions = a_element.positions;
 
 		// Cull off-screen primitives
+		// TODO: Edge case where all four vertices are outside of ndc but the primitive still covers the screen
 		bool isAnyInbounds = false;
 		for (int i = 0; i < sizeof(positions) / sizeof(*positions); i++)
 		{

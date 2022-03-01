@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphics/CubeMap.h"
+
 #include "Scripting/Component.h"
 
 namespace Next
@@ -29,6 +31,12 @@ namespace Next
 		{
 			return m_farClippingPlane;
 		}
+		
+		CubeMap const&
+		GetSkybox() const
+		{
+			return m_skybox;
+		}
 
 		void
 		SetFov(float a_fov, FovType a_type = FovType::Vertical);
@@ -45,16 +53,25 @@ namespace Next
 			m_farClippingPlane = a_far;
 		}
 
+		void
+		SetSkybox(CubeMap const& a_skybox)
+		{
+			m_skybox = a_skybox;
+		}
+
 	private:
 		float m_verticalFov = 60;
 		
 		float m_nearClippingPlane = 0.1f;
 		float m_farClippingPlane  = 1000.f;
 
+		CubeMap m_skybox;
+
 		ReflectMembers(
 			ReflectField(m_verticalFov)
 			ReflectField(m_nearClippingPlane)
 			ReflectField(m_farClippingPlane)
+			ReflectField(m_skybox)
 		)
 	};
 }
