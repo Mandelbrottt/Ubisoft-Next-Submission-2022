@@ -81,6 +81,15 @@ namespace Next
 		{
 			return Vector::Cross(*this, a_other);
 		}
+
+		constexpr static Vector_t<3, TUnderlying> right   = Vector_t<3, TUnderlying>(1, 0, 0);
+		constexpr static Vector_t<3, TUnderlying> left    = Vector_t<3, TUnderlying>(-1, 0, 0);
+														  
+		constexpr static Vector_t<3, TUnderlying> up      = Vector_t<3, TUnderlying>(0, 1, 0);
+		constexpr static Vector_t<3, TUnderlying> down    = Vector_t<3, TUnderlying>(0, -1, 0);
+
+		constexpr static Vector_t<3, TUnderlying> forward = Vector_t<3, TUnderlying>(0, 0, 1);
+		constexpr static Vector_t<3, TUnderlying> back    = Vector_t<3, TUnderlying>(0, 0, -1);
 	};
 
 	namespace Vector
