@@ -24,6 +24,9 @@ namespace Next::Matrix
 	Matrix4
 	RotateX(float a_angle)
 	{
+		// std::cos and sin expect radians
+		a_angle *= PI / 180;
+		
 		Matrix4 result;
 
 		result[0][0] = 1.0f;
@@ -39,6 +42,9 @@ namespace Next::Matrix
 	Matrix4
 	RotateY(float a_angle)
 	{
+		// std::cos and sin expect radians
+		a_angle *= PI / 180;
+		
 		Matrix4 result;
 
 		result[0][0] =  std::cos(a_angle);
@@ -54,6 +60,9 @@ namespace Next::Matrix
 	Matrix4
 	RotateZ(float a_angle)
 	{
+		// std::cos and sin expect radians
+		a_angle *= PI / 180;
+
 		Matrix4 result;
 
 		result[0][0] =  std::cos(a_angle);

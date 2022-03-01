@@ -20,7 +20,7 @@ namespace Next::Matrix
 	Perspective(float a_fieldOfView, float a_aspectRatio, float a_nearPlane, float a_farPlane);
 	
 	/**
-	 * \param a_angle The angle by which to rotate
+	 * \param a_angle The angle in degrees by which to rotate
 	 * \return A 4x4 row-major matrix representing a rotation about the x axis in 3D space
 	 */
 	NEXT_CORE_EXPORT
@@ -29,7 +29,7 @@ namespace Next::Matrix
 	RotateX(float a_angle);
 
 	/**
-	 * \param a_angle The angle by which to rotate
+	 * \param a_angle The angle in degrees by which to rotate
 	 * \return A 4x4 row-major matrix representing a rotation about the y axis in 3D space
 	 */
 	NEXT_CORE_EXPORT
@@ -38,7 +38,7 @@ namespace Next::Matrix
 	RotateY(float a_angle);
 
 	/**
-	 * \param a_angle The angle by which to rotate
+	 * \param a_angle The angle in degrees by which to rotate
 	 * \return A 4x4 row-major matrix representing a rotation about the z axis in 3D space
 	 */
 	NEXT_CORE_EXPORT

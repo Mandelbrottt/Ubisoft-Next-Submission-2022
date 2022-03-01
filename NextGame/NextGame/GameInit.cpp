@@ -26,7 +26,7 @@ Application_Init()
 	cubeEntity.AddComponent<Cube>();
 	cubeEntity.Transform()->SetPosition({ 0, 0, 0 });
 
-	for (int i = 0; i <= -1; i++)
+	for (int i = 0; i <= 10; i++)
 	{
 		float angle = 360.f * i / 10.f;
 
