@@ -31,7 +31,10 @@ namespace Next::Reflection
 
 		explicit
 		Type(std::type_info const& a_info) noexcept
-			: name(a_info.name()), m_typeInfo(&a_info) {}
+			: m_typeInfo(&a_info)
+		{
+			ProcessName(a_info);
+		}
 
 		Type(Type const& a_other) = default;
 
@@ -67,14 +70,32 @@ namespace Next::Reflection
 			return m_baseTypeId;
 		}
 
+		/**
+		 * \return The simplified name of the type represented by the current \link Type \endlink
+		 */
+		std::string const&
+		Name() const
+		{
+			return m_name;
+		}
+		
+		/**
+		 * \return The fully-qualified name of the type represented by the current \link Type \endlink
+		 */
+		std::string const&
+		FullName() const
+		{
+			return m_fullName;
+		}
+
 		bool
 		IsConvertibleTo(TypeId a_typeId) const;
 		
 		bool
-		IsConvertibleFrom(TypeId a_typeId) const;
+		IsConvertibleTo(Type const* a_type) const;
 		
 		bool
-		IsConvertibleTo(Type const* a_type) const;
+		IsConvertibleFrom(TypeId a_typeId) const;
 		
 		bool
 		IsConvertibleFrom(Type const* a_type) const;
@@ -246,8 +267,6 @@ namespace Next::Reflection
 		}
 
 	public:
-		std::string name;
-
 		std::map<std::string, Field> instanceFields;
 
 	private:
@@ -340,12 +359,89 @@ namespace Next::Reflection
 			instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
 		}
 
+		/**
+		 * \brief Convert the compiler-generated name from type_info.name() into the raw type name
+		 */
+		void ProcessName(std::type_info const& a_typeInfo)
+		{
+			const char* typeName = a_typeInfo.name();
+
+			// type_info.name() is implementation specific
+		#if defined _MSC_BUILD
+			// for user types, MSVC uses the format [class, struct] [<namespace>::]<classname> [cv and pointer status]
+			// ie. "Type const*" is "class Next::Reflection::Type const * __ptr64" in x86_64
+			const char* classString     = strstr(typeName, "class");
+			const char* structString    = strstr(typeName, "struct");
+			const char* firstWhitespace = strchr(typeName, ' ');
+			
+			if (!(classString || structString))
+			{
+				std::ptrdiff_t difference;
+
+				// Assume this is a primitive type
+				if (firstWhitespace)
+				{
+					// Oh wow, const char* - const char* = long long, who knew?
+					difference = (firstWhitespace + 1) - typeName;
+				} else
+				{
+					difference = strlen(typeName);
+				}
+				
+				m_name     = std::string(typeName, difference);
+				m_fullName = m_name;
+
+				return;
+			}
+
+			// This probably shouldn't be an assert but im lazy
+			// There should always be whitespace in a user-defined-class name
+			assert(firstWhitespace);
+
+			const char* fullNameStart = firstWhitespace + 1;
+
+			const char* shortNameStart = fullNameStart;
+
+			// Find the last instance of the scope operator
+			while (true)
+			{
+				const char* find = strstr(shortNameStart, "::");
+				if (!find)
+				{
+					break;
+				}
+				shortNameStart = find + 2;
+			}
+
+			const char* nextWhitespace = strchr(shortNameStart, ' ');
+
+			std::ptrdiff_t fullNameLength;
+			std::ptrdiff_t shortNameLength;
+			if (nextWhitespace)
+			{
+				fullNameLength = nextWhitespace - fullNameStart;
+				shortNameLength = nextWhitespace - shortNameStart;
+			} else
+			{
+				fullNameLength  = strlen(fullNameStart);
+				shortNameLength = strlen(shortNameStart);
+			}
+			
+			m_name     = std::string(shortNameStart, shortNameLength);
+			m_fullName = std::string(fullNameStart, fullNameLength);
+		#endif
+		}
+
 	private:
 		TypeId m_typeId = TypeId::Null;
 
 		TypeId m_baseTypeId = TypeId::Null;
 
 		std::type_info const* m_typeInfo;
+		
+		std::string m_name;
+
+		std::string m_fullName;
 		
 	#ifndef IN_PLACE_FACTORY
 		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
