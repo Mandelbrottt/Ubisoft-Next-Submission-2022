@@ -14,9 +14,9 @@ namespace Next
 			  b(a_b),
 			  a(a_a) { }
 		
-		float r = 0.0f;
-		float g = 0.0f;
-		float b = 0.0f;
+		float r = 1.0f;
+		float g = 1.0f;
+		float b = 1.0f;
 		float a = 1.0f;
 
 		// TODO: Add more colors
