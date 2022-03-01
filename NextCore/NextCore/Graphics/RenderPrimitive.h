@@ -21,6 +21,7 @@ namespace Next
 	class RenderPrimitive final
 	{
 		friend class Mesh;
+		friend class CubeMap;
 		
 	public:
 		/* TODO: Find a way to have non-public constructor, and deleted / non-public copy constructors
@@ -32,6 +33,9 @@ namespace Next
 		RenderPrimitive(RenderPrimitive const& a_other) = default;
 		RenderPrimitive& 
 		operator =(RenderPrimitive const& a_other) = default;
+
+		explicit
+		RenderPrimitive(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
 		void
 		OnUpdate(float a_deltaTime);
@@ -45,7 +49,7 @@ namespace Next
 		 * \remark Currently only supports .bmp files.
 		 */
 		bool
-		LoadFromTexture(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
+		LoadFromFile(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
 		/**
 		 * \brief Render the sprite to the screen

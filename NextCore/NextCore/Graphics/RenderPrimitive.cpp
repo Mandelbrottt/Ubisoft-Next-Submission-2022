@@ -16,6 +16,11 @@
 
 namespace Next
 {
+	RenderPrimitive::RenderPrimitive(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
+	{
+		LoadFromFile(a_fileName, a_nColumns, a_nRows);
+	}
+
 	void
 	RenderPrimitive::OnUpdate(float a_deltaTime)
 	{
@@ -25,7 +30,7 @@ namespace Next
 	static std::unordered_set<std::string> g_processedFiles;
 	
 	bool
-	RenderPrimitive::LoadFromTexture(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
+	RenderPrimitive::LoadFromFile(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
 	{
 		std::string filename = std::string(a_fileName);
 		

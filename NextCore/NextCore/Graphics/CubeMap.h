@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class CSimpleSprite;
+#include "RenderPrimitive.h"
 
 namespace Next
 {
@@ -16,8 +16,8 @@ namespace Next
 		Back,
 		Top,
 		Bottom,
-		Left,
 		Right,
+		Left,
 	};
 
 	struct CubeMapFaceDescriptor
@@ -37,7 +37,25 @@ namespace Next
 		bool
 		LoadFromFiles(CubeMapFaceDescriptor a_descriptors[6]);
 
+		bool
+		IsValid() const
+		{
+			for (auto const& primitive : m_faces)
+			{
+				if (!primitive.IsValid())
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 	private:
-		CSimpleSprite* m_faces[6];
+		void
+		PopulateVertices();
+
+	private:
+		RenderPrimitive m_faces[6];
 	};
 }

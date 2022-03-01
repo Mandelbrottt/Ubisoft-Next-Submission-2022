@@ -26,7 +26,7 @@ namespace Next
 			p.m_primitiveType = numVerticesPerPrimitive == 3
 				                    ? RenderPrimitiveType::Triangle
 				                    : RenderPrimitiveType::Quad;
-			p.LoadFromTexture(a_textureFilename);
+			p.LoadFromFile(a_textureFilename);
 
 			// Set all of the vertices
 			p.SetVertex(0, a_vertices[indexIntoVertices]);
