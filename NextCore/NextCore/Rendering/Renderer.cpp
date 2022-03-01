@@ -222,9 +222,15 @@ namespace Next::Renderer
 				positions[j]           = transformedVertex;
 			}
 
+			// positions[3] is normally never set for triangles, which messes things up
+			if (numVerts == 3)
+			{
+				positions[3] = positions[0];
+			}
+
 			auto& normals = element.normals;
 
-			for (int j = 0; j < numVerts - 2; j++)
+			for (int j = 0; j < 2; j++)
 			{
 				Vector3 line1 = Vector3(positions[j + 1]) - Vector3(positions[0]);
 				Vector3 line2 = Vector3(positions[j + 2]) - Vector3(positions[0]);
@@ -241,8 +247,8 @@ namespace Next::Renderer
 			// This can't be handled with vertex depth testing alone because of the edge case
 			// where some vertices are behind the camera and some are in front such that the average depth
 			// is positive, but the primitive doesn't intersect with the camera frustum
-			bool isInFrontOfCamera = Vector::Dot(g_cameraForward, normals[0]) < 0 &&
-			                         Vector::Dot(g_cameraForward, normals[1]) < 0;
+			bool isInFrontOfCamera = Vector::Dot(g_cameraForward, commonPointOnPrimitive1) > 0 &&
+			                         Vector::Dot(g_cameraForward, commonPointOnPrimitive2) > 0;
 
 			// Back-face culling
 			bool isFrontFace = Vector::Dot(normals[0], commonPointOnPrimitive1) < 0 ||
