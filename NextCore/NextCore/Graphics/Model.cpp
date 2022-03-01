@@ -37,6 +37,20 @@ namespace Next
 		return false;
 	}
 
+	Model*
+	Model::Create()
+	{
+		return new Model;
+	}
+
+	Model*
+	Model::Create(std::string_view a_filename)
+	{
+		Model* result = Create();
+		result->LoadFromFile(a_filename);
+		return result;
+	}
+
 	bool
 	Model::LoadFromFile(std::string_view a_filename)
 	{

@@ -15,7 +15,7 @@ namespace Next
 	 */
 	class AudioSource : public Component
 	{
-		GenerateConstructors(AudioSource)
+		ReflectDeclare(AudioSource, Component)
 
 	public:
 		AudioClip audioClip;
@@ -62,10 +62,8 @@ namespace Next
 		bool
 		IsPlaying() const;
 		
-		REFLECT_DECLARE(AudioSource, Component)
-
-		REFLECT_MEMBERS(
-			REFLECT_FIELD(audioClip, r_name = "Audio Clip")
+		ReflectMembers(
+			ReflectField(audioClip, r_name = "Audio Clip")
 		)
 	};
 }

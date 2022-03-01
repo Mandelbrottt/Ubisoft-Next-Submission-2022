@@ -3,19 +3,16 @@
 #include <string>
 
 #include "Reflection/Reflection.h"
-
-#define GenerateObjectConstructors(_class_) \
-		_MACRO_AUTO_FORMAT_INDENT \
-	protected: \
-		explicit \
-		_class_(const char* a_name) \
-			: Base({ a_name }) { } \
-		~_class_() override = default; \
-	public: \
-		_class_() \
-			: _class_( #_class_ ) {} \
-	private: \
-		_MACRO_AUTO_FORMAT_INDENT
+//
+//#define GenerateObjectConstructors(_class_) \
+//		_MACRO_AUTO_FORMAT_INDENT \
+//	_class_() \
+//		: Base({ #_class_ }) {} \
+//	protected: \
+//		explicit \
+//		_class_(const char* a_name) \
+//			: Base({ a_name }) { } \
+//		~_class_() override = default; \
 
 namespace Next
 {
@@ -24,18 +21,15 @@ namespace Next
 	 */
 	class Object
 	{
-	protected:
-		struct ObjectConstructionArgs
-		{
-			const char* typeName;
-		};
+		ReflectDeclareNoConstructors(Object)
 
+	protected:
+		struct ObjectConstructionArgs { };
+
+		Object() = default;
+		
 		explicit
-		Object(ObjectConstructionArgs const& a_args)
-		#ifndef NEXT_RELEASE
-			: m_typeName(a_args.typeName)
-		#endif
-		{ }
+		Object(ObjectConstructionArgs const& a_args) { }
 
 		virtual ~Object() = default;
 
@@ -46,23 +40,9 @@ namespace Next
 		operator =(Object const& a_other) = delete;
 	public:
 		Object(Object&& a_other) = default;
-	
-	#ifndef NEXT_RELEASE
-	protected:
-		const char*
-		GetName() const
-		{
-			return m_typeName;
-		}
-	
-	private:
-		const char* m_typeName;
-	#endif
-
-		REFLECT_DECLARE(Object)
 	};
 }
 
-#ifndef NEXT_CORE
-	#undef GenerateObjectConstructors
-#endif
+//#ifndef NEXT_CORE
+//	#undef GenerateObjectConstructors
+//#endif

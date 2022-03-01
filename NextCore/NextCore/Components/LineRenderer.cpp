@@ -6,7 +6,7 @@
 
 namespace Next
 {
-	REFLECT_REGISTER(LineRenderer);
+	ReflectRegister(LineRenderer);
 
 	using Point = LineRenderer::Point;
 

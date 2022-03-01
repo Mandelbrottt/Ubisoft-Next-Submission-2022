@@ -9,6 +9,8 @@ namespace Next
 	 */
 	class Behaviour : public Component
 	{
+		ReflectDeclareNoConstructors(Behaviour, Component)
+
 	protected:
 		struct BehaviourConstructionArgs : ComponentConstructionArgs { };
 
@@ -18,7 +20,5 @@ namespace Next
 
 		~Behaviour() override = default;
 	public:
-	private:
-		REFLECT_DECLARE(Behaviour, Component)
 	};
 }

@@ -4,16 +4,15 @@
 
 class RotateOverTime : public Next::Behaviour
 {
-	GenerateConstructors(RotateOverTime)
+	ReflectDeclare(RotateOverTime, Behaviour)
+
 public:
 	void OnUpdate() override;
 
 private:
 	float m_theta = 0;
-
-	REFLECT_DECLARE(RotateOverTime, Behaviour)
-
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(m_theta)
+	
+	ReflectMembers(
+		ReflectField(m_theta)
 	)
 };

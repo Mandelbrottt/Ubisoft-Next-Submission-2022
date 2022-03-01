@@ -4,5 +4,5 @@
 
 namespace Next
 {
-	REFLECT_REGISTER(Behaviour);
+	ReflectRegister(Behaviour);
 }

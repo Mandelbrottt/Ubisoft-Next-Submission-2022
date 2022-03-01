@@ -7,8 +7,6 @@
 #include "NextCoreCommon.h"
 #include "Math/Vector.h"
 
-#include "Reflection/Reflection.h"
-
 #include "Scripting/Component.h"
 
 class CSimpleSprite;
@@ -31,7 +29,7 @@ namespace Next
 	
 	public:
 		Sprite() = default;
-
+		
 		explicit
 		Sprite(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		

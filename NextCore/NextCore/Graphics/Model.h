@@ -6,11 +6,22 @@
 
 namespace Next
 {
-	class Model final : Object
+	class Model final : public Object
 	{
+		Model() = default;
+		~Model() override = default;
+		
 	public:
 		using mesh_container_t = std::vector<Mesh>;
+
+		static
+		Model*
+		Create();
 		
+		static
+		Model*
+		Create(std::string_view a_filename);
+
 		/**
 		 * \brief Loads a model from file, and automatically detects textures and sub-meshes if possible
 		 * \param a_filename The path to the model file to be loaded
@@ -28,5 +39,7 @@ namespace Next
 
 	private:
 		mesh_container_t m_meshes;
+
+		ReflectDeclareNoConstructors(Model, Object)
 	};
 }

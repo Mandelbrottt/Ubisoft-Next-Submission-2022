@@ -6,7 +6,7 @@
 
 namespace Next
 {
-	REFLECT_REGISTER(Transform);
+	ReflectRegister(Transform);
 
 	Transform*
 	Transform::GetParent()

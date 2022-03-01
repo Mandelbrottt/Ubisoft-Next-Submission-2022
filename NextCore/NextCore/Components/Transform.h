@@ -12,7 +12,7 @@ namespace Next
 	
 	class Transform : public Component
 	{
-		GenerateConstructors(Transform)
+		ReflectDeclare(Transform, Component)
 
 	public:
 		Transform*
@@ -122,12 +122,10 @@ namespace Next
 
 		mutable bool m_isMatrixDirty = true;
 		
-		REFLECT_DECLARE(Transform, Component)
-
-		REFLECT_MEMBERS(
-			REFLECT_FIELD(m_position)
-			REFLECT_FIELD(m_rotation)
-			REFLECT_FIELD(m_scale)
+		ReflectMembers(
+			ReflectField(m_position)
+			ReflectField(m_rotation)
+			ReflectField(m_scale)
 		)
 	};
 }

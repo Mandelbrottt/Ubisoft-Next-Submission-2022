@@ -1,10 +1,9 @@
 #pragma once
 
+#include <string_view>
 #include <vector>
 
 #include "RenderPrimitive.h"
-
-#include <string_view>
 
 #include "Detail/IModelLoader.h"
 
@@ -13,10 +12,10 @@ namespace Next
 	class Mesh final
 	{
 		friend class Model;
-
+		
 	public:
 		using primitive_container_t = std::vector<RenderPrimitive>;
-
+		
 		/**
 		 * \brief Generate the list of \link RenderPrimitive's \endlink that make up the mesh.
 		 * \param a_textureFilename The name of the texture file to use as the base texture for the primitives

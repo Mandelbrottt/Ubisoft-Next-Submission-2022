@@ -4,7 +4,8 @@
 
 class Cube : public Next::Behaviour
 {
-	GenerateConstructors(Cube)
+	ReflectDeclare(Cube, Behaviour)
+
 public:
 	void OnCreate() override;
 
@@ -14,10 +15,8 @@ private:
 	float m_timeElapsed = 0;
 	
 	std::string m_baseFilePath;
-
-	REFLECT_DECLARE(Cube, Behaviour)
-
-	REFLECT_MEMBERS(
-		REFLECT_FIELD(m_baseFilePath)
+	
+	ReflectMembers(
+		ReflectField(m_baseFilePath)
 	)
 };

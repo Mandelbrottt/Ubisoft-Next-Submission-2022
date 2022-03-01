@@ -1,10 +1,5 @@
 #pragma once
 
-#include "Object.h"
-#include "Entity.h"
-
-#include "Reflection/Reflection.h"
-
 #define GenerateConstructors(_class_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	protected: \
@@ -13,8 +8,14 @@
 		friend ::Next::Reflection::Detail::typed_factory_friend_helper; \
 		\
 		_class_() \
-			: Base({ #_class_ }) { } \
+			: Base({ }) { } \
 		~_class_() override = default;
+
+// Include after GenerateConstructors is defined because there is a #define that relies on GenerateConstructors
+#include "Reflection/Reflection.h"
+
+#include "Object.h"
+#include "Entity.h"
 
 namespace Next::Reflection
 {
@@ -37,6 +38,9 @@ namespace Next
 	class Component : public Object
 	{
 		friend class Entity;
+
+		ReflectDeclareNoConstructors(Component, Object)
+
 	protected:
 		struct ComponentConstructionArgs : ObjectConstructionArgs { };
 
@@ -219,7 +223,5 @@ namespace Next
 
 	private:
 		EntityId m_entityId = EntityId::Null;
-		
-		REFLECT_DECLARE(Component, Object)
 	};
 }

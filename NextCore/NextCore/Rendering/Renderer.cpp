@@ -81,7 +81,7 @@ namespace Next::Renderer
 
 		std::size_t offset = g_primitiveRenderQueue.size();
 
-		for (auto const& mesh : a_modelRenderer->model.GetMeshes())
+		for (auto const& mesh : a_modelRenderer->model->GetMeshes())
 		{
 			auto const& primitives = mesh.GetPrimitives();
 

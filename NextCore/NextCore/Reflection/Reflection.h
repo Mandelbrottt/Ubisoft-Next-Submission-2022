@@ -6,6 +6,7 @@
 #include "NextCoreCommon.h"
 
 #pragma region Macro Argument Overloading
+    #define _CLEAR(x)
     #define _EXPAND(x) x
     #define _CAT(a, b) a##b
     #define _SELECT(name, num) _CAT(name##_, num)
@@ -21,19 +22,22 @@
 
 	#define _REFLECT_NAMESPACE ::Next::Reflection::
 
+	#define _REFLECT_CLASS_NAME _ReflectClassNameIdentifier
+
 	#define _REFLECT_DECLARE_COMMON(_class_) \
 			_MACRO_AUTO_FORMAT_INDENT \
 		private: \
 			friend class _REFLECT_NAMESPACE Type; \
 			typedef _class_ _REFLECT_TYPE_ALIAS; \
+			static constexpr char* _REFLECT_CLASS_NAME = #_class_; \
 			\
 			static \
 			void \
 			_ReflectType(_REFLECT_NAMESPACE Type& r) \
 			{ \
-				if constexpr (_REFLECT_NAMESPACE is_complete_type_v<Base>) \
+				if constexpr (_REFLECT_NAMESPACE is_complete_type_v<_REFLECT_BASE_ALIAS>) \
 				{ \
-					r.operator()<Base, This>(); \
+					r.operator()<_REFLECT_BASE_ALIAS, _REFLECT_TYPE_ALIAS>(); \
 				} \
 			} \
 			\
@@ -48,13 +52,15 @@
 				return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_TYPE_ALIAS>();\
 			}
 
-	#define _REFLECT_DECLARE_1(_class_) \
-		struct Base; \
-		class  Base; \
+	#define _REFLECT_DECLARE_NO_CTOR_1(_class_) \
+		_MACRO_AUTO_FORMAT_INDENT \
+	private: \
+		struct _REFLECT_BASE_ALIAS; \
+		class  _REFLECT_BASE_ALIAS; \
 		_REFLECT_DECLARE_COMMON(_class_)
 
-	#define _REFLECT_DECLARE_2(_derived_, _base_) \
-		_REFLECT_DECLARE_COMMON(_derived_) \
+	#define _REFLECT_DECLARE_NO_CTOR_2(_class_, _base_) \
+		_REFLECT_DECLARE_COMMON(_class_) \
 	private: \
 		typedef _base_ _REFLECT_BASE_ALIAS; \
 	public: \
@@ -63,9 +69,19 @@
 			return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\
 		}
 
-	#define REFLECT_DECLARE(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
+	#define ReflectDeclareNoConstructors(...) _MACRO_OVERLOAD(_REFLECT_DECLARE_NO_CTOR, __VA_ARGS__)
 
-	#define REFLECT_MEMBERS(_list_) \
+	#define _REFLECT_DECLARE_1(_class_) \
+		GenerateConstructors(_class_) \
+		_REFLECT_DECLARE_NO_CTOR_1(_class_)
+
+	#define _REFLECT_DECLARE_2(_class_, _base_) \
+		GenerateConstructors(_class_) \
+		_REFLECT_DECLARE_NO_CTOR_2(_class_, _base_)
+
+	#define ReflectDeclare(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
+
+	#define ReflectMembers(_list_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	private:\
 		static \
@@ -85,7 +101,7 @@
 				/*.size             =*/ (uint32_t) sizeof(_field_), \
 				/*.fieldType        =*/ _REFLECT_NAMESPACE GetTypeId<decltype(_field_)>(), \
 				/*.containingType   =*/ _REFLECT_NAMESPACE GetTypeId<_REFLECT_TYPE_ALIAS>(),\
-				/*.flags            =*/ _REFLECT_NAMESPACE Pick<_REFLECT_NAMESPACE FieldFlags>(__VA_ARGS__, _REFLECT_NAMESPACE FfNone)\
+				/*.flags            =*/ _REFLECT_NAMESPACE Pick<_REFLECT_NAMESPACE FieldFlags>(__VA_ARGS__, _REFLECT_NAMESPACE FieldFlags::None)\
 			})
 
 		#define _REFLECT_FIELD_1(_field_) _REFLECT_FIELD_2(_field_, #_field_)
@@ -111,10 +127,10 @@
 		#define _REFLECT_FIELD_8(_field_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_, _arg6_, _arg7_) \
 			_REFLECT_FIELD_PROTOTYPE(_field_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_, _arg6_, _arg7_)
 
-		#define REFLECT_FIELD(...) _MACRO_OVERLOAD(_REFLECT_FIELD, __VA_ARGS__)
+		#define ReflectField(...) _MACRO_OVERLOAD(_REFLECT_FIELD, __VA_ARGS__)
 
 	#pragma endregion
-	#define REFLECT_REGISTER(_type_) \
+	#define ReflectRegister(_type_) \
 		static volatile _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\

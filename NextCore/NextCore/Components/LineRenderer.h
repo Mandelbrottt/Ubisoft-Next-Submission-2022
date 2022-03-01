@@ -23,8 +23,8 @@ namespace Next
 	class LineRenderer : public Component
 	{
 		friend void ::Render();
-
-		GenerateConstructors(LineRenderer)
+		
+		ReflectDeclare(LineRenderer, Component)
 
 	public:
 		struct Point
@@ -75,10 +75,8 @@ namespace Next
 		LineType m_lineType = LineType::Continuous;
 
 	public:
-		REFLECT_DECLARE(LineRenderer, Component)
-
-		REFLECT_MEMBERS(
-			REFLECT_FIELD(m_points)
+		ReflectMembers(
+			ReflectField(m_points)
 		)
 	};
 }

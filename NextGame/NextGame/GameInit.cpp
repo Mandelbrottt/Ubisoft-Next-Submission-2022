@@ -18,11 +18,9 @@ using namespace Next;
 void
 Application_Init()
 {
-	Model cube;
-	cube.LoadFromFile(Application::ResourcePath() + "cube/plane.obj");
+	Model* cube = Model::Create(Application::ResourcePath() + "cube/plane.obj");
 
-	Model suzanne;
-	suzanne.LoadFromFile(Application::ResourcePath() + "complex/suzanne.obj");
+	Model* suzanne = Model::Create(Application::ResourcePath() + "complex/suzanne.obj");
 
 	Entity cubeEntity = Entity::Create();
 	cubeEntity.AddComponent<Cube>();

@@ -5,7 +5,7 @@
 
 namespace Next
 {
-	REFLECT_REGISTER(Camera);
+	ReflectRegister(Camera);
 	
 	float
 	Camera::GetFov(FovType a_type) const

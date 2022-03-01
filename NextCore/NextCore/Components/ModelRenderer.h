@@ -9,14 +9,13 @@ namespace Next
 	// TODO: Come up with a better name that doesn't imply that this class renders the models itself
 	class ModelRenderer : public Component
 	{
-		GenerateConstructors(ModelRenderer)
-	public:
-		Model model;
-		
-		REFLECT_DECLARE(ModelRenderer, Component)
+		ReflectDeclare(ModelRenderer, Component)
 
-		REFLECT_MEMBERS(
-			REFLECT_FIELD(model)
+	public:
+		Model* model;
+		
+		ReflectMembers(
+			ReflectField(model)
 		)
 	};
 }

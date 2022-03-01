@@ -6,14 +6,14 @@
 
 namespace Next::Reflection
 {
-	enum FieldFlags : uint32_t
+	enum class FieldFlags : uint32_t
 	{
-		FfNone = 0,
+		None = 0,
 
-		FfStatic = 0x01,
+		Static = 0x01,
 		//FfNonStatic = 0x02,
-		FfPrivate = 0x04,
-		FfProtected = 0x08,
+		Private = 0x04,
+		Protected = 0x08,
 		//FfPrivate   = 0x10,
 	};
 
@@ -44,7 +44,7 @@ namespace Next::Reflection
 		TypeId const containingTypeId;
 
 		// Flags that provide additional information about the field.
-		const FieldFlags flags = FfNone;
+		const FieldFlags flags = FieldFlags::None;
 		
 		/**
 		 * \brief Get a read-only pointer to the field for the given object.
