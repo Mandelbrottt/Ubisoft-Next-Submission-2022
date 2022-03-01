@@ -55,8 +55,8 @@ namespace Next
 
 		for (int i = 0; i < 6; i++)
 		{
-			auto& front = m_faces[i];
-			auto& [position, uv, normal] = front.m_vertices[0];
+			auto& face = m_faces[i];
+			auto& [position, uv, normal] = face.m_vertices[0];
 
 			for (int j = 0; j < 4; j++)
 			{
@@ -77,6 +77,8 @@ namespace Next
 				uv       = { x * 0.5f + 0.5f, y * 0.5f + 0.5f };
 				normal   = -directions[i];
 			}
+
+			face.m_primitiveType = RenderPrimitiveType::Quad;
 		}
 	}
 }

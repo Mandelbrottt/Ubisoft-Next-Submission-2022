@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <array>
+
 #include "RenderPrimitive.h"
 
 namespace Next
@@ -51,11 +53,17 @@ namespace Next
 			return true;
 		}
 
+		std::array<RenderPrimitive, 6> const&
+		GetFaces() const
+		{
+			return m_faces;
+		}
+
 	private:
 		void
 		PopulateVertices();
 
 	private:
-		RenderPrimitive m_faces[6];
+		std::array<RenderPrimitive, 6> m_faces;
 	};
 }
