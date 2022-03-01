@@ -4,19 +4,33 @@
 
 namespace Next
 {
-	AudioClip::AudioClip(const char* a_fileName, bool a_playOnLoad, bool a_loop)
+	AudioClip::AudioClip(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
 	{
 		if (a_fileName == nullptr)
 		{
 			return;
 		}
 
-		Load(a_fileName, a_playOnLoad, a_loop);
+		LoadFromFile(a_fileName, a_playOnLoad, a_loop);
 	}
 	
 	AudioClip::~AudioClip()
 	{
 		Stop();
+	}
+
+	AudioClip*
+	AudioClip::Create()
+	{
+		return new AudioClip;
+	}
+
+	AudioClip*
+	AudioClip::Create(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
+	{
+		AudioClip* result = Create();
+		result->LoadFromFile(a_fileName, a_playOnLoad, a_loop);
+		return result;
 	}
 
 	bool
@@ -36,7 +50,7 @@ namespace Next
 	}
 
 	bool
-	AudioClip::Load(const char* a_fileName, bool a_playOnLoad, bool a_loop)
+	AudioClip::LoadFromFile(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
 	{
 		// See NextAPI/app.h
 		DWORD flags = (a_loop) ? DSBPLAY_LOOPING : 0;
@@ -62,7 +76,7 @@ namespace Next
 		{
 			bool result =
 		#ifndef PLAY_TO_LOAD
-				CSimpleSound::GetInstance().PlaySound(a_fileName, flags);
+				CSimpleSound::GetInstance().PlaySound(a_fileName.data(), flags);
 		#else
 				true;
 		#endif
@@ -74,12 +88,6 @@ namespace Next
 		Stop();
 
 		return true;
-	}
-
-	bool
-	AudioClip::Load(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
-	{
-		return Load(a_fileName.data(), a_playOnLoad, a_loop);
 	}
 
 	bool

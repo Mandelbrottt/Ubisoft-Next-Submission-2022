@@ -73,8 +73,7 @@ namespace Next
 		std::vector<Point> m_points;
 
 		LineType m_lineType = LineType::Continuous;
-
-	public:
+		
 		ReflectMembers(
 			ReflectField(m_points)
 		)

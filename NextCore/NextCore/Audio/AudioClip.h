@@ -2,15 +2,16 @@
 
 #include <string>
 
+#include "Scripting/Object.h"
+
 namespace Next
 {
 	/**
 	 * \brief Represents an audio file that can be played and stopped. Does not support pausing.
 	 * \remarks Currently only supports wav files
 	 */
-	class AudioClip
+	class AudioClip : Object
 	{
-	public:
 		AudioClip() = default;
 
 		/**
@@ -20,19 +21,18 @@ namespace Next
 		 * \param a_loop Whether to loop the sound once it ends.
 		 */
 		explicit
-		AudioClip(const char* a_fileName, bool a_playOnLoad = false, bool a_loop = false);
-		
-		/**
-		 * \brief Load an audio clip from the given file with the given parameters.
-		 * \param a_fileName The name of the audio file to load.
-		 * \param a_playOnLoad Whether to play the sound once it loads.
-		 * \param a_loop Whether to loop the sound once it ends.
-		 */
-		explicit
-		AudioClip(std::string_view a_fileName, bool a_playOnLoad = false, bool a_loop = false)
-			: AudioClip(a_fileName.data(), a_playOnLoad, a_loop) {}
+		AudioClip(std::string_view a_fileName, bool a_playOnLoad = false, bool a_loop = false);
 
-		~AudioClip();
+		~AudioClip() override;
+
+	public:
+		static
+		AudioClip*
+		Create();
+
+		static
+		AudioClip*
+		Create(std::string_view a_fileName, bool a_playOnLoad = false, bool a_loop = false);
 
 		/**
 		 * \brief Play the audio clip.
@@ -50,17 +50,7 @@ namespace Next
 		 * \return True if the load succeeded, false otherwise.
 		 */
 		bool
-		Load(const char* a_fileName, bool a_playOnLoad = false, bool a_loop = false);
-		
-		/**
-		 * \brief Load an audio clip from the given file with the given parameters.
-		 * \param a_fileName The name of the audio file to load.
-		 * \param a_playOnLoad Whether to play the sound once it loads.
-		 * \param a_loop Whether to loop the sound once it ends.
-		 * \return True if the load succeeded, false otherwise.
-		 */
-		bool
-		Load(std::string_view a_fileName, bool a_playOnLoad = false, bool a_loop = false);
+		LoadFromFile(std::string_view a_fileName, bool a_playOnLoad = false, bool a_loop = false);
 
 		/**
 		 * \brief Stop the current audio clip.

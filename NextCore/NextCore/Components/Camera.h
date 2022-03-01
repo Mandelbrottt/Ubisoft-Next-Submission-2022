@@ -12,6 +12,8 @@ namespace Next
 
 	class Camera : public Component
 	{
+		ReflectDeclare(Camera, Component)
+
 	public:
 		float
 		GetFov(FovType a_type = FovType::Vertical) const;
@@ -48,8 +50,6 @@ namespace Next
 		
 		float m_nearClippingPlane = 0.1f;
 		float m_farClippingPlane  = 1000.f;
-
-		ReflectDeclare(Camera, Component)
 
 		ReflectMembers(
 			ReflectField(m_verticalFov)
