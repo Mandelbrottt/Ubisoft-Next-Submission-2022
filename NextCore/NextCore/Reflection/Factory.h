@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TypeId.h"
+
 namespace Next::Reflection
 {
 	/**
@@ -13,13 +15,20 @@ namespace Next::Reflection
 		bool valid = false;
 
 		uint32_t size = 0;
-		
+
 		virtual
 		~GenericFactory()
 		{
 			valid = false;
-			size = 0;
-		};
+			size  = 0;
+		}
+
+		virtual
+		TypeId
+		GetTypeId() const
+		{
+			return TypeId::Null;
+		}
 
 		virtual
 		void*
@@ -37,7 +46,7 @@ namespace Next::Reflection
 
 		virtual
 		void
-		Destruct(void* a_location, bool a_deallocate = true) const { };
+		Destruct(void* a_location, bool a_deallocate = true) const { }
 	};
 
 	namespace Detail
@@ -54,7 +63,7 @@ namespace Next::Reflection
 			template<typename T>
 			constexpr static bool value<T, std::void_t<decltype(sizeof(T {}))>> = true;
 		};
-		
+
 		template<typename T>
 		constexpr static bool typed_factory_friend_helper_v = typed_factory_friend_helper::value<T>;
 	}
@@ -66,7 +75,7 @@ namespace Next::Reflection
 	struct TypedFactory<T, false> final : GenericFactory
 	{
 		static_assert(Detail::typed_factory_friend_helper_v<T> == false);
-		
+
 		using value_type = T;
 
 		constexpr static int value_size = sizeof(T);
@@ -76,8 +85,14 @@ namespace Next::Reflection
 			valid = true;
 			size  = value_size;
 		}
+
+		TypeId
+		GetTypeId() const override
+		{
+			return GetTypeId<T>();
+		}
 	};
-	
+
 	template<typename T>
 	struct TypedFactory<T, true> final : GenericFactory
 	{
@@ -86,15 +101,21 @@ namespace Next::Reflection
 		using value_type = T;
 
 		constexpr static int value_size = sizeof(T);
-		
+
 		TypedFactory()
 		{
 			// valid is only set to true if GenericConstructor has been overridden
 			valid = true;
 			size  = value_size;
 		}
-		
+
 		~TypedFactory() override = default;
+
+		TypeId
+		GetTypeId() const override
+		{
+			return GetTypeId<T>();
+		}
 
 		/**
 		 * \brief Allocates a new object and returns it
