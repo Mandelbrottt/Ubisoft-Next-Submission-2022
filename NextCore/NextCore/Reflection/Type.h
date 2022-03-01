@@ -11,6 +11,7 @@
 
 #define DEPRECATED_WARNING_NUMBER 4996
 
+#define HEAP_ALLOCATED_FACTORY
 //#define IN_PLACE_FACTORY
 
 namespace Next::Reflection
@@ -125,7 +126,9 @@ namespace Next::Reflection
 		 */
 		const GenericFactory* GetFactory() const
 		{
-		#ifndef IN_PLACE_FACTORY
+		#if defined HEAP_ALLOCATED_FACTORY
+			return m_factory;
+		#elif !defined IN_PLACE_FACTORY
 			// See https://en.cppreference.com/w/cpp/types/aligned_storage
 			auto pConstructor = std::launder(reinterpret_cast<GenericFactory const*>(m_factoryData));
 			return pConstructor;
@@ -315,25 +318,31 @@ namespace Next::Reflection
 		void
 		PopulateFactory(Type& a_type)
 		{
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+			// Heap Allocated Factory supersedes in place factory
+		#if defined HEAP_ALLOCATED_FACTORY
+			// Use pointer and new to allow free passing around of the factory without fear of
+			// Reallocation
+			a_type.m_factory = new TypedFactory<TReflected>;
+		#else
+		#if !defined IN_PLACE_FACTORY
 			// Generate the constructor/destructor and use placement new under the hood
 			// We use vtable shenanigans to make this work, so the data represented
 			// by reflector.m_constructorData is stored "on the stack" inside this type while
 			// being able to reference it like a pointer and use the vtable to call overridden
 			// versions of Construct and Destruct
-			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-
-		#ifndef IN_PLACE_FACTORY
 			auto pConstructor = reinterpret_cast<GenericFactory*>(a_type.m_factoryData);
 		#else
 			GenericFactory* pConstructor = &a_type.m_factory;
 		#endif
-
 			static_assert(sizeof(*pConstructor) == sizeof(TypedFactory<TReflected>));
 			
 			// ReSharper disable once CppDeprecatedEntity
 			new(pConstructor) TypedFactory<TReflected>;
+		#endif
 
-			#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		}
 		
 		// Called by Type::Register
@@ -442,8 +451,10 @@ namespace Next::Reflection
 		std::string m_name;
 
 		std::string m_fullName;
-		
-	#ifndef IN_PLACE_FACTORY
+
+	#if defined HEAP_ALLOCATED_FACTORY
+		GenericFactory* m_factory;
+	#elif !defined IN_PLACE_FACTORY
 		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
 	#else
 		/* TODO: Using placement new on stack-allocated type to manipulate the vtable
@@ -464,5 +475,13 @@ static Next::Reflection::Description r_description;
 
 // Write-Only
 static Next::Reflection::FieldFlags r_flags;
+
+#ifdef HEAP_ALLOCATED_FACTORY
+	#undef HEAP_ALLOCATED_FACTORY
+#endif
+
+#ifdef IN_PLACE_FACTORY
+	#undef IN_PLACE_FACTORY
+#endif
 
 #undef DEPRECATED_WARNING_NUMBER

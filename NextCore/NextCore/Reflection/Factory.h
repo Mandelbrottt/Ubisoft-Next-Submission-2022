@@ -12,10 +12,13 @@ namespace Next::Reflection
 	{
 		bool valid = false;
 
+		uint32_t size = 0;
+		
 		virtual
 		~GenericFactory()
 		{
 			valid = false;
+			size = 0;
 		};
 
 		virtual
@@ -67,6 +70,12 @@ namespace Next::Reflection
 		using value_type = T;
 
 		constexpr static int value_size = sizeof(T);
+
+		TypedFactory()
+		{
+			valid = true;
+			size  = value_size;
+		}
 	};
 	
 	template<typename T>
@@ -82,6 +91,7 @@ namespace Next::Reflection
 		{
 			// valid is only set to true if GenericConstructor has been overridden
 			valid = true;
+			size  = value_size;
 		}
 		
 		~TypedFactory() override = default;
