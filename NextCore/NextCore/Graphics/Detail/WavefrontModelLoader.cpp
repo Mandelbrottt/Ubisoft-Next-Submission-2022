@@ -11,9 +11,9 @@ namespace Next::Detail
 {
 	bool
 	WavefrontModelLoader::LoadFromFile(
-		std::string_view        a_filename,
-		model_file_stream_t&    a_fileStream,
-		mesh_container_t*       a_container
+		std::string_view     a_filename,
+		model_file_stream_t& a_fileStream,
+		mesh_container_t*    a_container
 	)
 	{
 		std::string line;

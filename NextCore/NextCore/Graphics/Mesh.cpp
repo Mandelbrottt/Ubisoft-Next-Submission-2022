@@ -10,7 +10,7 @@ namespace Next
 {
 	bool
 	Mesh::GeneratePrimitives(
-		std::string_view                        a_textureFilename,
+		std::string_view                a_textureFilename,
 		vertex_container_t const&       a_vertices,
 		vertex_count_container_t const& a_vertexCounts
 	)

@@ -27,7 +27,13 @@ namespace Next
 		m_sprite.OnUpdate(a_deltaTime);
 	}
 
-	static std::unordered_set<std::string> g_processedFiles;
+	static std::unordered_set<std::string> g_processedFiles = []()
+	{
+		// Reserve 100 now so that we hopefully don't need to reallocate the container
+		decltype(g_processedFiles) result;
+		result.reserve(100);
+		return result;
+	}();
 	
 	bool
 	RenderPrimitive::LoadFromFile(std::string_view a_fileName, unsigned a_nColumns, unsigned a_nRows)
@@ -42,8 +48,14 @@ namespace Next
 			}
 			g_processedFiles.insert(filename);
 		}
+
+		// Use the cached filename to guarantee that NextAPI's cache get's a unique char*
+		// Using a_fileName directly can sometimes lead to incorrect cache hits. This is because
+		// sometimes the string allocation is optimized away and the stack is used instead, leading
+		// to erroneous copycat addresses
+		std::string const& cachedFilename = *g_processedFiles.find(filename);
 		
-		m_sprite = Sprite(a_fileName.data(), a_nColumns, a_nRows);
+		m_sprite = Sprite(cachedFilename, a_nColumns, a_nRows);
 
 		if (!m_sprite.IsValid())
 		{
