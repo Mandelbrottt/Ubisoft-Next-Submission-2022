@@ -55,12 +55,6 @@ namespace Next
 	{
 		return GetEntity().RemoveComponent(a_typeId);
 	}
-
-	bool
-	Component::RemoveComponent(Component* a_component)
-	{
-		return GetEntity().RemoveComponent(a_component);
-	}
 	
 	Component*
 	Component::GetComponent(Reflection::Type const& a_type)
@@ -72,17 +66,5 @@ namespace Next
 	Component::GetComponent(Reflection::TypeId a_typeId)
 	{
 		return GetEntity().GetComponent(a_typeId);
-	}
-	
-	int
-	Component::NumComponents(Reflection::Type const& a_type) const
-	{
-		return GetEntity().NumComponents(a_type);
-	}
-
-	int
-	Component::NumComponents(Reflection::TypeId a_typeId) const
-	{
-		return GetEntity().NumComponents(a_typeId);
 	}
 }

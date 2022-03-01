@@ -23,7 +23,7 @@ namespace Next::Detail
 		using size_type = uint32_t;
 
 		explicit
-		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize = 0);
+		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize = 1);
 
 		Component*
 		AddComponent(EntityId a_entityId);
@@ -42,7 +42,7 @@ namespace Next::Detail
 
 		void
 		Resize(size_type a_newSize);
-
+		
 	private:
 		size_type
 		AutoCalculateNewSize() const;
@@ -68,6 +68,5 @@ namespace Next::Detail
 		const size_type m_elementSize;
 		
 		size_type m_currentSize;
-
 	};
 }

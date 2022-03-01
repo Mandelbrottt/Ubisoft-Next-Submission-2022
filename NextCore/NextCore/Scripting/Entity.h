@@ -1,14 +1,13 @@
 #pragma once
 
-#include "EntityId.h"
-#include "Object.h"
-
-#include "Reflection/Type.h"
-#include "Reflection/Factory.h"
-
 #include <type_traits>
 #include <unordered_set>
-#include <unordered_map>
+
+#include "EntityId.h"
+
+#include "Reflection/Type.h"
+
+#include "Detail/Registry.h"
 
 void
 Init();
@@ -29,19 +28,21 @@ namespace Next
 
 	namespace Detail
 	{
-		struct ComponentListElement
-		{
-			Reflection::TypeId id;
+		class Registry;
 
-			Component* component;
-		};
+		//struct ComponentListElement
+		//{
+		//	Reflection::TypeId id;
 
-		struct EntityRepresentation
-		{
-			std::vector<ComponentListElement> components;
+		//	Component* component;
+		//};
 
-			std::vector<Reflection::TypeId> needsFirstUpdate;
-		};
+		//struct EntityRepresentation
+		//{
+		//	std::vector<ComponentListElement> components;
+
+		//	std::vector<Reflection::TypeId> needsFirstUpdate;
+		//};
 	}
 	
 	/**
@@ -59,6 +60,16 @@ namespace Next
 		static
 		void
 		Update();
+
+		template<typename TComponent>
+		static
+		void
+		GetAllComponents(std::vector<TComponent*>& a_vectorToPopulate);
+		
+		template<typename TComponent>
+		static
+		std::vector<TComponent*>
+		GetAllComponents();
 
 	public:
 		Entity(Entity const& a_other) = default;
@@ -117,24 +128,11 @@ namespace Next
 		TComponent*
 		AddComponent()
 		{
-			auto* rep = GetCurrentEntityRepresentation();
+			auto typeId = Reflection::Type::Get<TComponent>().GetTypeId();
+			
+			Component* result = OnAddComponent(m_entityId, typeId);
 
-			if (!rep)
-			{
-				return {};
-			}
-
-			auto static_id = Reflection::GetTypeId<TComponent>();
-
-			// TODO: Convert to use a pool allocator
-			Reflection::TypedFactory<TComponent> factory;
-
-			auto result = static_cast<TComponent*>(factory.Construct());
-
-			Detail::ComponentListElement element = { static_id, result };
-			OnAddComponent(m_entityId, rep, element);
-
-			return result;
+			return static_cast<TComponent*>(result);
 		}
 
 		Component*
@@ -162,10 +160,7 @@ namespace Next
 
 		bool
 		RemoveComponent(Reflection::TypeId a_typeId);
-
-		bool
-		RemoveComponent(Component* a_component);
-
+		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
 		GetComponent()
@@ -202,107 +197,19 @@ namespace Next
 			return const_cast<Entity*>(this)->GetComponent(a_typeId);
 		}
 		
-		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		void
-		GetComponents(std::vector<TComponent*>& a_outComponents) const
-		{
-			// TODO: Find a way to avoid allocation in GetComponents. Copy body over?
-			std::vector<Component*> result;
-			auto static_id = Reflection::GetTypeId<TComponent>();
-			GetComponents(static_id, result);
-			a_outComponents.clear();
-			a_outComponents.reserve(result.size());
-			for (int i = 0; i < result.size(); i++)
-			{
-				a_outComponents.push_back(static_cast<TComponent*>(result[i]));
-			}
-		}
-	
-		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		std::vector<TComponent*>
-		GetComponents() const
-		{
-			std::vector<TComponent*> result;
-			GetComponents<TComponent>(result);
-			return result;
-		}
-	
-		void
-		GetComponents(Reflection::Type const& a_type, std::vector<Component*>& a_outComponents) const
-		{
-			return GetComponents(a_type.GetTypeId(), a_outComponents);
-		}
-		
-		std::vector<Component*>
-		GetComponents(Reflection::Type const& a_type) const
-		{
-			std::vector<Component*> result;
-			GetComponents(a_type.GetTypeId(), result);
-			return result;
-		}
-		
-		void
-		GetComponents(Reflection::TypeId a_typeId, std::vector<Component*>& a_outComponents) const;
-		
-		std::vector<Component*>
-		GetComponents(Reflection::TypeId a_typeId) const
-		{
-			std::vector<Component*> result;
-			GetComponents(a_typeId, result);
-			return result;
-		}
-
-		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
-		int
-		NumComponents() const
-		{
-			auto static_id = Reflection::GetTypeId<TComponent>();
-			return NumComponents(static_id);
-		}
-
-		int
-		NumComponents(Reflection::Type const& a_type) const
-		{
-			return NumComponents(a_type.GetTypeId());
-		}
-
-		int
-		NumComponents(Reflection::TypeId a_typeId) const;
-
 	private:
 		EntityId m_entityId;
 
 		std::string m_name;
-
+		
 	private:
-		Detail::EntityRepresentation*
-		GetCurrentEntityRepresentation();
-
-		Detail::EntityRepresentation const*
-		GetCurrentEntityRepresentation() const;
-
 		static
-		decltype(Detail::EntityRepresentation::components)::iterator
-		FindComponentById(Detail::EntityRepresentation* a_rep, Reflection::TypeId a_id);
-
-		static
-		decltype(Detail::EntityRepresentation::components)::iterator
-		FindComponent(Detail::EntityRepresentation* a_rep, Component* a_component);
+		Component*
+		OnAddComponent(EntityId a_id, Reflection::TypeId a_typeId);
 
 		static
 		bool
-		RemoveComponentByIterator(
-			Detail::EntityRepresentation*                                  a_rep,
-			decltype(Detail::EntityRepresentation::components)::iterator a_iter
-		);
-
-		static
-		void
-		OnAddComponent(EntityId a_id, Detail::EntityRepresentation* a_rep, Detail::ComponentListElement& a_listElement);
-
-		static
-		void
-		OnRemoveComponent(Detail::EntityRepresentation* a_rep, Detail::ComponentListElement& a_listElement);
+		OnRemoveComponent(EntityId a_id, Reflection::TypeId a_typeId);
 
 		template<typename T>
 		struct identity
@@ -325,16 +232,48 @@ namespace Next
 		RemoveComponent(identity<Next::Transform>);
 
 		static
-		void
-		OnUpdate(Detail::EntityRepresentation& a_rep);
-
-		static
-		void
-		OnDestroy(Detail::EntityRepresentation& a_rep);
+		Detail::Registry&
+		Registry();
 
 	private:
-		static std::unordered_map<EntityId, Detail::EntityRepresentation> s_entityRepresentations;
+		//static std::unordered_map<EntityId, Detail::EntityRepresentation> s_entityRepresentations;
 
 		static std::unordered_set<EntityId> s_entityIdDestroyBuffer;
+		
+		static std::vector<std::pair<EntityId, Reflection::TypeId>> s_entityIdFirstUpdateBuffer;
 	};
+
+	template<typename TComponent>
+	void
+	Entity::GetAllComponents(std::vector<TComponent*>& a_vectorToPopulate)
+	{
+		const auto typeId = Reflection::Type::Get<TComponent>().GetTypeId();
+
+		a_vectorToPopulate.clear();
+
+		auto& activeEntities = Registry().GetActiveEntities();
+
+		a_vectorToPopulate.reserve(activeEntities.size());
+		
+		for (EntityId entityId : activeEntities)
+		{
+			auto component = Registry().GetComponent(entityId, typeId);
+
+			if (!component)
+			{
+				continue;
+			}
+
+			a_vectorToPopulate.push_back(static_cast<TComponent*>(component));
+		}
+	}
+
+	template<typename TComponent>
+	std::vector<TComponent*>
+	Entity::GetAllComponents()
+	{
+		std::vector<TComponent*> result;
+		GetAllComponents<TComponent>(result);
+		return result;
+	}
 }

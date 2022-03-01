@@ -5,27 +5,18 @@
 
 #include "Components/Transform.h"
 
+#include "Scripting/Detail/Registry.h"
+
 namespace Next
 {
-	//decltype(Entity::s_entityIds) Entity::s_entityIds;
+	decltype(Entity::s_entityIdFirstUpdateBuffer) Entity::s_entityIdFirstUpdateBuffer;
 
 	decltype(Entity::s_entityIdDestroyBuffer) Entity::s_entityIdDestroyBuffer;
+	
+	//decltype(Entity::s_registry) Entity::s_registry;
 
-	decltype(Entity::s_entityRepresentations) Entity::s_entityRepresentations;
-
-	static EntityId g_nextEntityCounter = EntityId::FirstValid;
-
-	static EntityId
-	GetNextEntityId()
-	{
-		auto result = g_nextEntityCounter;
-
-		auto& counterReference = reinterpret_cast<entity_id_underlying_t&>(g_nextEntityCounter);
-		counterReference++;
-
-		return result;
-	}
-
+	static Detail::Registry g_registry;
+	
 	Entity::Entity(EntityId a_id)
 	{
 		m_entityId = a_id;
@@ -34,13 +25,9 @@ namespace Next
 	Entity
 	Entity::Create()
 	{
-		// TODO: Will eventually be implemented by the registry when a new entity is created
-		
 		Entity entity;
-		entity.m_entityId = GetNextEntityId();
-
-		s_entityRepresentations.emplace(entity.m_entityId, Detail::EntityRepresentation {});
-
+		entity.m_entityId = Registry().OnCreateEntity();
+		
 		entity.OnCreate();
 
 		return entity;
@@ -82,27 +69,8 @@ namespace Next
 		{
 			return nullptr;
 		}
-
-		auto* componentType = Reflection::Type::TryGet(a_typeId);
-
-		if (componentType == nullptr)
-		{
-			return nullptr;
-		}
-
-		auto*      constructor = componentType->GetFactory();
-		void*      p           = constructor->Construct();
-		Component* result      = static_cast<Component*>(p);
-
-		auto* rep = GetCurrentEntityRepresentation();
-
-		if (!rep)
-		{
-			return nullptr;
-		}
-
-		Detail::ComponentListElement element = { a_typeId, result };
-		OnAddComponent(m_entityId, rep, element);
+		
+		Component* result = OnAddComponent(m_entityId, a_typeId);
 
 		return result;
 	}
@@ -115,38 +83,9 @@ namespace Next
 			return false;
 		}
 
-		auto* rep = GetCurrentEntityRepresentation();
-
-		if (!rep)
-		{
-			return false;
-		}
-
-		auto iter = FindComponentById(rep, a_typeId);
-
-		return RemoveComponentByIterator(rep, iter);
+		return OnRemoveComponent(m_entityId, a_typeId);
 	}
-
-	bool
-	Entity::RemoveComponent(Component* a_component)
-	{
-		if (a_component == nullptr)
-		{
-			return false;
-		}
-
-		auto* rep = GetCurrentEntityRepresentation();
-
-		if (!rep)
-		{
-			return false;
-		}
-
-		auto iter = FindComponent(rep, a_component);
-
-		return RemoveComponentByIterator(rep, iter);
-	}
-
+	
 	Component*
 	Entity::GetComponent(Reflection::TypeId a_typeId)
 	{
@@ -154,212 +93,68 @@ namespace Next
 		{
 			return nullptr;
 		}
-
-		auto* rep = GetCurrentEntityRepresentation();
-
-		Component* result = nullptr;
-
-		if (auto iter = FindComponentById(rep, a_typeId); rep && iter != rep->components.end())
-		{
-			result = iter->component;
-		}
-
+		
+		Component* result = Registry().GetComponent(m_entityId, a_typeId);
+		
 		return result;
 	}
-
-	void
-	Entity::GetComponents(Reflection::TypeId a_typeId, std::vector<Component*>& a_outComponents) const
-	{
-		if (a_typeId == Reflection::TypeId::Null)
-		{
-			return;
-		}
-
-		auto* rep = GetCurrentEntityRepresentation();
-
-		if (!rep)
-		{
-			return;
-		}
-
-		a_outComponents.clear();
-
-		int count = NumComponents(a_typeId);
-
-		a_outComponents.reserve(count);
-		
-		for (const auto& [id, component] : rep->components)
-		{
-			if (id == a_typeId)
-			{
-				a_outComponents.push_back(component);
-			}
-		}
-	}
-
-	int
-	Entity::NumComponents(Reflection::TypeId a_typeId) const
-	{
-		auto* rep = GetCurrentEntityRepresentation();
-
-		if (!rep)
-		{
-			return 0;
-		}
-
-		auto predicate = [&](Detail::ComponentListElement const& a_value)
-		{
-			return a_value.id == a_typeId;
-		};
-
-		auto numComponents = std::count_if(rep->components.begin(), rep->components.end(), predicate);
-
-		return static_cast<int>(numComponents);
-	}
-
+	
 	void
 	Entity::Update()
 	{
 		if (s_entityIdDestroyBuffer.empty())
 		{
+			goto First_Update_Active_Entities;
+		}
+
+		for (auto id : s_entityIdDestroyBuffer)
+		{
+			Registry().OnDestroyEntity(id);
+		}
+		
+		s_entityIdDestroyBuffer.clear();
+
+	First_Update_Active_Entities:
+
+		if (s_entityIdFirstUpdateBuffer.empty())
+		{
 			goto Update_Active_Entities;
 		}
 
-		for (auto id : s_entityIdDestroyBuffer)
+		for (auto& [entityId, typeId] : s_entityIdFirstUpdateBuffer)
 		{
-			auto& rep = s_entityRepresentations.at(id);
-			OnDestroy(rep);
+			Registry().OnFirstUpdate(entityId, typeId);
 		}
 
-		for (auto id : s_entityIdDestroyBuffer)
-		{
-			s_entityRepresentations.erase(id);
-		}
-
-		s_entityIdDestroyBuffer.clear();
+		s_entityIdFirstUpdateBuffer.clear();
 
 	Update_Active_Entities:
-		for (auto& [id, rep] : s_entityRepresentations)
-		{
-			OnUpdate(rep);
-		}
+		
+		Registry().OnUpdate();
 	}
-
-	Detail::EntityRepresentation*
-	Entity::GetCurrentEntityRepresentation()
+	
+	Component*
+	Entity::OnAddComponent(EntityId a_id, Reflection::TypeId a_typeId)
 	{
-		auto iter = s_entityRepresentations.find(m_entityId);
+		Component* result = Registry().AddComponent(a_id, a_typeId);
 
-		Detail::EntityRepresentation* result = nullptr;
+		s_entityIdFirstUpdateBuffer.emplace_back(std::make_pair(a_id, a_typeId));
 
-		if (iter != s_entityRepresentations.end())
-		{
-			result = &iter->second;
-		}
+		result->m_entityId = a_id;
+
+		result->OnCreate();
 
 		return result;
-	}
-
-	Detail::EntityRepresentation const*
-	Entity::GetCurrentEntityRepresentation() const
-	{
-		return const_cast<Entity*>(this)->GetCurrentEntityRepresentation();
-	}
-
-	decltype(Detail::EntityRepresentation::components)::iterator
-	Entity::FindComponentById(Detail::EntityRepresentation* a_rep, Reflection::TypeId a_id)
-	{
-		auto iter = a_rep->components.begin();
-		auto end  = a_rep->components.end();
-
-		while (iter != end)
-		{
-			if (iter->id == a_id)
-			{
-				break;
-			}
-
-			++iter;
-		}
-
-		return iter;
-	}
-
-	decltype(Detail::EntityRepresentation::components)::iterator
-	Entity::FindComponent(Detail::EntityRepresentation* a_rep, Component* a_component)
-	{
-		auto iter = a_rep->components.begin();
-		auto end  = a_rep->components.end();
-
-		while (iter != end)
-		{
-			if (iter->component == a_component)
-			{
-				break;
-			}
-
-			++iter;
-		}
-
-		return iter;
 	}
 
 	bool
-	Entity::RemoveComponentByIterator(
-		Detail::EntityRepresentation*                                a_rep,
-		decltype(Detail::EntityRepresentation::components)::iterator a_iter
-	)
+	Entity::OnRemoveComponent(EntityId a_id, Reflection::TypeId a_typeId)
 	{
-		bool result = a_iter != a_rep->components.end();
-
-		// If component exists and it's type is registered with reflection, destruct it
-		if (result)
-		{
-			auto                         [id, component] = *a_iter;
-			Detail::ComponentListElement element { id, component };
-			OnRemoveComponent(a_rep, element);
-
-			if (auto* componentType = Reflection::Type::TryGet(id); componentType != nullptr)
-			{
-				auto* constructor = componentType->GetFactory();
-				constructor->Destruct(component);
-			}
-		}
-
-		return result;
-	}
-
-	void
-	Entity::OnAddComponent(
-		EntityId                      a_id,
-		Detail::EntityRepresentation* a_rep,
-		Detail::ComponentListElement& a_listElement
-	)
-	{
-		auto& [id, component] = a_listElement;
-
-		component->m_entityId = a_id;
-
-		component->OnCreate();
-
-		a_rep->needsFirstUpdate.push_back(id);
-
-		a_rep->components.emplace_back(std::move(a_listElement));
-	}
-
-	void
-	Entity::OnRemoveComponent(
-		Detail::EntityRepresentation* a_rep,
-		Detail::ComponentListElement& a_listElement
-	)
-	{
-		auto& [id, component] = a_listElement;
-
+		Component* component = Registry().GetComponent(a_id, a_typeId);
+		
 		component->OnDestroy();
 
-		auto iter = FindComponentById(a_rep, id);
-
-		a_rep->components.erase(iter);
+		return Registry().RemoveComponent(a_id, a_typeId);
 	}
 
 	bool
@@ -369,32 +164,9 @@ namespace Next
 		return RemoveComponent(static_id);
 	}
 
-	void
-	Entity::OnUpdate(Detail::EntityRepresentation& a_rep)
+	Detail::Registry&
+	Entity::Registry()
 	{
-		for (auto id : a_rep.needsFirstUpdate)
-		{
-			auto iter = FindComponentById(&a_rep, id);
-			if (iter == a_rep.components.end())
-			{
-				continue;
-			}
-
-			iter->component->OnFirstUpdate();
-		}
-
-		for (auto& [id, component] : a_rep.components)
-		{
-			component->OnUpdate();
-		}
-	}
-
-	void
-	Entity::OnDestroy(Detail::EntityRepresentation& a_rep)
-	{
-		for (auto& [id, component] : a_rep.components)
-		{
-			component->OnDestroy();
-		}
+		return g_registry;
 	}
 }

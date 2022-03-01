@@ -5,6 +5,8 @@
 
 using namespace Next;
 
+ReflectRegister(Cube);
+
 void
 Cube::OnCreate()
 {

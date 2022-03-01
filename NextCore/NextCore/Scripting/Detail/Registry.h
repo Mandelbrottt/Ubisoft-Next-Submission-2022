@@ -8,7 +8,11 @@
 #include "Reflection/TypeId.h"
 
 #include "Scripting/EntityId.h"
-#include "Scripting/Component.h"
+
+namespace Next
+{
+	class Component;
+}
 
 namespace Next::Detail
 {
@@ -16,13 +20,25 @@ namespace Next::Detail
 	{
 	public:
 		EntityId
-		CreateEntity();
+		OnCreateEntity();
 
 		void
-		DestroyEntity(EntityId a_entityId);
+		OnDestroyEntity(EntityId a_entityId);
+		
+		void
+		OnFirstUpdate(EntityId a_entityId, Reflection::TypeId a_typeId);
+		
+		void
+		OnUpdate();
 
 		bool
 		IsValid(EntityId a_entityId) const;
+
+		std::unordered_set<EntityId>&
+		GetActiveEntities()
+		{
+			return m_activeEntities;
+		}
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
@@ -35,10 +51,7 @@ namespace Next::Detail
 		}
 
 		Component*
-		AddComponent(EntityId a_entityId, Reflection::Type const& a_type)
-		{
-			return AddComponent(a_entityId, a_type.GetTypeId());
-		}
+		AddComponent(EntityId a_entityId, Reflection::Type const& a_type);
 
 		Component*
 		AddComponent(EntityId a_entityId, Reflection::TypeId a_typeId);
@@ -54,10 +67,7 @@ namespace Next::Detail
 		}
 
 		bool
-		RemoveComponent(EntityId a_entityId, Reflection::Type const& a_type)
-		{
-			return RemoveComponent(a_entityId, a_type.GetTypeId());
-		}
+		RemoveComponent(EntityId a_entityId, Reflection::Type const& a_type);
 
 		bool
 		RemoveComponent(EntityId a_entityId, Reflection::TypeId a_typeId);
@@ -73,10 +83,7 @@ namespace Next::Detail
 		}
 
 		Component*
-		GetComponent(EntityId a_entityId, Reflection::Type const& a_type)
-		{
-			return GetComponent(a_entityId, a_type.GetTypeId());
-		}
+		GetComponent(EntityId a_entityId, Reflection::Type const& a_type);
 
 		Component*
 		GetComponent(EntityId a_entityId, Reflection::TypeId a_typeId);
@@ -89,16 +96,10 @@ namespace Next::Detail
 		}
 
 		Component const*
-		GetComponent(EntityId a_entityId, Reflection::Type const& a_type) const
-		{
-			return const_cast<Registry*>(this)->GetComponent(a_entityId, a_type);
-		}
+		GetComponent(EntityId a_entityId, Reflection::Type const& a_type) const;
 
 		Component*
-		GetComponent(EntityId a_entityId, Reflection::TypeId a_typeId) const
-		{
-			return const_cast<Registry*>(this)->GetComponent(a_entityId, a_typeId);
-		}
+		GetComponent(EntityId a_entityId, Reflection::TypeId a_typeId) const;
 
 	private:
 		EntityId
@@ -108,7 +109,7 @@ namespace Next::Detail
 		EnsureComponentPoolInstantiated(Reflection::TypeId a_typeId);
 
 	private:
-		EntityId m_nextEntityId = EntityId::Null;
+		EntityId m_nextEntityId = EntityId::FirstValid;
 
 		std::unordered_set<EntityId> m_activeEntities;
 

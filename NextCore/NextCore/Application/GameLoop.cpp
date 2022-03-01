@@ -54,9 +54,7 @@ void
 Render()
 {
 	using namespace Next;
-
-	auto& entityReps = Entity::s_entityRepresentations;
-
+	
 	float fov  = 90;
 	float near = 0.1f;
 	float far  = 1000.0f;
@@ -67,37 +65,28 @@ Render()
 
 	CubeMap skybox;
 
-	for (auto& [entityId, rep] : entityReps)
+	static std::vector<Camera*> cameras;
+	Entity::GetAllComponents(cameras);
+
+	if (!cameras.empty())
 	{
-		for (auto& [typeId, component] : rep.components)
-		{
-			if (typeId != Reflection::GetTypeId<Camera>())
-			{
-				continue;
-			}
+		auto* camera = cameras.front();
 
-			auto* camera = static_cast<Camera*>(component);
+		fov  = camera->GetFov();
+		near = camera->GetNearClippingPlane();
+		far  = camera->GetFarClippingPlane();
 
-			fov  = camera->GetFov();
-			near = camera->GetNearClippingPlane();
-			far  = camera->GetFarClippingPlane();
+		auto* transform = camera->Transform();
 
-			auto* transform = camera->Transform();
+		cameraPosition = transform->GetPosition();
+		cameraForward = transform->Forward();
 
-			cameraPosition = transform->GetPosition();
-			cameraForward = transform->Forward();
+		viewMatrix = transform->GetTransformationMatrix();
+		viewMatrix = Matrix::ViewInverse(viewMatrix);
 
-			viewMatrix = transform->GetTransformationMatrix();
-			viewMatrix = Matrix::ViewInverse(viewMatrix);
-
-			skybox = camera->GetSkybox();
-
-			goto Render_Main_Camera_Found;
-		}
+		skybox = camera->GetSkybox();
 	}
-
-Render_Main_Camera_Found:
-
+	
 	float aspect = Application::ScreenHeight() / Application::ScreenWidth();
 
 	// Perspective Matrix
@@ -113,22 +102,12 @@ Render_Main_Camera_Found:
 	
 	PrepareScene(descriptor);
 
-	for (auto& [id, rep] : entityReps)
+	static std::vector<ModelRenderer*> modelRenderers;
+	Entity::GetAllComponents(modelRenderers);
+
+	for (auto* modelRenderer : modelRenderers)
 	{
-		for (auto& element : rep.components)
-		{
-			if (element.id == Reflection::GetTypeId<LineRenderer>())
-			{
-				LineRenderer* lineRenderer = static_cast<LineRenderer*>(element.component);
-
-				//lineRenderer->OnRender();
-			} else if (element.id == Reflection::GetTypeId<ModelRenderer>())
-			{
-				ModelRenderer* modelRenderer = static_cast<ModelRenderer*>(element.component);
-
-				Renderer::Submit(modelRenderer, modelRenderer->Transform());
-			}
-		}
+		Renderer::Submit(modelRenderer, modelRenderer->Transform());
 	}
 
 	Renderer::Flush();

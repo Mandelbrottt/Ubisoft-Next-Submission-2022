@@ -11,9 +11,9 @@ namespace Next::Detail
 	ComponentPool::ComponentPool(GenericFactory const* a_factory, size_type a_initialSize)
 		: m_factory(a_factory),
 		  m_elementSize(a_factory->size),
-		  m_currentSize(a_initialSize)
+		  m_currentSize(0)
 	{
-		assert(a_factory == nullptr);
+		assert(a_factory != nullptr);
 		
 		Resize(a_initialSize);
 	}
@@ -87,10 +87,11 @@ namespace Next::Detail
 		{
 			m_entityStorage.resize(m_elementSize * a_newSize);
 
-			size_type newAvailableIndex = m_elementSize * (m_currentSize - 1);
+			size_type newAvailableIndex = m_elementSize * m_currentSize;
 			
 			// Zero out the new elements
-			std::memset(&m_entityStorage[newAvailableIndex], 0, a_newSize - m_currentSize);
+			size_type bytesToZero = (a_newSize - m_currentSize) * m_elementSize;
+			std::memset(&m_entityStorage[newAvailableIndex], 0, bytesToZero);
 
 			while (newAvailableIndex < m_elementSize * a_newSize)
 			{
@@ -114,7 +115,7 @@ namespace Next::Detail
 	Component*
 	ComponentPool::GetComponentFromIndex(size_type a_index)
 	{
-		size_type offset = a_index * m_elementSize;
+		size_type offset = a_index;
 		Component* reinterpretedPtr = reinterpret_cast<Component*>(&m_entityStorage[offset]);
 		return std::launder(reinterpretedPtr);
 	}
