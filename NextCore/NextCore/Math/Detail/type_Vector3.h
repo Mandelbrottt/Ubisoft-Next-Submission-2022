@@ -82,14 +82,17 @@ namespace Next
 			return Vector::Cross(*this, a_other);
 		}
 
-		constexpr static Vector_t<3, TUnderlying> right    = Vector_t<3, TUnderlying>(1, 0, 0);
-		constexpr static Vector_t<3, TUnderlying> left     = Vector_t<3, TUnderlying>(-1, 0, 0);
+		constexpr static Vector_t<3, TUnderlying> Right()    { return Vector_t<3, TUnderlying>(1, 0, 0); }
+
+		constexpr static Vector_t<3, TUnderlying> Left()     { return Vector_t<3, TUnderlying>(-1, 0, 0); }
 														   
-		constexpr static Vector_t<3, TUnderlying> up       = Vector_t<3, TUnderlying>(0, 1, 0);
-		constexpr static Vector_t<3, TUnderlying> down     = Vector_t<3, TUnderlying>(0, -1, 0);
-														   
-		constexpr static Vector_t<3, TUnderlying> forward  = Vector_t<3, TUnderlying>(0, 0, 1);
-		constexpr static Vector_t<3, TUnderlying> backward = Vector_t<3, TUnderlying>(0, 0, -1);
+		constexpr static Vector_t<3, TUnderlying> Up()       { return Vector_t<3, TUnderlying>(0, 1, 0); }
+
+		constexpr static Vector_t<3, TUnderlying> Down()     { return Vector_t<3, TUnderlying>(0, -1, 0); }
+
+		constexpr static Vector_t<3, TUnderlying> Forward()  { return Vector_t<3, TUnderlying>(0, 0, 1); }
+
+		constexpr static Vector_t<3, TUnderlying> Backward() { return Vector_t<3, TUnderlying>(0, 0, -1); }
 	};
 
 	namespace Vector
