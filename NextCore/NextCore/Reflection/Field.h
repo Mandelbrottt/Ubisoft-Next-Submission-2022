@@ -17,6 +17,7 @@ namespace Next::Reflection
 		//FfPrivate   = 0x10,
 	};
 
+	// TODO: Look into pointer-to-member
 	/**
 	 * \brief Runtime representation of a field member.
 	 */

@@ -43,6 +43,8 @@ namespace Next::Reflection
 		operator =(Type const&) = delete;
 		
 	public:
+		using instance_fields_container_t = std::map<std::string, Field>;
+		
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
 		Type(Type&& a_other) = default;
@@ -87,6 +89,12 @@ namespace Next::Reflection
 		FullName() const
 		{
 			return m_fullName;
+		}
+
+		instance_fields_container_t&
+		GetInstanceFields()
+		{
+			return m_instanceFields;
 		}
 
 		bool
@@ -263,15 +271,13 @@ namespace Next::Reflection
 			{
 				auto& baseFields = baseType.instanceFields;
 				
-				instanceFields.insert(baseFields.begin(), baseFields.end());
+				m_instanceFields.insert(baseFields.begin(), baseFields.end());
 			}
 
 			return *this;
 		}
 
 	public:
-		std::map<std::string, Field> instanceFields;
-
 	private:
 		// We need this helper because you can't partially specialize functions to make sfinae work in
 		// the way we want it to here, so do the reflection work in the static reflect function
@@ -365,7 +371,7 @@ namespace Next::Reflection
 		void
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{
-			instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
+			m_instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
 		}
 
 		/**
@@ -451,6 +457,8 @@ namespace Next::Reflection
 		std::string m_name;
 
 		std::string m_fullName;
+
+		instance_fields_container_t m_instanceFields;
 
 	#if defined HEAP_ALLOCATED_FACTORY
 		GenericFactory* m_factory;
