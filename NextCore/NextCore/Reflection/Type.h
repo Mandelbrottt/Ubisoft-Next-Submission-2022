@@ -43,7 +43,7 @@ namespace Next::Reflection
 		operator =(Type const&) = delete;
 		
 	public:
-		using instance_fields_container_t = std::map<std::string, Field>;
+		using instance_fields_container_t = std::vector<Field>;
 		
 		// Warning because move constructor is public?
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
@@ -91,8 +91,8 @@ namespace Next::Reflection
 			return m_fullName;
 		}
 
-		instance_fields_container_t&
-		GetInstanceFields()
+		instance_fields_container_t const&
+		GetInstanceFields() const
 		{
 			return m_instanceFields;
 		}
@@ -267,11 +267,11 @@ namespace Next::Reflection
 
 			m_baseTypeId = baseType.GetTypeId();
 			
-			if (!baseType.instanceFields.empty())
+			if (!baseType.m_instanceFields.empty())
 			{
-				auto& baseFields = baseType.instanceFields;
+				auto& baseFields = baseType.m_instanceFields;
 				
-				m_instanceFields.insert(baseFields.begin(), baseFields.end());
+				m_instanceFields.insert(m_instanceFields.begin(), baseFields.begin(), baseFields.end());
 			}
 
 			return *this;
@@ -362,6 +362,18 @@ namespace Next::Reflection
 			reflect_type_helper<TReflected>::Reflect(reflector);
 			
 			reflect_members_helper<TReflected>::Reflect(reflector);
+
+			auto caseInsensitivePredicate = [](Field const& a_lhs, Field const& a_rhs)
+			{
+				auto const& lhsName = a_lhs.displayName;
+				auto const& rhsName = a_rhs.displayName;
+
+				return _strcmpi(lhsName.c_str(), rhsName.c_str()) < 0;
+			};
+
+			auto& fields = reflector.m_instanceFields;
+			
+			std::sort(fields.begin(), fields.end(), caseInsensitivePredicate);
 			
 			PopulateFactory<TReflected>(reflector);
 			
@@ -371,7 +383,7 @@ namespace Next::Reflection
 		void
 		ReflectInternal(Field&& a_fieldInfo) noexcept
 		{
-			m_instanceFields.emplace(a_fieldInfo.displayName, a_fieldInfo);
+			m_instanceFields.emplace_back(std::move(a_fieldInfo));
 		}
 
 		/**

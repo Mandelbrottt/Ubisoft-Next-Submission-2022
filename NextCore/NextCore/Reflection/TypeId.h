@@ -42,7 +42,9 @@ namespace Next::Reflection
 				std::hash<std::string> hashFn;
 
 				auto& type = typeid(T);
-				std::size_t hash = hashFn(type.name());
+				const char* name = type.name();
+				const char* raw_name = type.raw_name();
+				std::size_t hash = hashFn(name);
 
 				assert(hash != 0);
 				

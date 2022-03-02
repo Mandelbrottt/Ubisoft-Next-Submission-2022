@@ -108,11 +108,27 @@ namespace Next::Detail
 		ComponentPool*
 		EnsureComponentPoolInstantiated(Reflection::TypeId a_typeId);
 
+		void
+		GenerateComponentReferenceInfo(Reflection::TypeId a_typeId);
+		
+		void
+		OnPrePoolResize(Reflection::TypeId a_referenceTypeId);
+		
+		void
+		OnPostPoolResize(Reflection::TypeId a_referenceTypeId);
+
 	private:
 		EntityId m_nextEntityId = EntityId::FirstValid;
 
 		std::unordered_set<EntityId> m_activeEntities;
 
-		std::unordered_map<Reflection::TypeId, ComponentPool> m_componentPools;
+		struct ComponentPoolInfo
+		{
+			ComponentPool pool;
+
+			std::vector<Reflection::Field const*> fieldsToRefWatch;
+		};
+
+		std::unordered_map<Reflection::TypeId, ComponentPoolInfo> m_componentPoolInfos;
 	};
 }

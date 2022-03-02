@@ -89,7 +89,7 @@ namespace Next::Reflection
 		TypeId
 		GetTypeId() const override
 		{
-			return GetTypeId<T>();
+			return Reflection::GetTypeId<T>();
 		}
 	};
 
@@ -114,7 +114,7 @@ namespace Next::Reflection
 		TypeId
 		GetTypeId() const override
 		{
-			return GetTypeId<T>();
+			return Reflection::GetTypeId<T>();
 		}
 
 		/**

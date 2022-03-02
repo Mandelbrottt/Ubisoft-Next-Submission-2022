@@ -9,6 +9,8 @@
 #include <Rendering/Renderer.h>
 
 #include "Cube.h"
+#include "ReferenceTestA.h"
+#include "ReferenceTestB.h"
 #include "RotateOverTime.h"
 
 // TODO: Write wrapper printing to screen
@@ -18,6 +20,15 @@ using namespace Next;
 void
 Application_Init()
 {
+	Entity entityA = Entity::Create();
+	auto* refA = entityA.AddComponent<ReferenceTestA>();
+
+	Entity entityB = Entity::Create();
+	auto* refB = entityB.AddComponent<ReferenceTestB>();
+
+	refA->SetRefB(refB);
+	refB->SetRefA(refA);
+	
 	Model* cube = Model::Create(Application::ResourcePath() + "cube/cube.obj");
 	
 	Model* suzanne = Model::Create(Application::ResourcePath() + "complex/suzanne.obj");
@@ -35,12 +46,17 @@ Application_Init()
 
 		Entity entity = Entity::Create();
 		entity.AddComponent<RotateOverTime>();
+		entity.AddComponent<ReferenceTestA>();
+		entity.AddComponent<ReferenceTestB>();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 
 		innerModelRenderer->model = suzanne;
 
 		entity.Transform()->SetPosition({ x, y, 10 });
 	}
+
+	refA = entityA.GetComponent<ReferenceTestA>();
+	refB = entityB.GetComponent<ReferenceTestB>();
 }
 
 //class Something : public Behaviour

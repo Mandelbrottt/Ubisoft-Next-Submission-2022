@@ -21,31 +21,83 @@ namespace Next::Reflection
 	/**
 	 * \brief Runtime representation of a field member.
 	 */
-	struct Field
+	class Field
 	{
-		// The actual name of the field in the source code
-		const std::string name;
+	public:
+		Field(
+			std::string const& a_name,
+			std::string const& a_displayName,
+			std::string const& a_description,
+			uint32_t           a_offset,
+			uint32_t           a_size,
+			TypeId             a_fieldTypeId,
+			TypeId             a_containingTypeId,
+			FieldFlags         a_flags
+		)
+			: name(a_name),
+			  displayName(a_displayName),
+			  description(a_description),
+			  offset(a_offset),
+			  size(a_size),
+			  fieldTypeId(a_fieldTypeId),
+			  containingTypeId(a_containingTypeId),
+			  flags(a_flags) {}
 
-		// The name to display to the user in visual applications. Can be user-defined.
-		const std::string displayName;
+		[[nodiscard]]
+		std::string const&
+		GetName() const
+		{
+			return name;
+		}
 
-		// The description of the field. Optionally user-defined, else an empty string.
-		const std::string description;
+		[[nodiscard]]
+		std::string const&
+		GetDisplayName() const
+		{
+			return displayName;
+		}
 
-		// The offset in bytes into the containing object that the field resides at.
-		const uint32_t offset;
+		[[nodiscard]]
+		std::string const&
+		GetDescription() const
+		{
+			return description;
+		}
 
-		// The size returned by sizeof of the field.
-		const uint32_t size;
+		[[nodiscard]]
+		uint32_t
+		GetOffset() const
+		{
+			return offset;
+		}
 
-		// The StaticTypeId of the field.
-		TypeId const fieldTypeId;
+		[[nodiscard]]
+		uint32_t
+		GetSize() const
+		{
+			return size;
+		}
 
-		// The StaticTypeId of the object that the field is contained in.
-		TypeId const containingTypeId;
+		[[nodiscard]]
+		TypeId
+		GetFieldTypeId() const
+		{
+			return fieldTypeId;
+		}
 
-		// Flags that provide additional information about the field.
-		const FieldFlags flags = FieldFlags::None;
+		[[nodiscard]]
+		TypeId
+		GetContainingTypeId() const
+		{
+			return containingTypeId;
+		}
+
+		[[nodiscard]]
+		FieldFlags
+		GetFlags() const
+		{
+			return flags;
+		}
 		
 		/**
 		 * \brief Get a read-only pointer to the field for the given object.
@@ -169,6 +221,30 @@ namespace Next::Reflection
 			// Do this instead of calling other SetValue function to call copy constructor
 			refToMember = a_value;
 		}
+		
+		// The actual name of the field in the source code
+		std::string name;
+
+		// The name to display to the user in visual applications. Can be user-defined.
+		std::string displayName;
+
+		// The description of the field. Optionally user-defined, else an empty string.
+		std::string description;
+
+		// The offset in bytes into the containing object that the field resides at.
+		uint32_t offset;
+
+		// The size returned by sizeof of the field.
+		uint32_t size;
+
+		// The StaticTypeId of the field.
+		TypeId fieldTypeId;
+
+		// The StaticTypeId of the object that the field is contained in.
+		TypeId containingTypeId;
+
+		// Flags that provide additional information about the field.
+		FieldFlags flags = FieldFlags::None;
 	};
 	
 	/**
