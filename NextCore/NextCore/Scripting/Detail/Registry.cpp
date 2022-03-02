@@ -211,12 +211,12 @@ namespace Next::Detail
 		
 		for (auto const& field : referenceType->GetInstanceFields())
 		{
-			EnsureComponentPoolInstantiated(field.fieldTypeId);
-			
 			if (!componentType.IsConvertibleFrom(field.fieldTypeId))
 			{
 				continue;
 			}
+			
+			EnsureComponentPoolInstantiated(field.fieldTypeId);
 
 			auto& poolInfo = m_componentPoolInfos.at(field.fieldTypeId);
 
