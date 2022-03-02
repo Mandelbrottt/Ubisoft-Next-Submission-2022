@@ -4,10 +4,12 @@
 
 using namespace Next;
 
+ReflectRegister(RotateOverTime);
+
 void
 RotateOverTime::OnCreate()
 {
-	m_turnSpeed = 30 + (rand() % 1000) / 10.f;
+	m_turnSpeed = 30 + (rand() % 500) / 10.f;
 }
 
 void

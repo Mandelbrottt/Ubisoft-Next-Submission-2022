@@ -13,22 +13,16 @@ namespace Next
 	class Transform : public Component
 	{
 		ReflectDeclare(Transform, Component)
-
+			
 	public:
 		Transform*
 		GetParent();
 
 		Transform const*
 		GetParent() const;
-
-		EntityId
-		GetParentId() const;
-
-		void
-		SetParent(Transform* a_parent);
 		
 		void
-		SetParent(EntityId a_parent);
+		SetParent(Transform* a_parent);
 		
 		Vector3 const&
 		GetPosition()
@@ -110,13 +104,15 @@ namespace Next
 
 		Matrix4
 		GetTransformationMatrix() const;
-		
+	
 	private:
 		Vector3 m_position = Vector3(0);
 		Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
 		Vector3 m_scale    = Vector3(1);
 
-		EntityId m_parent = EntityId::Null;
+		//EntityId m_parent = EntityId::Null;
+
+		Transform* m_parent = nullptr;
 
 		mutable Matrix4 m_cachedTransformationMatrix;
 

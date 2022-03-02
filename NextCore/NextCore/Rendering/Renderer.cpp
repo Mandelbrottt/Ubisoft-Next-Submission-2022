@@ -218,7 +218,7 @@ namespace Next::Renderer
 			{
 				auto const& vertex = primitive.GetVertex(j);
 
-				auto transformedVertex = a_modelMatrix * Vector4(vertex.position, 1.0f);
+				auto transformedVertex = Vector4(vertex.position, 1.0f) * a_modelMatrix;
 				positions[j]           = transformedVertex;
 			}
 
@@ -307,9 +307,8 @@ namespace Next::Renderer
 				auto color = Color(dotProduct, dotProduct, dotProduct);
 
 				element.color = color;
-
-				auto viewVertex      = a_view * positions[j];
-				auto projectedVertex = a_projection * viewVertex;
+				
+				auto projectedVertex = positions[j] * a_view * a_projection;
 
 				projectedVertex.x /= projectedVertex.w;
 				projectedVertex.y /= projectedVertex.w;
@@ -375,8 +374,7 @@ namespace Next::Renderer
 			
 			for (int j = 0; j < numVerts; j++)
 			{
-				auto viewVertex      = adjustedViewMatrix * positions[j];
-				auto projectedVertex = a_projection * viewVertex;
+				auto projectedVertex = positions[j] * adjustedViewMatrix * a_projection;
 
 				projectedVertex.x /= projectedVertex.w;
 				projectedVertex.y /= projectedVertex.w;

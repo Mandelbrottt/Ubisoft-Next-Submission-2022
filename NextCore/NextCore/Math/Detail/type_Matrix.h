@@ -144,10 +144,10 @@ namespace Next
 	// Matrix-Matrix Multiplication
 	template<int SizeShared, int SizeLhsY, int SizeRhsX, typename TUnderlying>
 	constexpr
-	Matrix_t<SizeRhsX, SizeShared, TUnderlying>
+	Matrix_t<SizeShared, SizeLhsY, TUnderlying>
 	operator *(Matrix_t<SizeShared, SizeLhsY, TUnderlying> a_lhs, Matrix_t<SizeRhsX, SizeShared, TUnderlying> a_rhs)
 	{
-		Matrix_t<SizeRhsX, SizeShared, TUnderlying> result { 0 };
+		Matrix_t<SizeShared, SizeLhsY, TUnderlying> result { 0 };
 
 		const auto sizeX      = SizeRhsX;
 		const auto sizeY      = SizeLhsY;
@@ -161,11 +161,11 @@ namespace Next
 					auto        leftIndex = y * SizeShared + z;
 					TUnderlying left      = a_lhs.data[leftIndex];
 
-					auto        rightIndex = y * SizeRhsX + x;
+					auto        rightIndex = z * SizeRhsX + x;
 					TUnderlying right      = a_rhs.data[rightIndex];
 
 					TUnderlying product = left * right;
-					result.data[z * SizeRhsX + x] += product;
+					result.data[y * SizeShared + x] += product;
 				}
 		// ReSharper restore CppBadChildStatementIndent
 
@@ -173,21 +173,21 @@ namespace Next
 	}
 
 	// Matrix-Vector Multiplication Specialization
-	template<int SizeShared, int SizeLhsY, typename TUnderlying>
+	template<int SizeShared, int SizeRhsX, typename TUnderlying>
 	constexpr
 	Vector_t<SizeShared, TUnderlying>
-	operator *(Matrix_t<SizeShared, SizeLhsY, TUnderlying> a_lhs, Vector_t<SizeShared, TUnderlying> a_rhs)
+	operator *(Vector_t<SizeShared, TUnderlying> a_lhs, Matrix_t<SizeRhsX, SizeShared, TUnderlying> a_rhs)
 	{
 		constexpr int size_shared = SizeShared;
-		constexpr int size_lhs_y  = SizeLhsY;
+		constexpr int size_rhs_x  = SizeRhsX;
 
 		// Don't use SizeShared directly, causes stack corruptions on some systems
 		std::size_t sizeof_data = sizeof(TUnderlying) * size_shared;
 
-		Matrix_t<1, SizeShared, TUnderlying> rhsMatrix;
-		std::memcpy(rhsMatrix.data, a_rhs.data, sizeof_data);
+		Matrix_t<SizeShared, 1, TUnderlying> lhsMatrix;
+		std::memcpy(lhsMatrix.data, a_lhs.data, sizeof_data);
 
-		Matrix_t<1, SizeShared, TUnderlying> product = a_lhs * rhsMatrix;
+		Matrix_t<SizeShared, 1, TUnderlying> product = lhsMatrix * a_rhs;
 
 		Vector_t<SizeShared, TUnderlying> result;
 		std::memcpy(result.data, product.data, sizeof_data);

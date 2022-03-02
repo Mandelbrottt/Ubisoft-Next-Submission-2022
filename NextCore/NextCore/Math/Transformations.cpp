@@ -115,7 +115,7 @@ namespace Next::Matrix
 		
 		// Negate the position vector
 		Vector3 position = Vector3(a_locRot[3]);
-		position = -(rotation * position);
+		position = -(position * rotation);
 		
 		result[0] = Vector4(rotation[0], 0);
 		result[1] = Vector4(rotation[1], 0);

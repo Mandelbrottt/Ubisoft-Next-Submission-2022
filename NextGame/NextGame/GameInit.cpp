@@ -37,7 +37,9 @@ Application_Init()
 	cubeEntity.AddComponent<Cube>();
 	cubeEntity.Transform()->SetPosition({ 0, 0, 0 });
 
-	for (int i = 0; i <= 10; i++)
+	std::vector<Entity> transforms;
+	
+	for (int i = 0; i <= 3; i++)
 	{
 		float angle = 360.f * i / 10.f;
 
@@ -45,18 +47,22 @@ Application_Init()
 		float y = 4 * std::sin(angle);
 
 		Entity entity = Entity::Create();
-		entity.AddComponent<RotateOverTime>();
-		entity.AddComponent<ReferenceTestA>();
-		entity.AddComponent<ReferenceTestB>();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
+		entity.AddComponent<RotateOverTime>();
 
 		innerModelRenderer->model = suzanne;
 
-		entity.Transform()->SetPosition({ x, y, 10 });
-	}
+		auto* transform = entity.Transform();
+		
+		transform->SetPosition({ x, y, 10 });
 
-	refA = entityA.GetComponent<ReferenceTestA>();
-	refB = entityB.GetComponent<ReferenceTestB>();
+		if (i != 0)
+		{
+			transform->SetParent(transforms[i - 1].Transform());
+		}
+
+		transforms.push_back(entity);
+	}
 }
 
 //class Something : public Behaviour

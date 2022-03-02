@@ -11,33 +11,21 @@ namespace Next
 	Transform*
 	Transform::GetParent()
 	{
-		throw "Not Implemented";
+		return m_parent;
 	}
 
 	Transform const*
 	Transform::GetParent() const
 	{
-		throw "Not Implemented";
+		return m_parent;
 	}
-
-	EntityId
-	Transform::GetParentId() const
-	{
-		throw "Not Implemented";
-	}
-
+	
 	void
 	Transform::SetParent(Transform* a_parent)
 	{
-		throw "Not Implemented";
+		m_parent = a_parent;
 	}
-
-	void
-	Transform::SetParent(EntityId a_parent)
-	{
-		throw "Not Implemented";
-	}
-
+	
 	Matrix4
 	Transform::GetTransformationMatrix() const
 	{
@@ -46,9 +34,9 @@ namespace Next
 			// Calculate New Matrix
 			Matrix4 result = Matrix4::Identity();
 			result *= Matrix::Scale(m_scale);
-			result *= Matrix::RotateZ(m_rotation.z);
+			result *= Matrix::RotateX(-m_rotation.x);
 			result *= Matrix::RotateY(m_rotation.y);
-			result *= Matrix::RotateX(m_rotation.x);
+			result *= Matrix::RotateZ(m_rotation.z);
 			result *= Matrix::Translate(m_position);
 
 			// Implement parenting
@@ -61,8 +49,8 @@ namespace Next
 		/* TODO: Get parent matrix. Find way to recalculate this matrix if parent was made dirty
 		         even if it has been marked as not dirty before this calculation is done.
 		         Events / function pointers? */
-		Matrix4 parent = Matrix4::Identity();
-
-		return parent * m_cachedTransformationMatrix;
+		Matrix4 parent = m_parent == nullptr ? Matrix4::Identity() : m_parent->GetTransformationMatrix();
+		
+		return m_cachedTransformationMatrix * parent;
 	}
 }
