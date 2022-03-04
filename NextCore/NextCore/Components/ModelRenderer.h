@@ -6,7 +6,9 @@
 
 namespace Next
 {
-	// TODO: Come up with a better name that doesn't imply that this class renders the models itself
+	/**
+	 * \brief Represents a model to be rendered in the game world, and the parameters with which to render it.
+	 */
 	class ModelRenderer : public Component
 	{
 		ReflectDeclare(ModelRenderer, Component)

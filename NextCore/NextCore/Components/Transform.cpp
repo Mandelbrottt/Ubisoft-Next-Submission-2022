@@ -27,7 +27,7 @@ namespace Next
 	}
 	
 	Matrix4
-	Transform::GetTransformationMatrix() const
+	Transform::GetTransformationMatrix(bool a_includeParent) const
 	{
 		if (m_isMatrixDirty)
 		{
@@ -38,19 +38,18 @@ namespace Next
 			result *= Matrix::RotateY(-m_rotation.y); // Not sure why these values need to be negated to get the
 			result *= Matrix::RotateZ(-m_rotation.z); // result we want
 			result *= Matrix::Translate(m_position);
-
-			// Implement parenting
-			//result *= GetParent()->GetTransformationMatrix();
-
+			
 			m_cachedTransformationMatrix = std::move(result);
 			m_isMatrixDirty = false;
 		}
 
-		/* TODO: Get parent matrix. Find way to recalculate this matrix if parent was made dirty
-		         even if it has been marked as not dirty before this calculation is done.
-		         Events / function pointers? */
-		Matrix4 parent = m_parent == nullptr ? Matrix4::Identity() : m_parent->GetTransformationMatrix();
+		Matrix4 result = m_cachedTransformationMatrix;
+
+		if (a_includeParent && m_parent)
+		{
+			result *= m_parent->GetTransformationMatrix(a_includeParent);
+		}
 		
-		return m_cachedTransformationMatrix * parent;
+		return result;
 	}
 }

@@ -12,6 +12,14 @@ namespace Next
 		Vertical,
 	};
 
+	/**
+	 * \brief Represents a virtual camera in the game world.
+	 *        Contains information about how the game should be rendered.
+	 *        When the scene is being rendered, the first camera found is used as the main camera.
+	 *
+	 * \remark Currently only supports one camera. For consistent results, ensure that only one camera
+	 *         is active at any given time.
+	 */
 	class Camera : public Component
 	{
 		ReflectDeclare(Camera, Component)
