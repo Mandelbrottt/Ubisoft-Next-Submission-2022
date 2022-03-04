@@ -110,6 +110,9 @@ namespace Next::Detail
 
 		void
 		GenerateComponentReferenceInfo(Reflection::TypeId a_typeId);
+
+		void
+		OnRemoveComponent(EntityId a_entityId, Reflection::TypeId a_typeId);
 		
 		void
 		OnPrePoolResize(Reflection::TypeId a_referenceTypeId);

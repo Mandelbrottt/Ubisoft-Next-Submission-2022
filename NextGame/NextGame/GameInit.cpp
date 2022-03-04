@@ -28,6 +28,8 @@ Application_Init()
 
 	refA->SetRefB(refB);
 	refB->SetRefA(refA);
+
+	entityB.RemoveComponent<ReferenceTestB>();
 	
 	Model* cube = Model::Create(Application::ResourcePath() + "cube/cube.obj");
 	
@@ -35,7 +37,6 @@ Application_Init()
 
 	Entity cubeEntity = Entity::Create();
 	cubeEntity.AddComponent<Cube>();
-	cubeEntity.Transform()->SetPosition({ 0, 0, 0 });
 
 	std::vector<Entity> transforms;
 	
@@ -46,6 +47,8 @@ Application_Init()
 		float x = 4 * std::cos(angle);
 		float y = 4 * std::sin(angle);
 
+		if (i == 0) x = y = 0;
+
 		Entity entity = Entity::Create();
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 		entity.AddComponent<RotateOverTime>();
@@ -54,7 +57,7 @@ Application_Init()
 
 		auto* transform = entity.Transform();
 		
-		transform->SetPosition({ x, y, 10 });
+		transform->SetPosition({ x, y, 0 });
 
 		if (i != 0)
 		{

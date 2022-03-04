@@ -110,6 +110,8 @@ namespace Next::Detail
 			return nullptr;
 		}
 		
+		OnRemoveComponent(a_entityId, a_typeId);
+
 		auto result = componentPool->RemoveComponent(a_entityId);
 		
 		return result;
@@ -226,6 +228,49 @@ namespace Next::Detail
 		}
 	}
 
+	static std::vector<Component*> g_componentsList;
+
+	void
+	Registry::OnRemoveComponent(EntityId a_entityId, Reflection::TypeId a_typeId)
+	{
+		// R(B)
+		auto& resizedPoolInfo = m_componentPoolInfos.at(a_typeId);
+
+		auto& fields = resizedPoolInfo.fieldsToRefWatch;
+
+		// 0A_B
+		for (auto const* field : fields)
+		{
+			auto containingTypeId = field->containingTypeId;
+
+			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
+
+			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
+
+			// A_B.id
+			for (auto* containingComponent : g_componentsList)
+			{
+				// GetValue returns a pointer to a pointer, dereference it to get the actual component pointer
+				Component const* referenceComponent = 
+					*static_cast<Component* const*>(field->GetValue(containingComponent));
+
+				if (referenceComponent == nullptr)
+				{
+					continue;
+				}
+
+				// B.id
+				auto referenceEntityId = referenceComponent->GetEntityId();
+
+				if (referenceEntityId == a_entityId)
+				{
+					// Set the reference pointer to nullptr since the component doesn't exist anymore
+					field->SetValue(containingComponent, nullptr);
+				}
+			}
+		}
+	}
+
 	struct ReferenceInfo
 	{
 		Reflection::TypeId containingTypeId;
@@ -236,8 +281,6 @@ namespace Next::Detail
 	};
 
 	std::vector<ReferenceInfo> g_referenceInfos;
-
-	static std::vector<Component*> g_componentsList;
 	
 	void
 	Registry::OnPrePoolResize(Reflection::TypeId a_referenceTypeId)
