@@ -16,16 +16,25 @@ namespace Next::Application
 	std::string
 	ResourcePath();
 
+	/**
+	 * \return The screen size in pixels 
+	 */
 	NEXT_CORE_EXPORT
 	extern
 	Vector2
 	ScreenSize();
-
+	
+	/**
+	 * \return The screen width in pixels 
+	 */
 	NEXT_CORE_EXPORT
 	extern
 	float
 	ScreenWidth();
-
+	
+	/**
+	 * \return The screen height in pixels 
+	 */
 	NEXT_CORE_EXPORT
 	extern
 	float
