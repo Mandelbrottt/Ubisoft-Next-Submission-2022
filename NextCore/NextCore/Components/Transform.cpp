@@ -34,9 +34,9 @@ namespace Next
 			// Calculate New Matrix
 			Matrix4 result = Matrix4::Identity();
 			result *= Matrix::Scale(m_scale);
-			result *= Matrix::RotateX(-m_rotation.x);
-			result *= Matrix::RotateY(m_rotation.y);
-			result *= Matrix::RotateZ(m_rotation.z);
+			result *= Matrix::RotateX(-m_rotation.x); // Negate rotation so that +x rotates up, +y right, +z clockwise
+			result *= Matrix::RotateY(-m_rotation.y); // Not sure why these values need to be negated to get the
+			result *= Matrix::RotateZ(-m_rotation.z); // result we want
 			result *= Matrix::Translate(m_position);
 
 			// Implement parenting

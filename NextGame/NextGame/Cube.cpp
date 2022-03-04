@@ -12,7 +12,8 @@ Cube::OnCreate()
 {
 	auto* transform = Transform();
 
-	transform->SetPosition({ 0.0f, 0.0f, 0 });
+	transform->SetPosition({ 10, 10, -10 });
+	transform->SetRotation({ -45, -45, 0 });
 
 	auto* camera = AddComponent<Camera>();
 	camera->SetFov(105, FovType::Horizontal);
@@ -35,7 +36,7 @@ Cube::OnUpdate()
 	position -= transform->Up()      * Input::GetAxis(AxisCode::LeftTrigger)  * moveSpeed * Time::DeltaTime();
 	
 	rotation.x += Input::GetAxis(AxisCode::VerticalLook)   * turnSpeed * Time::DeltaTime();
-	rotation.y -= Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
+	rotation.y += Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
 
 	rotation.x = std::clamp(rotation.x, -85.f, 85.f);
 
