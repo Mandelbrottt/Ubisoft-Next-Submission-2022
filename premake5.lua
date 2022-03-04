@@ -57,7 +57,7 @@ workspace "NextSubmission"
 
         include "NextCore"
 
-        include "NextGUI"
+        -- include "NextGUI"
 
         include "NextBootstrap"
 
