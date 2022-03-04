@@ -1,7 +1,5 @@
 #pragma once
 
-// Keep to avoid errors when included
-
 #include "Color.h"
 #include "Sprite.h"
 
@@ -18,6 +16,10 @@ namespace Next
 		Quad,
 	};
 	
+	/**
+	 * \brief A primitive that cannot be broken down anymore in the given underlying framework.
+	 *        Represents a quad or a triangle with 3D vertices, uvs, and a texture.
+	 */
 	class RenderPrimitive final
 	{
 		friend class Mesh;
@@ -37,8 +39,13 @@ namespace Next
 		explicit
 		RenderPrimitive(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
+		/**
+		 * \brief Update the underlying data per-frame
+		 * \param a_deltaTime Time since last frame in milliseconds.
+		 *        Leave empty for time to be calculated automatically.
+		 */
 		void
-		OnUpdate(float a_deltaTime);
+		OnUpdate(float a_deltaTime = -1);
 		
 		/**
 		 * \brief Load an image from the given file. The image can be a sprite sheet.
@@ -52,7 +59,7 @@ namespace Next
 		LoadFromFile(std::string_view a_fileName, unsigned int a_nColumns = 1, unsigned int a_nRows = 1);
 		
 		/**
-		 * \brief Render the sprite to the screen
+		 * \brief Render the primitive to the screen
 		 */
 		void
 		OnRender();

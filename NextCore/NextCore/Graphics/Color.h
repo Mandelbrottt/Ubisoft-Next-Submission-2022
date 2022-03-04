@@ -2,6 +2,9 @@
 
 namespace Next
 {
+	/**
+	 * \brief Represents a color using the 32R 32G 32B 32A color format.
+	 */
 	struct Color
 	{
 		constexpr

@@ -11,7 +11,7 @@ namespace Next::Detail
 		LoadFromFile(
 			std::string_view     a_filename,
 			model_file_stream_t& a_fileStream,
-			mesh_container_t*    a_container
+			mesh_container_t&    a_container
 		) override;
 
 	private:

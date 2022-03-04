@@ -13,9 +13,11 @@ namespace Next::Detail
 	WavefrontModelLoader::LoadFromFile(
 		std::string_view     a_filename,
 		model_file_stream_t& a_fileStream,
-		mesh_container_t*    a_container
+		mesh_container_t&    a_container
 	)
 	{
+		a_container.clear();
+		
 		std::string line;
 		while (!a_fileStream.eof())
 		{
@@ -36,30 +38,31 @@ namespace Next::Detail
 			char& firstCharacter = line[index];			
 			char& secondCharacter = line[index + 1];
 
+			// Comments
 			if (firstCharacter == '#')
 			{
-				// Comments
 				continue;
 			}
 
-			if (firstCharacter == 'v')
+			if (firstCharacter == 'v')                     // Vertex Information
 			{
-				if (secondCharacter == 't')
+				if (secondCharacter == 't')                // UV Coordinates
 				{
 					ProcessVertexUvData(line_c_str);
-				} else if (secondCharacter == 'n')
+				} else if (secondCharacter == 'n')         // Normal Vector
 				{
 					ProcessVertexNormalData(line_c_str);
-				} else
+				} else                                     // Vertex Position
 				{
 					ProcessVertexPositionData(line_c_str);
 				}
-			} else if (firstCharacter == 'f')
+			} else if (firstCharacter == 'f')              // Face Information
 			{
 				ProcessFaceData(line_c_str);
 			}
 		}
 
+		// Load in the texture
 		std::filesystem::path path = a_filename;
 		path.replace_extension(".bmp");
 
@@ -72,12 +75,14 @@ namespace Next::Detail
 			}
 		}
 
+		// Generate the mesh
 		Mesh mesh;
 		bool result = mesh.GeneratePrimitives(path.string(), m_vertices, m_vertexCount);
 
 		if (result)
 		{
-			a_container->emplace_back(std::move(mesh));
+			// Add the mesh to the mesh container
+			a_container.emplace_back(std::move(mesh));
 		}
 		
 		return result;

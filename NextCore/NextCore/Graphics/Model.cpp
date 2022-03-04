@@ -20,7 +20,7 @@ namespace Next
 		std::string_view     a_filename,
 		std::fs::path const& a_extension,
 		const char*          a_checkExtension,
-		mesh_container_t*    a_meshContainer
+		mesh_container_t&    a_meshContainer
 	)
 	{
 		static_assert(std::is_convertible_v<TModelLoader*, Detail::IModelLoader*>);
@@ -66,7 +66,7 @@ namespace Next
 		bool result;
 		
 		// TODO: Add more model file support
-		if ((result = TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", &m_meshes))) {}
+		if ((result = TryLoadModelFile<Detail::WavefrontModelLoader>(a_filename, extension, ".obj", m_meshes))) {}
 
 		return result;
 	}
