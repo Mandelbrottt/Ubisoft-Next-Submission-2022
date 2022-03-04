@@ -112,6 +112,8 @@ namespace Next::Detail
 
 		m_availableIndexQueue.push(index);
 
+		m_indexMap.erase(iter);
+
 		return true;
 	}
 

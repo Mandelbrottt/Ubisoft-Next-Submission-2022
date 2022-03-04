@@ -43,7 +43,11 @@ namespace Next::Detail
 			return;
 		}
 
-		pool->GetComponent(a_entityId)->OnFirstUpdate();
+		auto* component = pool->GetComponent(a_entityId);
+		if (component)
+		{
+			component->OnFirstUpdate();
+		}
 	}
 	
 	void
@@ -110,7 +114,7 @@ namespace Next::Detail
 			return nullptr;
 		}
 		
-		OnRemoveComponent(a_entityId, a_typeId);
+		InvalidateReferencesToComponent(a_entityId, a_typeId);
 
 		auto result = componentPool->RemoveComponent(a_entityId);
 		
@@ -231,7 +235,7 @@ namespace Next::Detail
 	static std::vector<Component*> g_componentsList;
 
 	void
-	Registry::OnRemoveComponent(EntityId a_entityId, Reflection::TypeId a_typeId)
+	Registry::InvalidateReferencesToComponent(EntityId a_entityId, Reflection::TypeId a_typeId)
 	{
 		// R(B)
 		auto& resizedPoolInfo = m_componentPoolInfos.at(a_typeId);
