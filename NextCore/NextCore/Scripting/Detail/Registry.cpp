@@ -8,11 +8,11 @@ namespace Next::Detail
 	EntityId
 	Registry::OnCreateEntity()
 	{
-		EntityId newEntity = IncrementEntityCounter();
+		EntityId newEntityId = IncrementEntityCounter();
 
-		m_activeEntities.insert(newEntity);
+		m_activeEntities.insert(newEntityId);
 
-		return newEntity;
+		return newEntityId;
 	}
 
 	void
@@ -198,14 +198,14 @@ namespace Next::Detail
 			auto pair = std::make_pair(a_typeId, std::move(poolInfo));
 			iter = m_componentPoolInfos.emplace(std::move(pair)).first;
 
-			GenerateComponentReferenceInfo(a_typeId);
+			GenerateComponentReferenceTrackingInfo(a_typeId);
 		}
 		
 		return &iter->second.pool;
 	}
 
 	void
-	Registry::GenerateComponentReferenceInfo(Reflection::TypeId a_typeId)
+	Registry::GenerateComponentReferenceTrackingInfo(Reflection::TypeId a_typeId)
 	{
 		using Reflection::Type;
 		using Reflection::TypeId;

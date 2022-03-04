@@ -10,6 +10,10 @@
 
 namespace Next::Renderer
 {
+	/**
+	 * \brief An element in the render queue that contains all the information the
+	 *        renderer needs to draw a render primitive
+	 */
 	struct RenderQueueElement
 	{
 		explicit
@@ -70,6 +74,7 @@ namespace Next::Renderer
 		Matrix4 const& a_projection
 	);
 
+	[[deprecated("Currrently not working")]]
 	static
 	void
 	RenderSkybox(CubeMap const& a_skybox, Matrix4 const& a_view, Matrix4 const& a_projection);
@@ -117,6 +122,11 @@ namespace Next::Renderer
 		TransformPrimitivesByModelMatrix(offset, element.numPrimitives, element.modelMatrix);
 	}
 
+	/**
+	 * \brief Determine if the given render queue element represents a
+	 *        primitive that can be properly rendered to the screen.
+	 * \param a_element the RenderQueueElement to check. 
+	 */
 	static
 	bool
 	IsValidPrimitive(RenderQueueElement const& a_element);

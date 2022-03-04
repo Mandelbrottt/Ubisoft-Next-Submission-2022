@@ -3,16 +3,6 @@
 #include <string>
 
 #include "Reflection/Reflection.h"
-//
-//#define GenerateObjectConstructors(_class_) \
-//		_MACRO_AUTO_FORMAT_INDENT \
-//	_class_() \
-//		: Base({ #_class_ }) {} \
-//	protected: \
-//		explicit \
-//		_class_(const char* a_name) \
-//			: Base({ a_name }) { } \
-//		~_class_() override = default; \
 
 namespace Next
 {
@@ -42,7 +32,3 @@ namespace Next
 		Object(Object&& a_other) = default;
 	};
 }
-
-//#ifndef NEXT_CORE
-//	#undef GenerateObjectConstructors
-//#endif
