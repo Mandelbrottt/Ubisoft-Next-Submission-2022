@@ -34,13 +34,16 @@ namespace Next
 		};
 
 	public:
+		[[nodiscard]]
 		std::size_t
 		GetPointCount() const;
 
 		// Make return type std::optional?
+		[[nodiscard]]
 		Point
 		GetPoint(int a_index, bool* a_success = nullptr) const;
 		
+		[[nodiscard]]
 		LineType
 		GetLineType() const;
 

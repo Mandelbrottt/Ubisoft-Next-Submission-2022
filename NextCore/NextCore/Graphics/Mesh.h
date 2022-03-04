@@ -32,6 +32,7 @@ namespace Next
 			vertex_count_container_t const& a_vertexCounts
 		);
 
+		[[nodiscard]]
 		primitive_container_t const&
 		GetPrimitives() const
 		{

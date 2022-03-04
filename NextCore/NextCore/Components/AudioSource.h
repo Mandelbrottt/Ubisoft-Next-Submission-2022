@@ -39,6 +39,7 @@ namespace Next
 		/**
 		 * \return Whether the sound is currently playing.
 		 */
+		[[nodiscard]]
 		bool
 		IsPlaying() const;
 		
