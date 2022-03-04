@@ -27,6 +27,10 @@ namespace Next::Reflection
 	
 	namespace Detail
 	{
+		/**
+		 * \remark Only to be called with a non-pointer, non-reference, non-cv-qualified type.
+		 *         ie. int, float instead of int**, float const&
+		 */
 		template<typename T>
 		static
 		TypeId

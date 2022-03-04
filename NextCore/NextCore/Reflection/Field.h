@@ -42,57 +42,49 @@ namespace Next::Reflection
 			  fieldTypeId(a_fieldTypeId),
 			  containingTypeId(a_containingTypeId),
 			  flags(a_flags) {}
-
-		[[nodiscard]]
+		
 		std::string const&
 		GetName() const
 		{
 			return name;
 		}
-
-		[[nodiscard]]
+		
 		std::string const&
 		GetDisplayName() const
 		{
 			return displayName;
 		}
-
-		[[nodiscard]]
+		
 		std::string const&
 		GetDescription() const
 		{
 			return description;
 		}
-
-		[[nodiscard]]
+		
 		uint32_t
 		GetOffset() const
 		{
 			return offset;
 		}
-
-		[[nodiscard]]
+		
 		uint32_t
 		GetSize() const
 		{
 			return size;
 		}
-
-		[[nodiscard]]
+		
 		TypeId
 		GetFieldTypeId() const
 		{
 			return fieldTypeId;
 		}
-
-		[[nodiscard]]
+		
 		TypeId
 		GetContainingTypeId() const
 		{
 			return containingTypeId;
 		}
-
-		[[nodiscard]]
+		
 		FieldFlags
 		GetFlags() const
 		{

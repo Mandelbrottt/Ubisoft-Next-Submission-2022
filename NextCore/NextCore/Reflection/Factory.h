@@ -54,7 +54,7 @@ namespace Next::Reflection
 		// Break normal sfinae convention here
 		// Both values have to be in the same struct since types will friend the struct, and we can't
 		// check if we can construct T in the struct's template parameters because the parameters
-		// are technically outside the struct
+		// would technically be outside the struct
 		struct typed_factory_friend_helper
 		{
 			template<typename T, typename = void>
@@ -71,6 +71,11 @@ namespace Next::Reflection
 	template<typename T, bool = Detail::typed_factory_friend_helper_v<T>>
 	struct TypedFactory;
 
+	/**
+	 * \brief A factory for creating objects that do not have default constructors, or
+	 *        for classes that do not declare the TypedFactory as a friend.
+	 * \tparam T The underlying type to construct
+	 */
 	template<typename T>
 	struct TypedFactory<T, false> final : GenericFactory
 	{
@@ -92,7 +97,12 @@ namespace Next::Reflection
 			return Reflection::GetTypeId<T>();
 		}
 	};
-
+	
+	/**
+	 * \brief A factory for creating objects that either have default constructors, or
+	 *        for classes that declare the TypedFactory as a friend. Mainly useful for components.
+	 * \tparam T The underlying type to construct
+	 */
 	template<typename T>
 	struct TypedFactory<T, true> final : GenericFactory
 	{

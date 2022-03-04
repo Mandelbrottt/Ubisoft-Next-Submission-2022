@@ -45,6 +45,14 @@ namespace Next::Reflection
 	template<typename T, typename Tuple, int N = 0>
 	constexpr std::size_t tuple_element_index_v = tuple_element_index<T, Tuple, N>::value;
 
+	/**
+	 * \brief Return a value from a variable list of parameters with the given type T
+	 * \tparam T The type to retrieve
+	 * \tparam N If there are multiple of the same type, which to return in order of occurrence
+	 * \tparam TArgs The types of the variable list of parameters
+	 * \param args The variable list of parameters
+	 * \return 
+	 */
 	template<typename T, int N = 0, typename... TArgs>
 	constexpr T Pick(TArgs ...args) noexcept
 	{
