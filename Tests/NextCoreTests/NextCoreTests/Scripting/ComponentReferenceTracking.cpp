@@ -87,8 +87,8 @@ namespace Scripting
 		ASSERT_NE(oldRefB_B, refA->refB);
 
 		// Check that all references to the removed RefTestA are set to nullptr
+		// NOTE: refB doesn't have to be invalidated here because RefTestB ComponentPool is untouched
 		entityA.RemoveComponent<RefTestA>();
-		refB = entityB.GetComponent<RefTestB>();
 		ASSERT_EQ(refB->refA, nullptr);
 
 		// Cleanup after ourselves
