@@ -4,9 +4,15 @@
 
 #include "Reflection/Factory.h"
 
+// Expose default size to users who explicitly want it, namely for tests
+int g_componentPoolDefaultSize = 10;
+
 namespace Next::Detail
 {
 	using Reflection::GenericFactory;
+
+	ComponentPool::ComponentPool(GenericFactory const* a_factory)
+		: ComponentPool(a_factory, g_componentPoolDefaultSize) {}
 
 	ComponentPool::ComponentPool(GenericFactory const* a_factory, size_type a_initialSize)
 		: m_factory(a_factory),
@@ -18,7 +24,7 @@ namespace Next::Detail
 		
 		Resize(a_initialSize);
 	}
-
+	
 	Component*
 	ComponentPool::AddComponent(EntityId a_entityId)
 	{

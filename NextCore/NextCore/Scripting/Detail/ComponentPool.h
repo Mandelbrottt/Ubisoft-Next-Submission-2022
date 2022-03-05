@@ -28,7 +28,10 @@ namespace Next::Detail
 		using size_type = uint32_t;
 
 		explicit
-		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize = 1);
+		ComponentPool(Reflection::GenericFactory const* a_factory);
+		
+		explicit
+		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize);
 
 		/**
 		 * \brief Set callbacks for when the component pool is resized. This gives the opportunity for

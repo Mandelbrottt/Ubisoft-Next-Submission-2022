@@ -40,9 +40,13 @@ project(project_name)
     links {
         "NextCore",
         "NextGUI",
+        "NextAPI",
+        "dxguid",
+        "dsound"
     }
 
     libdirs {
+        user_config.output_dir .. "/NextAPI/",
         user_config.output_dir .. "/NextCore/",
         user_config.output_dir .. "/NextGUI/",
     }
@@ -56,6 +60,24 @@ project(project_name)
     postbuildcommands {
         "\"%{cfg.buildtarget.abspath}\""
     }
+
+    filter "architecture:Win32"
+        libdirs {
+            "%{wks.location}/NextAPI/glut/lib/",
+        }
+        
+        postbuildcommands {
+            "{COPY} \"%{wks.location}NextAPI/glut/bin/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+        }
+
+    filter "architecture:x64"
+        libdirs {
+            "%{wks.location}/NextAPI/glut/lib/x64/",
+        }
+        
+        postbuildcommands {
+            "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+        }
 
     filter "system:windows"
         systemversion "latest"
