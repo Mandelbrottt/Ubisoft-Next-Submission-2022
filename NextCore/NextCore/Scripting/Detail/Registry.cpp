@@ -234,24 +234,27 @@ namespace Next::Detail
 
 	static std::vector<Component*> g_componentsList;
 
+	/* HACK: The following three functions should be refactored, but because their innermost scope has very
+	         different requirements from each-other, it is very difficult to refactor them in a way that isn't
+	         super verbose. For now just copy and paste and deal with it */
 	void
 	Registry::InvalidateReferencesToComponent(EntityId a_entityId, Reflection::TypeId a_typeId)
 	{
-		// R(B)
+		// Retrieve the component pool info that contains all the types that depend on referenceType
 		auto& resizedPoolInfo = m_componentPoolInfos.at(a_typeId);
 
 		auto& fields = resizedPoolInfo.fieldsToRefWatch;
-
-		// 0A_B
+		
+		// Iterate through all of the fields that are of pointer type to referenceType
 		for (auto const* field : fields)
 		{
+			// Get the type containing the field and its corresponding componentPoolInfo
 			auto containingTypeId = field->containingTypeId;
-
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
 			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
-
-			// A_B.id
+			
+			// Iterate through all of the components and store the entityId of their references
 			for (auto* containingComponent : g_componentsList)
 			{
 				// GetValue returns a pointer to a pointer, dereference it to get the actual component pointer
@@ -263,7 +266,7 @@ namespace Next::Detail
 					continue;
 				}
 
-				// B.id
+				// Find all references to the component being destroyed and null them out
 				auto referenceEntityId = referenceComponent->GetEntityId();
 
 				if (referenceEntityId == a_entityId)
