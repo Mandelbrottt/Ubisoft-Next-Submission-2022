@@ -188,7 +188,7 @@ namespace Next::Detail
 			}
 
 			auto componentPool = ComponentPool(type->GetFactory());
-			componentPool.SetResizeCallbacks(this, &Registry::OnPrePoolResize, &Registry::OnPostPoolResize);
+			componentPool.SetResizeCallbacks(this, &Registry::CacheAllReferencesOfType, &Registry::RestoreAllReferencesOfType);
 
 			ComponentPoolInfo poolInfo = {
 				std::move(componentPool),
@@ -287,26 +287,25 @@ namespace Next::Detail
 	std::vector<ReferenceInfo> g_referenceInfos;
 	
 	void
-	Registry::OnPrePoolResize(Reflection::TypeId a_referenceTypeId)
+	Registry::CacheAllReferencesOfType(Reflection::TypeId a_referenceTypeId)
 	{
-		// R(B)
+		// Retrieve the component pool info that contains all the types that depend on referenceType
 		auto& resizedPoolInfo = m_componentPoolInfos.at(a_referenceTypeId);
 
 		auto& fields = resizedPoolInfo.fieldsToRefWatch;
 
-		// 0A_B
+		// Iterate through all of the fields that are of pointer type to referenceType
 		for (auto const* field : fields)
 		{
+			// Get the type containing the field and its corresponding componentPoolInfo
 			auto containingTypeId = field->containingTypeId;
-
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
 			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
 
-			// A_B.id
+			// Iterate through all of the components and store the entityId of their references
 			for (auto* containingComponent : g_componentsList)
 			{
-				// A.id
 				auto containingEntityId = containingComponent->GetEntityId();
 
 				// GetValue returns a pointer to a pointer, dereference it to get the actual component pointer
@@ -318,9 +317,11 @@ namespace Next::Detail
 					continue;
 				}
 
-				// B.id
+				// Retrieve the entityId of the reference
 				auto referenceEntityId = referenceComponent->GetEntityId();
 
+				// We need to store the current pointer value so that we can
+				// value check against it in the restore function
 				ReferenceInfo something = {
 					containingTypeId,
 					containingEntityId,
@@ -332,6 +333,7 @@ namespace Next::Detail
 			}
 		}
 
+		// Sort the referenceInfos so that we can more efficiently iterate over the list
 		auto sortPredicate = [](ReferenceInfo const& a_lhs, ReferenceInfo const& a_rhs)
 		{
 			auto lhs = static_cast<entity_id_underlying_t>(a_lhs.containingTypeId);
@@ -344,32 +346,32 @@ namespace Next::Detail
 	}
 
 	void
-	Registry::OnPostPoolResize(Reflection::TypeId a_referenceTypeId)
+	Registry::RestoreAllReferencesOfType(Reflection::TypeId a_referenceTypeId)
 	{
-		// R(B)
+		// Retrieve the component pool info that contains all the types that depend on referenceType
 		auto& resizedPoolInfo = m_componentPoolInfos.at(a_referenceTypeId);
 
 		auto& fields = resizedPoolInfo.fieldsToRefWatch;
-
-		// 0A_B
+		
+		// Iterate through all of the fields that are of pointer type to referenceType
 		for (auto const* field : fields)
 		{
+			// Get the type containing the field and its corresponding componentPoolInfo
 			auto containingTypeId = field->containingTypeId;
-
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
 			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
-
-			// A_B.id
+			
+			// Re-iterate through all of the components and reconstruct their references
 			for (auto* containingComponent : g_componentsList)
 			{
-				// A.id
 				auto containingEntityId = containingComponent->GetEntityId();
 				
 				// GetValue returns a pointer to a pointer, dereference it to get the actual component pointer
 				void const* referencePtrValue = 
 					*static_cast<Component* const*>(field->GetValue(containingComponent));
 
+				// Search the reference infos list for the correct reference info
 				auto findPredicate = [&](ReferenceInfo const& a_value)
 				{
 					return a_value.containingTypeId == containingTypeId &&
@@ -384,8 +386,8 @@ namespace Next::Detail
 					continue;
 				}
 
+				// Restore the reference by invalidating the component pointer and setting the field in the component
 				Component* referenceComponent = GetComponent(iter->referenceEntityId, a_referenceTypeId);
-
 				field->SetValue(containingComponent, &referenceComponent, sizeof(referenceComponent));
 			}
 		}

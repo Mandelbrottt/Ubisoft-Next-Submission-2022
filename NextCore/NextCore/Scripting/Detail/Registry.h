@@ -220,13 +220,13 @@ namespace Next::Detail
 		void
 		InvalidateReferencesToComponent(EntityId a_entityId, Reflection::TypeId a_typeId);
 
-		// Called right before the given component pool is resized and reallocated.
+		// Retrieves and caches all of the references stored in all of the components of the given type
 		void
-		OnPrePoolResize(Reflection::TypeId a_referenceTypeId);
+		CacheAllReferencesOfType(Reflection::TypeId a_referenceTypeId);
 		
-		// Called right after the given component pool is resized and reallocated.
+		// Restores all of the references stored in all of the components of the given type
 		void
-		OnPostPoolResize(Reflection::TypeId a_referenceTypeId);
+		RestoreAllReferencesOfType(Reflection::TypeId a_referenceTypeId);
 
 	private:
 		EntityId m_nextEntityId = EntityId::FirstValid;
