@@ -33,6 +33,8 @@ namespace Next::Detail
 		explicit
 		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize);
 
+		~ComponentPool();
+
 		/**
 		 * \brief Set callbacks for when the component pool is resized. This gives the opportunity for
 		 *        observers to collect any information about the state and memory of the pool before it

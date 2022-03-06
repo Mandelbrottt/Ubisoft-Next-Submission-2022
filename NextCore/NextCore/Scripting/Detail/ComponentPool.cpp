@@ -24,7 +24,15 @@ namespace Next::Detail
 		
 		Resize(a_initialSize);
 	}
-	
+
+	ComponentPool::~ComponentPool()
+	{
+		for (auto const& [entityId, index] : m_indexMap)
+		{
+			RemoveComponent(entityId);
+		}
+	}
+
 	Component*
 	ComponentPool::AddComponent(EntityId a_entityId)
 	{

@@ -14,8 +14,9 @@ namespace Next
 	decltype(Entity::s_entityIdDestroyBuffer) Entity::s_entityIdDestroyBuffer;
 	
 	//decltype(Entity::s_registry) Entity::s_registry;
-
-	static Detail::Registry g_registry;
+	
+	// Expose main registry to users who explicitly want it, namely for tests
+	Detail::Registry g_mainEntityRegistry;
 	
 	Entity::Entity(EntityId a_id)
 	{
@@ -167,6 +168,6 @@ namespace Next
 	Detail::Registry&
 	Entity::Registry()
 	{
-		return g_registry;
+		return g_mainEntityRegistry;
 	}
 }
