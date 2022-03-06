@@ -2,6 +2,11 @@
 
 extern int g_componentPoolDefaultSize;
 
+namespace Next
+{
+	extern Detail::Registry g_mainEntityRegistry;
+}
+	
 namespace Scripting
 {
 	using namespace Next;
@@ -39,8 +44,11 @@ namespace Scripting
 	ReflectRegister(RefTestA);
 	ReflectRegister(RefTestB);
 
-	TEST(Components, ReferenceTracking)
+	TEST(Component, ReferenceTracking)
 	{
+		// Reset the registry
+		g_mainEntityRegistry.Reset();
+
 		// Create the initial entities
 		Entity entityA = Entity::Create();
 		auto* refA = entityA.AddComponent<RefTestA>();
