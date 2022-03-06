@@ -5,6 +5,16 @@
 
 namespace Next::Detail
 {
+	void
+	Registry::Reset()
+	{
+		m_nextEntityId = EntityId::FirstValid;
+
+		m_activeEntities = {};
+
+		m_componentPoolInfos = {};
+	}
+
 	EntityId
 	Registry::OnCreateEntity()
 	{

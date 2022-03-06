@@ -19,6 +19,9 @@ namespace Next::Detail
 	class Registry
 	{
 	public:
+		void
+		Reset();
+
 		/**
 		 * \brief Creates and registers an entityId with the registry.
 		 * \return The EntityId of the newly created entity.
