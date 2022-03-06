@@ -51,11 +51,17 @@ namespace Next::Input::Detail
 
 	struct InputMap
 	{
-		using key_underlying_t = std::underlying_type_t<KeyCode>;
-		using button_underlying_t = std::underlying_type_t<ButtonCode>;
+		using key_underlying_t          = std::underlying_type_t<KeyCode>;
+		using mouse_button_underlying_t = std::underlying_type_t<MouseButton>;
 
-		constexpr static int key_size    = 256;
-		constexpr static int button_size = 16;
+	#ifdef _WIN32
+		// Windows uses bit-masks for XINPUT button codes, so use a different underlying type than ButtonCode 
+		using gamepad_button_underlying_t = uint16_t;
+	#endif
+
+		constexpr static int key_size          = 256;
+		constexpr static int button_size       = 16;
+		constexpr static int mouse_button_size = 5;
 		
 		constexpr
 		InputMap();
@@ -68,16 +74,25 @@ namespace Next::Input::Detail
 		}
 
 		constexpr
-		button_underlying_t
-		operator [](ButtonCode a_button) const
+		gamepad_button_underlying_t
+		operator [](GamepadButton a_gamepadButton) const
 		{
-			return m_buttons[a_button];
+			return m_buttons[a_gamepadButton];
+		}
+		
+		constexpr
+		mouse_button_underlying_t
+		operator [](MouseButton a_mouseButton) const
+		{
+			return m_mouseButtons[a_mouseButton];
 		}
 
 	private:
 		EnumIndexedArray<KeyCode, key_underlying_t, key_size> m_keys;
 
-		EnumIndexedArray<ButtonCode, button_underlying_t, button_size> m_buttons;
+		EnumIndexedArray<GamepadButton, gamepad_button_underlying_t, button_size> m_buttons;
+
+		EnumIndexedArray<MouseButton, mouse_button_underlying_t, mouse_button_size> m_mouseButtons;
 	};
 	
 	constexpr
@@ -86,21 +101,27 @@ namespace Next::Input::Detail
 		// TODO: Make keycodes portable
 	#ifdef _WIN32
 		// Gamepad buttons
-		m_buttons[ButtonCode::DPadUp]        = XINPUT_GAMEPAD_DPAD_UP;
-		m_buttons[ButtonCode::DPadDown]      = XINPUT_GAMEPAD_DPAD_DOWN;
-		m_buttons[ButtonCode::DPadLeft]      = XINPUT_GAMEPAD_DPAD_LEFT;
-		m_buttons[ButtonCode::DPadRight]     = XINPUT_GAMEPAD_DPAD_RIGHT;
-		m_buttons[ButtonCode::South]         = XINPUT_GAMEPAD_A;
-		m_buttons[ButtonCode::West]          = XINPUT_GAMEPAD_B;
-		m_buttons[ButtonCode::East]          = XINPUT_GAMEPAD_X;
-		m_buttons[ButtonCode::North]         = XINPUT_GAMEPAD_Y;
-		m_buttons[ButtonCode::LeftShoulder]  = XINPUT_GAMEPAD_LEFT_SHOULDER;
-		m_buttons[ButtonCode::RightShoulder] = XINPUT_GAMEPAD_RIGHT_SHOULDER;
-		m_buttons[ButtonCode::LeftStick]     = XINPUT_GAMEPAD_LEFT_THUMB;
-		m_buttons[ButtonCode::RightStick]    = XINPUT_GAMEPAD_RIGHT_THUMB;
-		m_buttons[ButtonCode::Start]         = XINPUT_GAMEPAD_START;
-		m_buttons[ButtonCode::Select]        = XINPUT_GAMEPAD_BACK;
+		m_buttons[GamepadButton::DPadUp]        = XINPUT_GAMEPAD_DPAD_UP;
+		m_buttons[GamepadButton::DPadDown]      = XINPUT_GAMEPAD_DPAD_DOWN;
+		m_buttons[GamepadButton::DPadLeft]      = XINPUT_GAMEPAD_DPAD_LEFT;
+		m_buttons[GamepadButton::DPadRight]     = XINPUT_GAMEPAD_DPAD_RIGHT;
+		m_buttons[GamepadButton::South]         = XINPUT_GAMEPAD_A;
+		m_buttons[GamepadButton::West]          = XINPUT_GAMEPAD_B;
+		m_buttons[GamepadButton::East]          = XINPUT_GAMEPAD_X;
+		m_buttons[GamepadButton::North]         = XINPUT_GAMEPAD_Y;
+		m_buttons[GamepadButton::LeftShoulder]  = XINPUT_GAMEPAD_LEFT_SHOULDER;
+		m_buttons[GamepadButton::RightShoulder] = XINPUT_GAMEPAD_RIGHT_SHOULDER;
+		m_buttons[GamepadButton::LeftStick]     = XINPUT_GAMEPAD_LEFT_THUMB;
+		m_buttons[GamepadButton::RightStick]    = XINPUT_GAMEPAD_RIGHT_THUMB;
+		m_buttons[GamepadButton::Start]         = XINPUT_GAMEPAD_START;
+		m_buttons[GamepadButton::Select]        = XINPUT_GAMEPAD_BACK;
 
+		m_mouseButtons[MouseButton::Left]   = VK_LBUTTON;
+		m_mouseButtons[MouseButton::Right]  = VK_RBUTTON;
+		m_mouseButtons[MouseButton::Middle] = VK_MBUTTON;
+		m_mouseButtons[MouseButton::Mouse4] = VK_XBUTTON1;
+		m_mouseButtons[MouseButton::Mouse5] = VK_XBUTTON2;
+		
 		for (int i = 0; i < 26; i++)
 		{
 			const key_underlying_t firstLetterCode  = static_cast<key_underlying_t>(KeyCode::A);

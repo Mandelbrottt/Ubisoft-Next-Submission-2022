@@ -3,6 +3,8 @@
 #include <MinimalInclude.h>
 #include <algorithm>
 
+#include <NextAPI/app.h>
+
 using namespace Next;
 
 ReflectRegister(Cube);
@@ -30,16 +32,20 @@ Cube::OnUpdate()
 	float moveSpeed = 3;
 	float turnSpeed = 180;
 
-	position += transform->Forward() * Input::GetAxis(AxisCode::Vertical)     * moveSpeed * Time::DeltaTime();
-	position += transform->Right()   * Input::GetAxis(AxisCode::Horizontal)   * moveSpeed * Time::DeltaTime();
-	position += transform->Up()      * Input::GetAxis(AxisCode::RightTrigger) * moveSpeed * Time::DeltaTime();
-	position -= transform->Up()      * Input::GetAxis(AxisCode::LeftTrigger)  * moveSpeed * Time::DeltaTime();
+	position += transform->Forward() * Input::GetAxis(Axis::Vertical)     * moveSpeed * Time::DeltaTime();
+	position += transform->Right()   * Input::GetAxis(Axis::Horizontal)   * moveSpeed * Time::DeltaTime();
+	position += transform->Up()      * Input::GetAxis(Axis::RightTrigger) * moveSpeed * Time::DeltaTime();
+	position -= transform->Up()      * Input::GetAxis(Axis::LeftTrigger)  * moveSpeed * Time::DeltaTime();
 	
-	rotation.x += Input::GetAxis(AxisCode::VerticalLook)   * turnSpeed * Time::DeltaTime();
-	rotation.y += Input::GetAxis(AxisCode::HorizontalLook) * turnSpeed * Time::DeltaTime();
+	rotation.x += Input::GetAxis(Axis::VerticalLook)   * turnSpeed * Time::DeltaTime();
+	rotation.y += Input::GetAxis(Axis::HorizontalLook) * turnSpeed * Time::DeltaTime();
 
 	rotation.x = std::clamp(rotation.x, -85.f, 85.f);
 
 	transform->SetPosition(position);
 	transform->SetRotation(rotation);
+
+	Vector2 mousePos           = Input::GetMousePosition();
+	Vector2 mousePosNormalized = Input::GetMousePosition(true);
+	printf("Mouse Position (%f, %f) - Normalized (%f, %f)\n", mousePos.x, mousePos.y, mousePosNormalized.x, mousePosNormalized.y);
 }

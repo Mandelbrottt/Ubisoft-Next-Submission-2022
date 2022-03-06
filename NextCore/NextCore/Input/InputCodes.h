@@ -4,7 +4,7 @@
 
 namespace Next
 {
-	enum class AxisCode : uint8_t
+	enum class Axis : uint8_t
 	{
 		// [-1, 1]
 		LeftStickX,
@@ -31,7 +31,7 @@ namespace Next
 		R2             = RightTrigger,
 	};
 
-	enum class ButtonCode : uint16_t
+	enum class GamepadButton : uint8_t
 	{
 		South,
 		Cross         = South,
@@ -61,6 +61,22 @@ namespace Next
 		Menu          = Start,
 		Select,		  
 		Back          = Select,
+	};
+
+	enum class MouseButton : uint8_t
+	{
+		Mouse1,
+		Left      = Mouse1,
+		Primary   = Mouse1,
+		Mouse2,
+		Right     = Mouse2,
+		Secondary = Mouse2,
+		Mouse3,
+		Middle    = Mouse3,
+		Mouse4,
+		Back      = Mouse4,
+		Mouse5,
+		Forward   = Mouse5,
 	};
 	
 	enum class KeyCode : uint8_t
