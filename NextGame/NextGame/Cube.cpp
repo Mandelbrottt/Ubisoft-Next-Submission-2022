@@ -3,8 +3,6 @@
 #include <MinimalInclude.h>
 #include <algorithm>
 
-#include <NextAPI/app.h>
-
 using namespace Next;
 
 ReflectRegister(Cube);
@@ -44,8 +42,4 @@ Cube::OnUpdate()
 
 	transform->SetPosition(position);
 	transform->SetRotation(rotation);
-
-	Vector2 mousePos           = Input::GetMousePosition();
-	Vector2 mousePosNormalized = Input::GetMousePosition(true);
-	printf("Mouse Position (%f, %f) - Normalized (%f, %f)\n", mousePos.x, mousePos.y, mousePosNormalized.x, mousePosNormalized.y);
 }
