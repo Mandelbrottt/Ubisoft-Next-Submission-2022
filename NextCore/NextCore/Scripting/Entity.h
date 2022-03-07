@@ -80,6 +80,12 @@ namespace Next
 		Entity&
 		operator =(Entity&& a_other) = default;
 
+		bool
+		operator ==(Entity const& a_other) const;
+		
+		bool
+		operator !=(Entity const& a_other) const;
+		
 		explicit
 		Entity(EntityId a_id);
 
@@ -89,7 +95,7 @@ namespace Next
 
 		static
 		void
-		Destroy(Entity const& a_entity);
+		Destroy(Entity& a_entity);
 
 		void
 		Destroy();
@@ -102,6 +108,9 @@ namespace Next
 		{
 			return m_entityId;
 		}
+
+		bool
+		IsValid() const;
 
 		Next::Transform*
 		Transform();
@@ -200,6 +209,7 @@ namespace Next
 	private:
 		EntityId m_entityId;
 
+		// TODO: Somehow store this in the registry and access from there instead of storing locally
 		std::string m_name;
 		
 	private:

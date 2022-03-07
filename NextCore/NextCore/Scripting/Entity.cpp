@@ -20,7 +20,19 @@ namespace Next
 	decltype(Entity::s_entityIdDestroyBuffer) Entity::s_entityIdDestroyBuffer;
 	
 	//decltype(Entity::s_registry) Entity::s_registry;
-	
+
+	bool
+	Entity::operator==(Entity const& a_other) const
+	{
+		return m_entityId == a_other.m_entityId;
+	}
+
+	bool
+	Entity::operator!=(Entity const& a_other) const
+	{
+		return !(*this == a_other);
+	}
+
 	Entity::Entity(EntityId a_id)
 	{
 		m_entityId = a_id;
@@ -38,7 +50,7 @@ namespace Next
 	}
 
 	void
-	Entity::Destroy(Entity const& a_entity)
+	Entity::Destroy(Entity& a_entity)
 	{
 		auto iter = s_entityIdDestroyBuffer.find(a_entity.m_entityId);
 
@@ -58,6 +70,12 @@ namespace Next
 	Entity::OnCreate()
 	{
 		AddComponent<Next::Transform>();
+	}
+
+	bool
+	Entity::IsValid() const
+	{
+		return Detail::g_mainEntityRegistry.IsValid(m_entityId);
 	}
 
 	Transform*
