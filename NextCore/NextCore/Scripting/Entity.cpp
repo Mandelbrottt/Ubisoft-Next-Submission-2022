@@ -12,7 +12,20 @@ namespace Next
 	namespace Detail
 	{	
 		// Expose main registry to users who explicitly want it, namely for tests
-		Detail::Registry g_mainEntityRegistry;
+		Registry g_mainEntityRegistry;
+
+		void SimulateEntityUpdate()
+		{
+			Entity::Update();
+		}
+		
+		void ResetRegistryAndEntityProperties()
+		{
+			g_mainEntityRegistry.Reset();
+
+			Entity::s_entityIdDestroyBuffer     = {};
+			Entity::s_entityIdFirstUpdateBuffer = {};
+		}
 	}
 	
 	decltype(Entity::s_entityIdFirstUpdateBuffer) Entity::s_entityIdFirstUpdateBuffer;
@@ -64,6 +77,20 @@ namespace Next
 	Entity::Destroy()
 	{
 		Destroy(*this);
+	}
+
+	void
+	Entity::DestroyImmediate(Entity& a_entity)
+	{
+		s_entityIdDestroyBuffer.erase(a_entity.m_entityId);
+
+		Registry().OnDestroyEntity(a_entity.m_entityId);
+	}
+
+	void
+	Entity::DestroyImmediate()
+	{
+		DestroyImmediate(*this);
 	}
 
 	void

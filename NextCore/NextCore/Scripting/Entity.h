@@ -30,6 +30,9 @@ namespace Next
 	{
 		class Registry;
 
+		void SimulateEntityUpdate();
+		void ResetRegistryAndEntityProperties();
+
 		//struct ComponentListElement
 		//{
 		//	Reflection::TypeId id;
@@ -54,6 +57,9 @@ namespace Next
 		friend void ::Update(float a_deltaTime);
 		friend void ::Render();
 		friend void ::Shutdown();
+
+		friend void Detail::SimulateEntityUpdate();
+		friend void Detail::ResetRegistryAndEntityProperties();
 
 		Entity() = default;
 
@@ -99,6 +105,13 @@ namespace Next
 
 		void
 		Destroy();
+		
+		static
+		void
+		DestroyImmediate(Entity& a_entity);
+
+		void
+		DestroyImmediate();
 
 		void
 		OnCreate();
