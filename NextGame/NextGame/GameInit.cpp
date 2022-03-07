@@ -2,12 +2,6 @@
 
 #include <Application/Init.h>
 
-#include <Components/AudioSource.h>
-
-#include <Graphics/Model.h>
-
-#include <Rendering/Renderer.h>
-
 #include "Cube.h"
 #include "ReferenceTestA.h"
 #include "ReferenceTestB.h"
@@ -19,18 +13,7 @@ using namespace Next;
 
 void
 Application_Init()
-{
-	Entity entityA = Entity::Create();
-	auto* refA = entityA.AddComponent<ReferenceTestA>();
-
-	Entity entityB = Entity::Create();
-	auto* refB = entityB.AddComponent<ReferenceTestB>();
-
-	refA->SetRefB(refB);
-	refB->SetRefA(refA);
-
-	entityB.RemoveComponent<ReferenceTestB>();
-	
+{	
 	Model* cube = Model::Create(Application::ResourcePath() + "cube/cube.obj");
 	
 	Model* suzanne = Model::Create(Application::ResourcePath() + "complex/suzanne.obj");

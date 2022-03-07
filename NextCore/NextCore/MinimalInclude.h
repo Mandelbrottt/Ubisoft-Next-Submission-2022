@@ -3,9 +3,12 @@
 #include <Application/Application.h>
 #include <Application/Time.h>
 
-#include <Components/Transform.h>
+#include <Components/AudioSource.h>
 #include <Components/Camera.h>
+#include <Components/ModelRenderer.h>
+#include <Components/Transform.h>
 
+#include <Graphics/Model.h>
 #include <Graphics/Sprite.h>
 
 #include <Input/Input.h>
