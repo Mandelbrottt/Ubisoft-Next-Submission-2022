@@ -4,6 +4,9 @@ namespace Next::Detail
 {
 	extern int      g_componentPoolDefaultSize;
 	extern Registry g_mainEntityRegistry;
+	
+	extern void SimulateEntityUpdate();
+	extern void ResetRegistryAndEntityProperties();
 }
 
 namespace Scripting
@@ -12,7 +15,6 @@ namespace Scripting
 	void
 	ScriptingTestStateInit()
 	{
-		// Reset the main registry to ensure consistent operation
-		Next::Detail::g_mainEntityRegistry.Reset();
+		Next::Detail::ResetRegistryAndEntityProperties();
 	}
 }

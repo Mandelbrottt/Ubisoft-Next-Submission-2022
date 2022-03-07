@@ -48,6 +48,8 @@ namespace Scripting
 
 	TEST(Entity, EntityDestruction)
 	{
+		ScriptingTestStateInit();
+		
 		Entity entity1 = Entity::Create();
 		Entity entity2 = Entity::Create();
 		Entity entity1Copy = entity1;
@@ -57,10 +59,26 @@ namespace Scripting
 		// Destroying an entity doesn't modify the value of the entity value-type
 		EXPECT_EQ(entity1, entity1Copy);
 
-		// Both variables refer to the same entity
+		// Both variables should be valid because destruction only queues for destruction at end of frame
+		EXPECT_TRUE(entity1.IsValid());
+		EXPECT_TRUE(entity1Copy.IsValid());
+		EXPECT_TRUE(entity2.IsValid());
+
+		Detail::SimulateEntityUpdate();
+
+		// Both variables should be valid because destruction only queues for destruction at end of frame
 		EXPECT_FALSE(entity1.IsValid());
 		EXPECT_FALSE(entity1Copy.IsValid());
+		EXPECT_TRUE(entity2.IsValid());
 
+		entity1 = Entity::Create();
+		entity1Copy = entity1;
+
+		// Destroy the entity without queuing for deletion at end of frame
+		entity1.DestroyImmediate();
+
+		EXPECT_FALSE(entity1.IsValid());
+		EXPECT_FALSE(entity1Copy.IsValid());
 		EXPECT_TRUE(entity2.IsValid());
 	}
 }

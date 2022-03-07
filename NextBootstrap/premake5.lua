@@ -35,6 +35,7 @@ project(project_name)
     links {
         "NextAPI", -- Eventually remove as dependency
         "NextCore",
+        "NextCoreTests",
         -- TODO: Make function to generate links to projects dynamically to
         --       allow users to have multi-module projects
         "NextGame",
@@ -88,6 +89,11 @@ project(project_name)
 
     filter "configurations:not Release"
         debugdir "%{wks.location}/"
+    
+    postbuildcommands {
+        -- TODO: Find a way to generate list of test executables
+        "\"" .. user_config.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
+    }
     
     filter "configurations:Release"
         defines  { "NEXT_RELEASE" }

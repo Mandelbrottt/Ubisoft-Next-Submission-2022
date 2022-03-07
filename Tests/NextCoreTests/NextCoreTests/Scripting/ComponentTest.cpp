@@ -51,6 +51,53 @@ namespace Scripting
 		EXPECT_NE(ref1_b, ref2_b);
 	}
 	
+	TEST(Component, RemoveComponent)
+	{
+		ScriptingTestStateInit();
+
+		Entity entity1 = Entity::Create();
+		auto ref1_a = entity1.AddComponent<RefTestA>();
+		
+		Entity entity2 = Entity::Create();
+		auto ref2_b = entity2.AddComponent<RefTestB>();
+
+		EXPECT_EQ(ref1_a,  entity1.GetComponent<RefTestA>());
+		EXPECT_EQ(nullptr, entity1.GetComponent<RefTestB>());
+		
+		EXPECT_EQ(nullptr, entity2.GetComponent<RefTestA>());
+		EXPECT_EQ(ref2_b, entity2.GetComponent<RefTestB>());
+		entity1.RemoveComponent<RefTestA>();
+		entity2.RemoveComponent<RefTestB>();
+		
+		EXPECT_NE(ref1_a,  entity1.GetComponent<RefTestA>());
+		EXPECT_NE(ref2_b, entity2.GetComponent<RefTestB>());
+
+		EXPECT_EQ(nullptr, entity1.GetComponent<RefTestA>());
+		EXPECT_EQ(nullptr, entity2.GetComponent<RefTestB>());
+	}
+
+	TEST(Component, RemoveComponentReflection)
+	{
+		ScriptingTestStateInit();
+
+		Entity entity1 = Entity::Create();
+		auto ref1_a = entity1.AddComponent(RefTestA::GetStaticType());
+		auto ref1_b = entity1.AddComponent(RefTestB::GetStaticType());
+		
+		Entity entity2 = Entity::Create();
+		auto ref2_a = entity2.AddComponent(Reflection::Type::Get<RefTestA>());
+		auto ref2_b = entity2.AddComponent(Reflection::Type::Get<RefTestB>());
+
+		EXPECT_EQ(ref1_a, entity1.GetComponent<RefTestA>());
+		EXPECT_EQ(ref1_b, entity1.GetComponent<RefTestB>());
+		
+		EXPECT_EQ(ref2_a, entity2.GetComponent<RefTestA>());
+		EXPECT_EQ(ref2_b, entity2.GetComponent<RefTestB>());
+
+		EXPECT_NE(ref1_a, ref2_a);
+		EXPECT_NE(ref1_b, ref2_b);
+	}
+	
 	TEST(Component, ReferenceTracking)
 	{
 		ScriptingTestStateInit();

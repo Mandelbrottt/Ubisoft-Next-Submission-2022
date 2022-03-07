@@ -57,10 +57,6 @@ project(project_name)
         "NEXT_RESOURCE_DIR=\"./Resources/\""
     }
 
-    postbuildcommands {
-        "\"%{cfg.buildtarget.abspath}\""
-    }
-
     filter "architecture:Win32"
         libdirs {
             "%{wks.location}/NextAPI/glut/lib/",
