@@ -9,14 +9,17 @@
 
 namespace Next
 {
+	namespace Detail
+	{	
+		// Expose main registry to users who explicitly want it, namely for tests
+		Detail::Registry g_mainEntityRegistry;
+	}
+	
 	decltype(Entity::s_entityIdFirstUpdateBuffer) Entity::s_entityIdFirstUpdateBuffer;
 
 	decltype(Entity::s_entityIdDestroyBuffer) Entity::s_entityIdDestroyBuffer;
 	
 	//decltype(Entity::s_registry) Entity::s_registry;
-	
-	// Expose main registry to users who explicitly want it, namely for tests
-	Detail::Registry g_mainEntityRegistry;
 	
 	Entity::Entity(EntityId a_id)
 	{
@@ -168,6 +171,6 @@ namespace Next
 	Detail::Registry&
 	Entity::Registry()
 	{
-		return g_mainEntityRegistry;
+		return Detail::g_mainEntityRegistry;
 	}
 }
