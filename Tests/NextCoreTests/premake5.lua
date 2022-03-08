@@ -1,7 +1,7 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/Tests/%{prj.name}"
+    location     (build_cfg.test_dir .. "/%{prj.name}")
     kind          "ConsoleApp"
     language      "C++"
     cppdialect    "C++17"
@@ -16,8 +16,8 @@ project(project_name)
         "MultiProcessorCompile"
     }
     
-    targetdir(user_config.output_dir .. "/Tests/%{prj.name}/")
-    objdir   (user_config.obj_dir    .. "/Tests/%{prj.name}/")
+    targetdir(build_cfg.output_dir .. "/Tests/%{prj.name}/")
+    objdir   (build_cfg.obj_dir    .. "/Tests/%{prj.name}/")
 
     pchheader "pch.h"
     pchsource "pch/pch.cpp"
@@ -32,9 +32,9 @@ project(project_name)
         "%{prj.location}/",
         "%{prj.location}/pch/",
         "%{prj.location}/%{prj.name}/",
-        "%{wks.location}/NextCore/",
-        "%{wks.location}/NextCore/NextCore/",
-        "%{wks.location}/NextGUI/",
+        build_cfg.source_dir .. "/NextCore/",
+        build_cfg.source_dir .. "/NextCore/NextCore/",
+        build_cfg.source_dir .. "/NextGUI/",
     }
 
     links {
@@ -46,9 +46,9 @@ project(project_name)
     }
 
     libdirs {
-        user_config.output_dir .. "/NextAPI/",
-        user_config.output_dir .. "/NextCore/",
-        user_config.output_dir .. "/NextGUI/",
+        build_cfg.output_dir .. "/NextAPI/",
+        build_cfg.output_dir .. "/NextCore/",
+        build_cfg.output_dir .. "/NextGUI/",
     }
 
     defines {
@@ -59,20 +59,20 @@ project(project_name)
 
     filter "architecture:Win32"
         libdirs {
-            "%{wks.location}/NextAPI/glut/lib/",
+            build_cfg.source_dir .. "/NextAPI/glut/lib/",
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+            "{COPY} \"" .. build_cfg.source_dir .. "NextAPI/glut/bin/*.dll\" \"" .. build_cfg.exe_output_dir .. "\"",
         }
 
     filter "architecture:x64"
         libdirs {
-            "%{wks.location}/NextAPI/glut/lib/x64/",
+            build_cfg.source_dir .. "/NextAPI/glut/lib/x64/",
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+            "{COPY} \"" .. build_cfg.source_dir .. "/NextAPI/glut/bin/x64/*.dll\" \"" .. build_cfg.exe_output_dir .. "\"",
         }
 
     filter "system:windows"
@@ -96,4 +96,4 @@ project(project_name)
         }
         runtime "release"
         optimize "speed"
-        symbols(user_config.do_release_symbols)
+        symbols(user_cfg.do_release_symbols)

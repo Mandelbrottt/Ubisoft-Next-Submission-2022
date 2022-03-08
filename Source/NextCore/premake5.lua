@@ -1,7 +1,7 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/%{prj.name}"
+    location     (build_cfg.source_dir .. "/%{prj.name}")
     kind          "StaticLib"
     language      "C++"
     cppdialect    "C++17"
@@ -14,8 +14,8 @@ project(project_name)
         "MultiProcessorCompile"
     }
     
-    targetdir(user_config.output_dir .. "/%{prj.name}/")
-    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
+    targetdir(build_cfg.output_dir .. "/%{prj.name}/")
+    objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")
 
     pchheader "pch.h"
     pchsource "pch/pch.cpp"
@@ -30,7 +30,7 @@ project(project_name)
         "%{prj.location}/",
         "%{prj.location}/pch/",
         "%{prj.location}/NextCore/",
-        "%{wks.location}/NextAPI/",
+        build_cfg.source_dir .. "/NextAPI/",
     }
 
     links {
@@ -38,7 +38,7 @@ project(project_name)
     }
 
     libdirs {
-        user_config.output_dir .. "/NextAPI/",
+        build_cfg.output_dir .. "/NextAPI/",
     }
 
     defines {
@@ -68,4 +68,4 @@ project(project_name)
         }
         runtime "release"
         optimize "speed"
-        symbols(user_config.do_release_symbols)
+        symbols(user_cfg.do_release_symbols)

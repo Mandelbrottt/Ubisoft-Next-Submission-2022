@@ -1,7 +1,7 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/%{prj.name}/"
+    location     (build_cfg.source_dir .. "/%{prj.name}/")
     kind          "StaticLib"
     language      "C++"
     cppdialect    "C++17"
@@ -14,8 +14,8 @@ project(project_name)
         "MultiProcessorCompile"
     }
 
-    targetdir(user_config.output_dir .. "/%{prj.name}/")
-    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
+    targetdir(build_cfg.output_dir .. "/%{prj.name}/")
+    objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
@@ -24,9 +24,9 @@ project(project_name)
 
     includedirs {
         "%{prj.location}/NextGame/",
-        "%{wks.location}/NextAPI/",
-        "%{wks.location}/NextCore/",
-        "%{wks.location}/NextCore/NextCore/",
+        build_cfg.source_dir .. "/NextAPI/",
+        build_cfg.source_dir .. "/NextCore/",
+        build_cfg.source_dir .. "/NextCore/NextCore/",
     }
 
     links {
@@ -35,8 +35,8 @@ project(project_name)
     }
 
     libdirs {
-        user_config.output_dir .. "/NextAPI/",
-        user_config.output_dir .. "/NextCore/",
+        build_cfg.output_dir .. "/NextAPI/",
+        build_cfg.output_dir .. "/NextCore/",
     }
 
     defines {
@@ -63,4 +63,4 @@ project(project_name)
         defines { "NEXT_RELEASE" }
         runtime "release"
         optimize "speed"
-        symbols(user_config.do_release_symbols)
+        symbols(user_cfg.do_release_symbols)

@@ -1,7 +1,7 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/%{prj.name}"
+    location     (build_cfg.source_dir .. "/%{prj.name}")
     kind          "StaticLib"
     language      "C++"
     cppdialect    "C++14"
@@ -15,8 +15,8 @@ project(project_name)
         "MultiProcessorCompile"
     }
     
-    targetdir(user_config.output_dir .. "/%{prj.name}/")
-    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
+    targetdir(build_cfg.output_dir .. "/%{prj.name}/")
+    objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")
 
     pchheader "stdafx.h"
     pchsource "stdafx.cpp"
@@ -36,7 +36,7 @@ project(project_name)
 
     includedirs {
         "%{prj.location}/",
-        "%{wks.location}/NextAPI/",
+        build_cfg.source_dir .. "/NextAPI/",
     }
 
     links {
@@ -79,4 +79,4 @@ project(project_name)
         defines { "NEXT_RELEASE" }
         runtime "release"
         optimize "speed"
-        symbols(user_config.do_release_symbols)
+        symbols(user_cfg.do_release_symbols)

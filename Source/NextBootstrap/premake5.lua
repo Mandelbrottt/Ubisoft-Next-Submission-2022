@@ -1,7 +1,7 @@
 local project_name = script_dir()
 
 project(project_name)
-    location      "%{wks.location}/%{prj.name}/"
+    location     (build_cfg.source_dir .. "/%{prj.name}/")
     kind          "WindowedApp"
     language      "C++"
     cppdialect    "C++17"
@@ -15,10 +15,10 @@ project(project_name)
     }
     
     -- Output to the executable directory instead of a project directory
-    targetdir(user_config.exe_output_dir)
-    objdir   (user_config.obj_dir    .. "/%{prj.name}/")
+    targetdir(build_cfg.exe_output_dir)
+    objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")
 
-    targetname(user_config.app_name)
+    targetname(user_cfg.app_name)
 
     files {
         "%{prj.location}/%{prj.name}/**.cpp",
@@ -29,7 +29,7 @@ project(project_name)
     includedirs {
         "%{prj.location}/",
         "%{prj.location}/pch/",
-        "%{wks.location}/NextCore/",
+        build_cfg.source_dir .. "/NextCore/",
     }
 
     links {
@@ -44,9 +44,9 @@ project(project_name)
     }
 
     libdirs {
-        user_config.output_dir .. "/NextAPI/",
-        user_config.output_dir .. "/NextCore/",
-        user_config.output_dir .. "/%{prj.name}/",
+        build_cfg.output_dir .. "/NextAPI/",
+        build_cfg.output_dir .. "/NextCore/",
+        build_cfg.output_dir .. "/%{prj.name}/",
     }
 
     defines {
@@ -56,25 +56,25 @@ project(project_name)
 
     postbuildcommands {
         -- TODO: Find a way to generate list of test executables
-        "\"" .. user_config.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
+        "\"" .. build_cfg.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
     }
     
     filter "architecture:Win32"
         libdirs {
-            "%{wks.location}/NextAPI/glut/lib/",
+            build_cfg.source_dir .. "/NextAPI/glut/lib/",
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+            "{COPY} \"" .. build_cfg.source_dir .. "/NextAPI/glut/bin/*.dll\" \"" .. build_cfg.exe_output_dir .. "\"",
         }
 
     filter "architecture:x64"
         libdirs {
-            "%{wks.location}/NextAPI/glut/lib/x64/",
+            build_cfg.source_dir .. "/NextAPI/glut/lib/x64/",
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}NextAPI/glut/bin/x64/*.dll\" \"" .. user_config.exe_output_dir .. "\"",
+            "{COPY} \"" .. build_cfg.source_dir .. "/NextAPI/glut/bin/x64/*.dll\" \"" .. build_cfg.exe_output_dir .. "\"",
         }
 
     filter "system:windows"
@@ -99,14 +99,14 @@ project(project_name)
         defines  { "NEXT_RELEASE" }
         runtime  "release"
         optimize "speed"
-        symbols   (user_config.do_release_symbols)
-        debugdir  (user_config.exe_output_dir)
+        symbols   (user_cfg.do_release_symbols)
+        debugdir  (build_cfg.exe_output_dir)
         
         debugargs {
-            user_config.do_release_console and "--console" or ""
+            user_cfg.do_release_console and "--console" or ""
         }
     
         -- Only copy game resources in Release because we use the resources in-place otherwise
         prebuildcommands {
-            "{COPY} \"%{wks.location}Resources/\" \"" .. user_config.exe_output_dir .. "/Resources/\"",
+            "{COPY} \"%{wks.location}Resources/\" \"" .. build_cfg.exe_output_dir .. "/Resources/\"",
         }

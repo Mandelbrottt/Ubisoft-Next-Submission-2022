@@ -1,5 +1,5 @@
 -- Config
-user_config = {
+user_cfg = {
     -- Application settings
     app_name = "NextGame",
     exe_dir  = "Executable/",
@@ -7,13 +7,18 @@ user_config = {
     -- Project settings
     do_release_symbols = "on",
     do_release_console = true,
+}
+
+build_cfg = {
+    source_dir = "%{wks.location}/Source",
+    test_dir   = "%{wks.location}/Tests",
     
     -- Build locations
     output_dir = "%{wks.location}/Build/Bin/%{cfg.architecture}/%{cfg.buildcfg}",
     obj_dir    = "%{wks.location}/Build/Obj/%{cfg.architecture}/%{cfg.buildcfg}",
 }
 
-user_config.exe_output_dir = user_config.output_dir .. "/" .. user_config.exe_dir
+build_cfg.exe_output_dir = build_cfg.output_dir .. "/" .. user_cfg.exe_dir
 
 local function mysplit (inputstr, sep)
     if sep == nil then
@@ -51,19 +56,17 @@ workspace "NextSubmission"
 
     group "Vendor"
 
-        include "NextAPI"
+        include "Source/NextAPI"
     
     group "Engine"
 
-        include "NextCore"
+        include "Source/NextCore"
 
-        -- include "NextGUI"
-
-        include "NextBootstrap"
+        include "Source/NextBootstrap"
 
     group "User Modules"
 
-        include "NextGame"
+        include "Source/NextGame"
 
     group "Unit Tests"
     
