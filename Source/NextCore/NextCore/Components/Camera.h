@@ -39,7 +39,8 @@ namespace Next
 		{
 			return m_farClippingPlane;
 		}
-		
+
+		CONSUMER_DEPRECATED("Skybox currently doesn't work")
 		CubeMap const&
 		GetSkybox() const
 		{
@@ -61,6 +62,7 @@ namespace Next
 			m_farClippingPlane = a_far;
 		}
 
+		CONSUMER_DEPRECATED("Skybox currently doesn't work")
 		void
 		SetSkybox(CubeMap const& a_skybox)
 		{

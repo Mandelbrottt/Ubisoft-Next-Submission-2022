@@ -40,3 +40,9 @@
 
 // Some auto formatters don't like access specifiers being the first line in a macro
 #define _MACRO_AUTO_FORMAT_INDENT static_assert(true);
+
+#ifndef NEXT_CORE
+	#define CONSUMER_DEPRECATED(_reason_) [[deprecated(_reason_)]]
+#else
+	#define CONSUMER_DEPRECATED(_reason_) [[]]
+#endif
