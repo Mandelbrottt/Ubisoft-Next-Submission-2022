@@ -52,6 +52,7 @@ project(project_name)
     defines {
         "NEXT_GUI",
         "MMNOSOUND",
+        "NEXT_RESOURCE_DIR=\"" .. build_cfg.resource_dir .. "\""
     }
 
     postbuildcommands {

@@ -16,6 +16,8 @@ build_cfg = {
     -- Build locations
     output_dir = "%{wks.location}/Build/Bin/%{cfg.architecture}/%{cfg.buildcfg}",
     obj_dir    = "%{wks.location}/Build/Obj/%{cfg.architecture}/%{cfg.buildcfg}",
+
+    resource_dir = "./Resources/",
 }
 
 build_cfg.exe_output_dir = build_cfg.output_dir .. "/" .. user_cfg.exe_dir

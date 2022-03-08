@@ -13,7 +13,7 @@ namespace Next::Application
 	 */
 	NEXT_CORE_EXPORT
 	extern
-	std::string
+	std::string const&
 	ResourcePath();
 
 	/**

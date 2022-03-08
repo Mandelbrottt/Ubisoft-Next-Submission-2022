@@ -44,7 +44,7 @@ project(project_name)
     defines {
         "NEXT_CORE",
         "MMNOSOUND",
-        "NEXT_RESOURCE_DIR=\"./Resources/\""
+        "NEXT_RESOURCE_DIR=\"" .. build_cfg.resource_dir .. "\""
     }
     
     filter "system:windows"
