@@ -51,6 +51,12 @@ namespace Next::Detail
 		void
 		OnUpdate();
 
+		std::string const&
+		GetName(EntityId a_entityId);
+		
+		void
+		SetName(EntityId a_entityId, std::string_view const& a_name);
+
 		/**
 		 * \brief Check if a given entity is currently active.
 		 */
@@ -62,7 +68,7 @@ namespace Next::Detail
 		{
 			return m_activeEntities;
 		}
-
+		
 		/**
 		 * \brief Construct and register a component owned by the entity with id a_entityId
 		 * \tparam TComponent The type of the component to register.
@@ -195,7 +201,7 @@ namespace Next::Detail
 		 */
 		Component*
 		GetComponent(EntityId a_entityId, Reflection::TypeId a_typeId) const;
-
+		
 	private:
 		EntityId
 		IncrementEntityCounter();
@@ -233,9 +239,17 @@ namespace Next::Detail
 
 	private:
 		EntityId m_nextEntityId = EntityId::FirstValid;
-
+		
 		// The set of all active entities.
 		std::unordered_set<EntityId> m_activeEntities;
+
+		struct EntityInfo
+		{
+			std::string name;
+		};
+
+		// TODO: Find way to integrate with m_activeEntities without making it a map and without exposing entity info
+		std::unordered_map<EntityId, EntityInfo> m_entityInfos;
 
 		struct ComponentPoolInfo
 		{

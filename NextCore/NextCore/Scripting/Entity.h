@@ -76,6 +76,9 @@ namespace Next
 		static
 		std::vector<TComponent*>
 		GetAllComponents();
+				
+		explicit
+		Entity(EntityId a_id);
 
 	public:
 		Entity(Entity const& a_other) = default;
@@ -91,14 +94,14 @@ namespace Next
 		
 		bool
 		operator !=(Entity const& a_other) const;
-		
-		explicit
-		Entity(EntityId a_id);
 
+		explicit
+		operator bool() const;
+		
 		static
 		Entity
-		Create();
-
+		Create(std::string_view const& a_name = "");
+		
 		static
 		void
 		Destroy(Entity& a_entity);
@@ -113,9 +116,18 @@ namespace Next
 		void
 		DestroyImmediate();
 
-		void
-		OnCreate();
+		static
+		Entity
+		FindByName(std::string_view const& a_name);
 		
+		static
+		std::vector<Entity>
+		FindAllByName(std::string_view const& a_name);
+		
+		static
+		void
+		FindAllByName(std::string_view const& a_name, std::vector<Entity>& a_outVector);
+
 		EntityId
 		GetEntityId() const
 		{
@@ -226,6 +238,9 @@ namespace Next
 		std::string m_name;
 		
 	private:
+		void
+		OnCreate();
+		
 		static
 		Component*
 		OnAddComponent(EntityId a_id, Reflection::TypeId a_typeId);

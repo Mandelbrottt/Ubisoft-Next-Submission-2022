@@ -11,7 +11,8 @@ namespace Next::Detail
 		m_nextEntityId = EntityId::FirstValid;
 
 		m_activeEntities = {};
-
+		m_entityInfos = {};
+		
 		m_componentPoolInfos = {};
 	}
 
@@ -21,7 +22,8 @@ namespace Next::Detail
 		EntityId newEntityId = IncrementEntityCounter();
 
 		m_activeEntities.insert(newEntityId);
-
+		m_entityInfos.emplace(newEntityId);
+		
 		return newEntityId;
 	}
 
@@ -29,6 +31,7 @@ namespace Next::Detail
 	Registry::OnDestroyEntity(EntityId a_entityId)
 	{
 		m_activeEntities.erase(a_entityId);
+		m_entityInfos.erase(a_entityId);
 
 		for (auto& [typeId, poolInfo] : m_componentPoolInfos)
 		{
@@ -77,6 +80,32 @@ namespace Next::Detail
 				component->OnUpdate();
 			}
 		}
+	}
+
+	std::string const&
+	Registry::GetName(EntityId a_entityId)
+	{
+		auto iter = m_entityInfos.find(a_entityId);
+
+		if (iter == m_entityInfos.end())
+		{
+			return {};
+		}
+
+		return iter->second.name;
+	}
+
+	void
+	Registry::SetName(EntityId a_entityId, std::string_view const& a_name)
+	{
+		auto iter = m_entityInfos.find(a_entityId);
+
+		if (iter == m_entityInfos.end())
+		{
+			return;
+		}
+
+		iter->second.name = std::string(a_name);
 	}
 
 	bool

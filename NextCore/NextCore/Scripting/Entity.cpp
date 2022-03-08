@@ -10,16 +10,18 @@
 namespace Next
 {
 	namespace Detail
-	{	
+	{
 		// Expose main registry to users who explicitly want it, namely for tests
 		Registry g_mainEntityRegistry;
 
-		void SimulateEntityUpdate()
+		void
+		SimulateEntityUpdate()
 		{
 			Entity::Update();
 		}
-		
-		void ResetRegistryAndEntityProperties()
+
+		void
+		ResetRegistryAndEntityProperties()
 		{
 			g_mainEntityRegistry.Reset();
 
@@ -27,11 +29,11 @@ namespace Next
 			Entity::s_entityIdFirstUpdateBuffer = {};
 		}
 	}
-	
+
 	decltype(Entity::s_entityIdFirstUpdateBuffer) Entity::s_entityIdFirstUpdateBuffer;
 
 	decltype(Entity::s_entityIdDestroyBuffer) Entity::s_entityIdDestroyBuffer;
-	
+
 	//decltype(Entity::s_registry) Entity::s_registry;
 
 	bool
@@ -46,16 +48,32 @@ namespace Next
 		return !(*this == a_other);
 	}
 
+	Entity::operator bool() const
+	{
+		return IsValid();
+	}
+
 	Entity::Entity(EntityId a_id)
 	{
 		m_entityId = a_id;
 	}
 
 	Entity
-	Entity::Create()
+	Entity::Create(std::string_view const& a_name)
 	{
 		Entity entity;
 		entity.m_entityId = Registry().OnCreateEntity();
+
+		std::string_view newName = a_name;
+
+		if (newName.empty())
+		{
+			char entityName[128];
+			sprintf_s(entityName, "Entity (%d)", entity.m_entityId);
+			newName = entityName;
+		}
+
+		Registry().SetName(entity.m_entityId, newName);
 		
 		entity.OnCreate();
 
@@ -93,6 +111,46 @@ namespace Next
 		DestroyImmediate(*this);
 	}
 
+	Entity
+	Entity::FindByName(std::string_view const& a_name)
+	{
+		for (auto entityId : Registry().GetActiveEntities())
+		{
+			std::string const& name = Registry().GetName(entityId);
+
+			if (a_name == name)
+			{
+				return Entity(entityId);
+			}
+		}
+
+		return Entity(EntityId::Null);
+	}
+
+	std::vector<Entity>
+	Entity::FindAllByName(std::string_view const& a_name)
+	{
+		std::vector<Entity> result;
+		FindAllByName(a_name, result);
+		return result;
+	}
+
+	void
+	Entity::FindAllByName(std::string_view const& a_name, std::vector<Entity>& a_outVector)
+	{
+		a_outVector.clear();
+
+		for (auto entityId : Registry().GetActiveEntities())
+		{
+			std::string const& name = Registry().GetName(entityId);
+
+			if (a_name == name)
+			{
+				a_outVector.push_back(Entity(entityId));
+			}
+		}
+	}
+
 	void
 	Entity::OnCreate()
 	{
@@ -102,7 +160,7 @@ namespace Next
 	bool
 	Entity::IsValid() const
 	{
-		return Detail::g_mainEntityRegistry.IsValid(m_entityId);
+		return m_entityId == EntityId::Null || Detail::g_mainEntityRegistry.IsValid(m_entityId);
 	}
 
 	Transform*
@@ -118,7 +176,7 @@ namespace Next
 		{
 			return nullptr;
 		}
-		
+
 		Component* result = OnAddComponent(m_entityId, a_typeId);
 
 		return result;
@@ -134,7 +192,7 @@ namespace Next
 
 		return OnRemoveComponent(m_entityId, a_typeId);
 	}
-	
+
 	Component*
 	Entity::GetComponent(Reflection::TypeId a_typeId)
 	{
@@ -142,12 +200,12 @@ namespace Next
 		{
 			return nullptr;
 		}
-		
+
 		Component* result = Registry().GetComponent(m_entityId, a_typeId);
-		
+
 		return result;
 	}
-	
+
 	void
 	Entity::Update()
 	{
@@ -160,7 +218,7 @@ namespace Next
 		{
 			Registry().OnDestroyEntity(id);
 		}
-		
+
 		s_entityIdDestroyBuffer.clear();
 
 	First_Update_Active_Entities:
@@ -178,7 +236,7 @@ namespace Next
 		s_entityIdFirstUpdateBuffer.clear();
 
 	Update_Active_Entities:
-		
+
 		Registry().OnUpdate();
 	}
 	
@@ -200,7 +258,7 @@ namespace Next
 	Entity::OnRemoveComponent(EntityId a_id, Reflection::TypeId a_typeId)
 	{
 		Component* component = Registry().GetComponent(a_id, a_typeId);
-		
+
 		component->OnDestroy();
 
 		return Registry().RemoveComponent(a_id, a_typeId);
