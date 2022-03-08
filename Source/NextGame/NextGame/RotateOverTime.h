@@ -10,6 +10,11 @@ public:
 	void OnCreate() override;
 	void OnUpdate() override;
 
+	void Init(int a_number)
+	{
+		m_turnSpeed = 50.f + 10.f * a_number;
+	}
+
 private:
 	float m_theta = 0;
 

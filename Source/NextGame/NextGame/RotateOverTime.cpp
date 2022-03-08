@@ -10,6 +10,7 @@ void
 RotateOverTime::OnCreate()
 {
 	m_turnSpeed = 30 + (rand() % 500) / 10.f;
+	m_turnSpeed = 100;
 }
 
 void
