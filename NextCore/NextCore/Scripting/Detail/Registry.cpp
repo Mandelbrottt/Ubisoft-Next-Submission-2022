@@ -22,7 +22,7 @@ namespace Next::Detail
 		EntityId newEntityId = IncrementEntityCounter();
 
 		m_activeEntities.insert(newEntityId);
-		m_entityInfos.emplace(newEntityId);
+		m_entityInfos[newEntityId] = {};
 		
 		return newEntityId;
 	}
@@ -82,6 +82,9 @@ namespace Next::Detail
 		}
 	}
 
+	// Circumvent warning for returning temporary by reference, find a way to not do this
+	static std::string g_getNameReturn;
+
 	std::string const&
 	Registry::GetName(EntityId a_entityId)
 	{
@@ -89,7 +92,7 @@ namespace Next::Detail
 
 		if (iter == m_entityInfos.end())
 		{
-			return {};
+			return g_getNameReturn;
 		}
 
 		return iter->second.name;

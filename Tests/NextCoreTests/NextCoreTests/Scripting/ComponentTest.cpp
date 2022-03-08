@@ -35,11 +35,11 @@ namespace Scripting
 
 		Entity entity1 = Entity::Create();
 		auto ref1_a = entity1.AddComponent(RefTestA::GetStaticType());
-		auto ref1_b = entity1.AddComponent(RefTestB::GetStaticType());
+		auto ref1_b = entity1.AddComponent(Reflection::Type::Get<RefTestB>());
 		
 		Entity entity2 = Entity::Create();
-		auto ref2_a = entity2.AddComponent(Reflection::Type::Get<RefTestA>());
-		auto ref2_b = entity2.AddComponent(Reflection::Type::Get<RefTestB>());
+		auto ref2_a = entity2.AddComponent(ref1_a->GetType());
+		auto ref2_b = entity2.AddComponent(Reflection::GetTypeId<RefTestB>());
 
 		EXPECT_EQ(ref1_a, entity1.GetComponent<RefTestA>());
 		EXPECT_EQ(ref1_b, entity1.GetComponent<RefTestB>());
@@ -82,20 +82,50 @@ namespace Scripting
 
 		Entity entity1 = Entity::Create();
 		auto ref1_a = entity1.AddComponent(RefTestA::GetStaticType());
-		auto ref1_b = entity1.AddComponent(RefTestB::GetStaticType());
 		
 		Entity entity2 = Entity::Create();
-		auto ref2_a = entity2.AddComponent(Reflection::Type::Get<RefTestA>());
 		auto ref2_b = entity2.AddComponent(Reflection::Type::Get<RefTestB>());
 
-		EXPECT_EQ(ref1_a, entity1.GetComponent<RefTestA>());
-		EXPECT_EQ(ref1_b, entity1.GetComponent<RefTestB>());
+		EXPECT_EQ(ref1_a,  entity1.GetComponent<RefTestA>());
+		EXPECT_EQ(nullptr, entity1.GetComponent<RefTestB>());
 		
-		EXPECT_EQ(ref2_a, entity2.GetComponent<RefTestA>());
+		EXPECT_EQ(nullptr, entity2.GetComponent<RefTestA>());
 		EXPECT_EQ(ref2_b, entity2.GetComponent<RefTestB>());
+		entity1.RemoveComponent(Reflection::GetTypeId<RefTestA>());
+		entity2.RemoveComponent(ref2_b->GetType());
+		
+		EXPECT_NE(ref1_a, entity1.GetComponent<RefTestA>());
+		EXPECT_NE(ref2_b, entity2.GetComponent<RefTestB>());
 
-		EXPECT_NE(ref1_a, ref2_a);
-		EXPECT_NE(ref1_b, ref2_b);
+		EXPECT_EQ(nullptr, entity1.GetComponent<RefTestA>());
+		EXPECT_EQ(nullptr, entity2.GetComponent<RefTestB>());
+	}
+	
+	TEST(Component, DestroyEntityRemovesComponents)
+	{
+		ScriptingTestStateInit();
+
+		Entity entity1 = Entity::Create();
+		auto ref1_a = entity1.AddComponent<RefTestA>();
+		auto ref1_b = entity1.AddComponent<RefTestB>();
+		
+		Entity entity2 = Entity::Create();
+		auto ref2_a = entity2.AddComponent<RefTestA>();
+		auto ref2_b = entity2.AddComponent<RefTestB>();
+
+		entity1.DestroyImmediate();
+
+		EXPECT_NE(entity1.GetComponent<RefTestA>(), ref1_a);
+		EXPECT_NE(entity1.GetComponent<RefTestB>(), ref1_b);
+		
+		EXPECT_EQ(entity2.GetComponent<RefTestA>(), ref2_a);
+		EXPECT_EQ(entity2.GetComponent<RefTestB>(), ref2_b);
+		
+		EXPECT_EQ(entity1.GetComponent<RefTestA>(), nullptr);
+		EXPECT_EQ(entity1.GetComponent<RefTestB>(), nullptr);
+
+		EXPECT_NE(entity2.GetComponent<RefTestA>(), nullptr);
+		EXPECT_NE(entity2.GetComponent<RefTestB>(), nullptr);
 	}
 	
 	TEST(Component, ReferenceTracking)

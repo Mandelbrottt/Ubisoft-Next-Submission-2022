@@ -160,13 +160,25 @@ namespace Next
 	bool
 	Entity::IsValid() const
 	{
-		return m_entityId == EntityId::Null || Detail::g_mainEntityRegistry.IsValid(m_entityId);
+		return m_entityId != EntityId::Null && Detail::g_mainEntityRegistry.IsValid(m_entityId);
 	}
 
 	Transform*
 	Entity::Transform()
 	{
 		return GetComponent<Next::Transform>();
+	}
+
+	std::string const&
+	Entity::GetName() const
+	{
+		return Registry().GetName(m_entityId);
+	}
+
+	void
+	Entity::SetName(std::string_view const& a_name)
+	{
+		Registry().SetName(m_entityId, a_name);
 	}
 
 	Component*

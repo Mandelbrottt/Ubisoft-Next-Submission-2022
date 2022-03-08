@@ -54,6 +54,11 @@ project(project_name)
         "MMNOSOUND",
     }
 
+    postbuildcommands {
+        -- TODO: Find a way to generate list of test executables
+        "\"" .. user_config.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
+    }
+    
     filter "architecture:Win32"
         libdirs {
             "%{wks.location}/NextAPI/glut/lib/",
@@ -89,11 +94,6 @@ project(project_name)
 
     filter "configurations:not Release"
         debugdir "%{wks.location}/"
-    
-    postbuildcommands {
-        -- TODO: Find a way to generate list of test executables
-        "\"" .. user_config.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
-    }
     
     filter "configurations:Release"
         defines  { "NEXT_RELEASE" }

@@ -61,7 +61,7 @@ namespace Next
 		friend void Detail::SimulateEntityUpdate();
 		friend void Detail::ResetRegistryAndEntityProperties();
 
-		Entity() = default;
+		friend class Component;
 
 		static
 		void
@@ -81,6 +81,8 @@ namespace Next
 		Entity(EntityId a_id);
 
 	public:
+		Entity() = default;
+		
 		Entity(Entity const& a_other) = default;
 		Entity&
 		operator =(Entity const& a_other) = default;
@@ -120,10 +122,11 @@ namespace Next
 		Entity
 		FindByName(std::string_view const& a_name);
 		
+		[[nodiscard]]
 		static
 		std::vector<Entity>
 		FindAllByName(std::string_view const& a_name);
-		
+
 		static
 		void
 		FindAllByName(std::string_view const& a_name, std::vector<Entity>& a_outVector);
@@ -147,16 +150,10 @@ namespace Next
 		}
 
 		std::string const&
-		GetName() const
-		{
-			return m_name;
-		}
+		GetName() const;
 
-		std::string const&
-		SetName(std::string_view a_name)
-		{
-			return (m_name = a_name);
-		}
+		void
+		SetName(std::string_view const& a_name);
 
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
@@ -233,9 +230,6 @@ namespace Next
 		
 	private:
 		EntityId m_entityId;
-
-		// TODO: Somehow store this in the registry and access from there instead of storing locally
-		std::string m_name;
 		
 	private:
 		void
