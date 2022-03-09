@@ -44,7 +44,7 @@ namespace Next
 		IsPlaying() const;
 		
 		ReflectMembers(
-			ReflectField(audioClip, r_name = "Audio Clip")
+			ReflectField(audioClip, r_name = "AudioClip")
 		)
 	};
 }

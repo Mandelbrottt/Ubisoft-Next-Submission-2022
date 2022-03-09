@@ -20,6 +20,7 @@ namespace Next
 
 namespace Next
 {
+	// Not currently supported
 	class LineRenderer : public Component
 	{
 		friend void ::Render();

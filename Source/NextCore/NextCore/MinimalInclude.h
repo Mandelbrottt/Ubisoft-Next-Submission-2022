@@ -5,6 +5,7 @@
 
 #include <Components/AudioSource.h>
 #include <Components/Camera.h>
+#include <Components/Light.h>
 #include <Components/ModelRenderer.h>
 #include <Components/Transform.h>
 
