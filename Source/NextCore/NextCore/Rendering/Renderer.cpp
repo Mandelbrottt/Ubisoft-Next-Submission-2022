@@ -397,7 +397,7 @@ namespace Next::Renderer
 				
 					break;
 				}
-				case LightType::Spot:
+				case LightType::Point:
 				{
 					Vector3 lightDir = Vector::Normalize(lightInfo.lightVector - a_position);
 

@@ -9,7 +9,7 @@ namespace Next
 	enum class LightType : uint8_t
 	{
 		Directional,
-		Spot,
+		Point,
 	};
 	
 	class Light : public Component
@@ -23,7 +23,7 @@ namespace Next
 		CONSUMER_DEPRECATED("Specular calculations currently unsupported")
 		Color specularColor = Color(1, 1, 1);
 
-		LightType type = LightType::Spot;
+		LightType type = LightType::Point;
 
 		ReflectMembers(
 			ReflectField(ambientColor)
