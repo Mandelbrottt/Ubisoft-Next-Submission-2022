@@ -95,7 +95,8 @@ namespace Next::Renderer
 
 	static
 	void
-	ApplyLightsToPrimitive(::Next::Color* a_outColor, Vector3 a_normal, Vector3 a_position);
+
+	ApplyLightsToPrimitive(Color* a_outColor, Vector3 a_normal, Vector3 a_position);
 
 	[[deprecated("Currrently not working")]]
 	static
@@ -337,23 +338,25 @@ namespace Next::Renderer
 
 			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 
-			Vector3 commonNormal = normals[0];
-			Vector3 commonPosition { 0 };
+			Vector3 averageNormal = normals[0];
+			Vector3 averagePosition { 0 };
 
+			// Compute average position of primitive
 			for (int j = 0; j < numVerts; j++)
 			{
-				commonPosition += Vector3(positions[j]);
+				averagePosition += Vector3(positions[j]);
 			}
+			averagePosition /= static_cast<float>(numVerts);
 			
 			if (normals[1] != Vector3(0))
 			{
-				commonNormal += normals[1];
-				commonNormal = Vector::Normalize(commonNormal * 0.5f);
+				averageNormal += normals[1];
+				averageNormal = Vector::Normalize(averageNormal * 0.5f);
 			}
 
 			for (int j = 0; j < numVerts; j++)
 			{
-				ApplyLightsToPrimitive(&element.color, commonNormal, commonPosition);
+				ApplyLightsToPrimitive(&element.color, averageNormal, averagePosition);
 				
 				auto projectedVertex = positions[j] * a_view * a_projection;
 
@@ -387,6 +390,7 @@ namespace Next::Renderer
 			{
 				case LightType::Directional:
 				{
+					// lightInfo.lightVector is interpreted as light direction here
 					float dotProduct = Vector::Dot(a_normal, -lightInfo.lightVector);
 					dotProduct       = std::max(dotProduct, 0.f);
 
@@ -399,6 +403,7 @@ namespace Next::Renderer
 				}
 				case LightType::Point:
 				{
+					// lightInfo.lightVector is interpreted as a light position here
 					Vector3 lightDir = Vector::Normalize(lightInfo.lightVector - a_position);
 
 					float diff = std::max(Vector::Dot(a_normal, lightDir), 0.0f);
@@ -415,6 +420,11 @@ namespace Next::Renderer
 			}
 		}
 
+		// Reinhardt tone mapping to not blow out the light color to white if multiple high-intensity lights hit it
+		// Not a great solution because the color we're calculating here is not necessarily the color applied to
+		// the frame-buffer, and so the real output color cannot be more than the input texture but it does something
+		colorVector = colorVector / (colorVector + Vector3(1.0f));
+		
 		*a_outColor = Color(colorVector);
 	}
 

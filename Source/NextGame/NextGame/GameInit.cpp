@@ -17,8 +17,8 @@ public:
 	void OnCreate() override
 	{
 		m_light = AddComponent<Light>();
-		m_light->type = LightType::Spot;
-		m_light->diffuseColor = { 0.8, 0.8, 0.8 };
+		m_light->type = LightType::Point;
+		m_light->diffuseColor = { 5, 0, 0 };
 
 		auto cube = AddComponent<ModelRenderer>();
 		cube->model = Model::Create("cube/cube.obj");
@@ -26,8 +26,10 @@ public:
 	
 	void OnUpdate() override
 	{
-		float x = 8 * std::cos(Time::ElapsedTime());
-		float y = 8 * std::sin(Time::ElapsedTime());
+		float theta = Time::ElapsedTime();
+		
+		float x = 8 * std::cos(theta);
+		float y = 8 * std::sin(theta);
 
 		Transform()->SetPosition({ x, 0, y });
 	}
@@ -45,13 +47,13 @@ ReflectRegister(LightSpin);
 void
 Application_Init()
 {
-	Model* suzanne = Model::Create("complex/suzanne.obj");
+	Model* suzanne = Model::Create("cube/cube.obj");
 
 	Entity dirLight = Entity::Create("DirLight");
 	auto light = dirLight.AddComponent<Light>();
 	light->type = LightType::Directional;
 	light->ambientColor = { 0.2f, 0.2f, 0.2f };
-	light->diffuseColor = { 0.2f, 0.2f, 0.2f };
+	light->diffuseColor = { 5, 5, 5 };
 	dirLight.Transform()->SetRotation({ -35, -45, 0 });
 	
 	Entity mainCamera = Entity::Create("MainCamera");
@@ -79,7 +81,7 @@ Application_Init()
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 		innerModelRenderer->model = suzanne;
 
-		entity.AddComponent<RotateOverTime>()->Init(i);
+		//entity.AddComponent<RotateOverTime>()->Init(i);
 
 		auto* transform = entity.Transform();
 		
