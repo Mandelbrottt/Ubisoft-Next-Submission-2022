@@ -42,6 +42,23 @@ namespace Next::Renderer
 		Matrix4 modelMatrix;
 	};
 
+	struct LightInfo
+	{
+		LightInfo(Vector3 a_lightVector, Vector3 a_ambient, Vector3 a_diffuse, LightType a_type)
+			: lightVector(std::move(a_lightVector)),
+			  ambient(std::move(a_ambient)),
+			  diffuse(std::move(a_diffuse)),
+			  type(a_type) {}
+
+		Vector3 lightVector;
+		
+		Vector3 ambient;
+		Vector3 diffuse;
+		//Color specular;
+		
+		LightType type;
+	};
+
 	static std::vector<TransformationCacheElement> g_transformationCache;
 
 	// TODO: Do all calculations in-place instead of copying them over every frame
@@ -49,6 +66,8 @@ namespace Next::Renderer
 
 	static std::mutex                      g_rasterQueueMutex;
 	static std::vector<RenderQueueElement> g_primitiveRasterQueue;
+
+	static std::vector<LightInfo> g_lightInfos;
 
 	static Vector3 g_cameraPosition;
 	static Vector3 g_cameraForward;
@@ -74,6 +93,10 @@ namespace Next::Renderer
 		Matrix4 const& a_projection
 	);
 
+	static
+	void
+	ApplyLightsToPrimitive(::Next::Color* a_outColor, Vector3 a_normal, Vector3 a_position);
+
 	[[deprecated("Currrently not working")]]
 	static
 	void
@@ -89,6 +112,21 @@ namespace Next::Renderer
 		g_projectionMatrix = a_descriptor.projectionMatrix;
 
 		g_skybox = std::move(a_descriptor.skybox);
+	}
+
+	void
+	Submit(Light const* a_light, Transform const* a_transform)
+	{
+		LightInfo info
+		{
+			a_light->type == LightType::Directional ? a_transform->Forward() : a_transform->GetPosition(),
+			Vector3(a_light->ambientColor),
+			Vector3(a_light->diffuseColor),
+			//a_light->specularColor,
+			a_light->type
+		};
+
+		g_lightInfos.push_back(std::move(info));
 	}
 
 	void
@@ -205,6 +243,7 @@ namespace Next::Renderer
 		g_primitiveRenderQueue.clear();
 		g_primitiveRasterQueue.clear();
 		g_transformationCache.clear();
+		g_lightInfos.clear();
 	}
 
 	static std::vector<std::size_t> g_primitivesToRaster;
@@ -299,7 +338,13 @@ namespace Next::Renderer
 			int numVerts = primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle ? 3 : 4;
 
 			Vector3 commonNormal = normals[0];
+			Vector3 commonPosition { 0 };
 
+			for (int j = 0; j < numVerts; j++)
+			{
+				commonPosition += Vector3(positions[j]);
+			}
+			
 			if (normals[1] != Vector3(0))
 			{
 				commonNormal += normals[1];
@@ -308,15 +353,7 @@ namespace Next::Renderer
 
 			for (int j = 0; j < numVerts; j++)
 			{
-				Vector3 lightDirection = { -1, 1, 1 };
-				lightDirection.Normalize();
-
-				float dotProduct = Vector::Dot(commonNormal, -lightDirection);
-				dotProduct       = std::max(dotProduct, 0.f) + 0.3f;
-
-				auto color = Color(dotProduct, dotProduct, dotProduct);
-
-				element.color = color;
+				ApplyLightsToPrimitive(&element.color, commonNormal, commonPosition);
 				
 				auto projectedVertex = positions[j] * a_view * a_projection;
 
@@ -331,6 +368,54 @@ namespace Next::Renderer
 
 			element.depth = element.depth / numVerts;
 		}
+	}
+	
+	void
+	ApplyLightsToPrimitive(Color* a_outColor, Vector3 a_normal, Vector3 a_position)
+	{
+		if (g_lightInfos.empty())
+		{
+			*a_outColor = Color(1, 1, 1);
+			return;
+		}
+
+		Vector3 colorVector { 0 };
+		
+		for (auto const& lightInfo : g_lightInfos)
+		{
+			switch (lightInfo.type)
+			{
+				case LightType::Directional:
+				{
+					float dotProduct = Vector::Dot(a_normal, -lightInfo.lightVector);
+					dotProduct       = std::max(dotProduct, 0.f);
+
+					Vector3 colorResult = Vector3(dotProduct) * lightInfo.diffuse;
+					colorResult += lightInfo.ambient;
+					
+					colorVector += colorResult;
+				
+					break;
+				}
+				case LightType::Spot:
+				{
+					Vector3 lightDir = Vector::Normalize(lightInfo.lightVector - a_position);
+
+					float diff = std::max(Vector::Dot(a_normal, lightDir), 0.0f);
+					Vector3 diffuse = lightInfo.diffuse * diff;
+					
+					Vector3 colorResult = lightInfo.ambient + diffuse;
+
+					colorVector += colorResult;
+				
+					break;
+				}
+				default:
+					assert(false); // Not implemented
+			}
+		}
+
+		*a_outColor = Color(colorVector);
 	}
 
 	static

@@ -102,6 +102,16 @@ Render()
 	
 	PrepareScene(descriptor);
 
+	// Submit all of the Lights in the scene
+	static std::vector<Light*> lights;
+	Entity::GetAllComponents(lights);
+
+	for (auto* light : lights)
+	{
+		Renderer::Submit(light, light->Transform());
+	}
+
+	// Submit all of the ModelRenderers in the scene
 	static std::vector<ModelRenderer*> modelRenderers;
 	Entity::GetAllComponents(modelRenderers);
 

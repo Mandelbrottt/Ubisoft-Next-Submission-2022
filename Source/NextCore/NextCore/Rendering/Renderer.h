@@ -2,6 +2,7 @@
 
 #include "NextCoreCommon.h"
 
+#include "Components/Light.h"
 #include "Components/ModelRenderer.h"
 
 #include "Graphics/CubeMap.h"
@@ -38,6 +39,15 @@ namespace Next::Renderer
 	extern
 	void
 	PrepareScene(PrepareSceneDescriptor& a_descriptor);
+	
+	/**
+	 * \brief Prepare the scene for rendering.
+	 * \remarks Must be called each frame during the Render function before the call to \link Flush \endlink.
+	 */
+	NEXT_CORE_EXPORT
+	extern
+	void
+	Submit(Light const* a_light, Transform const* a_transform);
 
 	/**
 	 * \brief Submit a ModelRenderer for rendering at the given Transform
