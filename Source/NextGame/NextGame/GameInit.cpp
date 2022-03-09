@@ -5,8 +5,6 @@
 #include "SimpleFpsCamera.h"
 #include "RotateOverTime.h"
 
-// TODO: Write wrapper printing to screen
-
 using namespace Next;
 
 class LightSpin : public Behaviour
@@ -47,13 +45,13 @@ ReflectRegister(LightSpin);
 void
 Application_Init()
 {
-	Model* suzanne = Model::Create("cube/cube.obj");
+	Model* suzanne = Model::Create("complex/suzanne.obj");
 
 	Entity dirLight = Entity::Create("DirLight");
 	auto light = dirLight.AddComponent<Light>();
 	light->type = LightType::Directional;
-	light->ambientColor = { 0.2f, 0.2f, 0.2f };
-	light->diffuseColor = { 5, 5, 5 };
+	//light->ambientColor = { 0.2f, 0.2f, 0.2f };
+	light->diffuseColor = { 1, 1, 1 };
 	dirLight.Transform()->SetRotation({ -35, -45, 0 });
 	
 	Entity mainCamera = Entity::Create("MainCamera");
@@ -81,7 +79,7 @@ Application_Init()
 		auto* innerModelRenderer = entity.AddComponent<ModelRenderer>();
 		innerModelRenderer->model = suzanne;
 
-		//entity.AddComponent<RotateOverTime>()->Init(i);
+		entity.AddComponent<RotateOverTime>()->Init(i * 3);
 
 		auto* transform = entity.Transform();
 		

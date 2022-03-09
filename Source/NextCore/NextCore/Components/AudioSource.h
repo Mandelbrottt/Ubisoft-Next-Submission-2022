@@ -18,7 +18,7 @@ namespace Next
 		ReflectDeclare(AudioSource, Component)
 
 	public:
-		AudioClip* audioClip;
+		AudioClip* audioClip = nullptr;
 		
 		/**
 		 * \brief Play the audio clip.

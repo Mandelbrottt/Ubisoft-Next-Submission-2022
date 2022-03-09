@@ -14,7 +14,7 @@ namespace Next
 		ReflectDeclare(ModelRenderer, Component)
 
 	public:
-		Model* model;
+		Model* model = nullptr;
 		
 		ReflectMembers(
 			ReflectField(model)

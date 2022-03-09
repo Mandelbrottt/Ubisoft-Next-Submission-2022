@@ -114,6 +114,6 @@ namespace Next
 
 		ModelVertex m_vertices[4];
 		
-		RenderPrimitiveType m_primitiveType;
+		RenderPrimitiveType m_primitiveType = RenderPrimitiveType::Null;
 	};
 }
