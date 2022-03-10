@@ -77,16 +77,6 @@
 
 	#define ReflectDeclare(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
 
-	//#define _REFLECT_DECLARE_1(_class_) \
-	//	GenerateConstructors(_class_) \
-	//	_REFLECT_DECLARE_NO_CTOR_1(_class_)
-
-	//#define _REFLECT_DECLARE_2(_class_, _base_) \
-	//	GenerateConstructors(_class_) \
-	//	_REFLECT_DECLARE_NO_CTOR_2(_class_, _base_)
-
-	//#define ReflectDeclare(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
-
 	#define ReflectMembers(_list_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	private:\
