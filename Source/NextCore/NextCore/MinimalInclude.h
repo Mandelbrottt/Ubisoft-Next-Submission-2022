@@ -20,6 +20,9 @@
 #include <Reflection/TypeId.h>
 #include <Reflection/TypeTraits.h>
 
+#include <Scenes/Scene.h>
+#include <Scenes/SceneManager.h>
+
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
 

@@ -12,12 +12,26 @@
 
 #include "Rendering/Renderer.h"
 
+#include "Scenes/Scene.h"
+
 #include "Scripting/Entity.h"
+
+static Next::Scene* g_mainLoop_activeScene = nullptr;
+
+Next::Scene* g_mainLoop_sceneToChangeTo = nullptr;
+
+void
+CheckForSceneChange();
 
 void
 Init()
 {
 	Application_Init();
+
+	if (g_mainLoop_sceneToChangeTo == nullptr)
+	{
+		throw "No active scene after initialization";
+	}
 }
 
 // Declare System Updates manually so as to not expose it unnecessarily
@@ -41,6 +55,8 @@ namespace Next
 void
 Update(float a_deltaTime)
 {
+	CheckForSceneChange();
+
 	// Convert deltaTime into seconds because NextAPI uses milliseconds
 	float timeInSeconds = a_deltaTime / 1000.f;
 	Next::Time::Update(timeInSeconds);
@@ -54,7 +70,7 @@ void
 Render()
 {
 	using namespace Next;
-	
+
 	float fov  = 90;
 	float near = 0.1f;
 	float far  = 1000.0f;
@@ -79,14 +95,14 @@ Render()
 		auto* transform = camera->Transform();
 
 		cameraPosition = transform->GetPosition();
-		cameraForward = transform->Forward();
+		cameraForward  = transform->Forward();
 
 		viewMatrix = transform->GetTransformationMatrix();
 		viewMatrix = Matrix::ViewInverse(viewMatrix);
 
 		skybox = camera->GetSkybox();
 	}
-	
+
 	float aspect = Application::ScreenHeight() / Application::ScreenWidth();
 
 	// Perspective Matrix
@@ -99,7 +115,7 @@ Render()
 		perspective,
 		std::move(skybox)
 	};
-	
+
 	PrepareScene(descriptor);
 
 	// Submit all of the Lights in the scene
@@ -127,4 +143,25 @@ void
 Shutdown()
 {
 	// TODO: cleanup entities
+}
+
+void
+CheckForSceneChange()
+{
+	if (g_mainLoop_sceneToChangeTo == nullptr)
+	{
+		return;
+	}
+
+	if (g_mainLoop_activeScene)
+	{
+		g_mainLoop_activeScene->OnSceneDestroy();
+	}
+
+	g_mainLoop_sceneToChangeTo->OnSceneCreate();
+
+	g_mainLoop_activeScene = g_mainLoop_sceneToChangeTo;
+	g_mainLoop_activeScene->OnSceneCreate();
+
+	g_mainLoop_sceneToChangeTo = nullptr;
 }
