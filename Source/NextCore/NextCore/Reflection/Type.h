@@ -51,6 +51,18 @@ namespace Next::Reflection
 		Type&
 		operator =(Type&&) = default;
 		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+
+		bool
+		operator ==(Type const& a_other) const
+		{
+			return m_typeId == a_other.m_typeId;
+		}
+		
+		bool
+		operator !=(Type const& a_other) const
+		{
+			return !(*this == a_other);
+		}
 		
 		/**
 		 * \brief Retrieve the statically assigned type id for the type represented by the current \link Type \endlink.
