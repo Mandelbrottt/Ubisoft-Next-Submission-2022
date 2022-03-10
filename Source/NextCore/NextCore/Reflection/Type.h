@@ -116,10 +116,16 @@ namespace Next::Reflection
 		IsConvertibleTo(Type const* a_type) const;
 		
 		bool
+		IsConvertibleTo(Type const& a_type) const;
+		
+		bool
 		IsConvertibleFrom(TypeId a_typeId) const;
 		
 		bool
 		IsConvertibleFrom(Type const* a_type) const;
+		
+		bool
+		IsConvertibleFrom(Type const& a_type) const;
 
 		/**
 		 * \brief Retrieve the value returned by sizeof for the type class represented by

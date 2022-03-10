@@ -34,6 +34,12 @@ namespace Next::Reflection
 	}
 
 	bool
+	Type::IsConvertibleTo(Type const& a_type) const
+	{
+		return IsConvertibleTo(a_type.GetTypeId());
+	}
+
+	bool
 	Type::IsConvertibleFrom(TypeId a_typeId) const
 	{
 		if (a_typeId == TypeId::Null)
@@ -46,11 +52,12 @@ namespace Next::Reflection
 			return true;
 		}
 
+		// Check if the other type is convertible to this type
 		Type* otherType = TryGet(a_typeId);
 		
 		if (otherType)
 		{
-			return otherType->IsConvertibleFrom(a_typeId);
+			return otherType->IsConvertibleTo(m_typeId);
 		}
 
 		return false;
@@ -60,5 +67,11 @@ namespace Next::Reflection
 	Type::IsConvertibleFrom(Type const* a_type) const
 	{
 		return IsConvertibleFrom(a_type->GetTypeId());
+	}
+
+	bool
+	Type::IsConvertibleFrom(Type const& a_type) const
+	{
+		return IsConvertibleFrom(a_type.GetTypeId());
 	}
 }

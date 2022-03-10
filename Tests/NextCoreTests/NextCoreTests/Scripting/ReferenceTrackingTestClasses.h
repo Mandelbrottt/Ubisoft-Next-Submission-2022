@@ -10,7 +10,7 @@ namespace Scripting
 
 	class RefTestA : public Behaviour
 	{
-		ReflectDeclare(RefTestA, Behaviour)
+		ComponentDeclare(RefTestA, Behaviour)
 
 	public:
 		RefTestA* refA;
@@ -24,7 +24,7 @@ namespace Scripting
 
 	class RefTestB : public Behaviour
 	{
-		ReflectDeclare(RefTestB, Behaviour)
+		ComponentDeclare(RefTestB, Behaviour)
 
 	public:
 		RefTestB* refB;
