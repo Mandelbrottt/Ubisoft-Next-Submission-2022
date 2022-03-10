@@ -9,7 +9,7 @@ using namespace Next;
 
 class LightSpin : public Behaviour
 {
-	ReflectDeclare(LightSpin, Behaviour)
+	ComponentDeclare(LightSpin, Behaviour)
 
 public:
 	void OnCreate() override

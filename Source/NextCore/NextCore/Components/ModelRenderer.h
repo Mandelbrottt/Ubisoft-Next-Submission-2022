@@ -11,7 +11,7 @@ namespace Next
 	 */
 	class ModelRenderer : public Component
 	{
-		ReflectDeclare(ModelRenderer, Component)
+		ComponentDeclare(ModelRenderer, Component)
 
 	public:
 		Model* model = nullptr;

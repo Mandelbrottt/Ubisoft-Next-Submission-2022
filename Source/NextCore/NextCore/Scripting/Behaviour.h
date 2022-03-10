@@ -9,7 +9,7 @@ namespace Next
 	 */
 	class Behaviour : public Component
 	{
-		ReflectDeclareNoConstructors(Behaviour, Component)
+		ReflectDeclare(Behaviour, Component)
 
 	protected:
 		struct BehaviourConstructionArgs : ComponentConstructionArgs { };

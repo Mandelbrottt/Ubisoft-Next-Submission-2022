@@ -11,7 +11,7 @@ namespace Next
 	 */
 	class Object
 	{
-		ReflectDeclareNoConstructors(Object)
+		ReflectDeclare(Object)
 
 	protected:
 		struct ObjectConstructionArgs { };

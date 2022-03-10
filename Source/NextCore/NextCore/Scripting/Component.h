@@ -11,6 +11,17 @@
 			: Base({ }) { } \
 		~_class_() override = default;
 
+#define _COMPONENT_DECLARE_1(_class_) \
+	GenerateConstructors(_class_) \
+	_REFLECT_DECLARE_1(_class_)
+
+#define _COMPONENT_DECLARE_2(_class_, _base_) \
+	GenerateConstructors(_class_) \
+	_REFLECT_DECLARE_2(_class_, _base_)
+
+#define ComponentDeclare(...) _MACRO_OVERLOAD(_COMPONENT_DECLARE, __VA_ARGS__)
+
+
 // Include after GenerateConstructors is defined because there is a #define that relies on GenerateConstructors
 #include "Reflection/Reflection.h"
 
@@ -39,7 +50,7 @@ namespace Next
 	{
 		friend class Entity;
 
-		ReflectDeclareNoConstructors(Component, Object)
+		ReflectDeclare(Component, Object)
 
 	protected:
 		struct ComponentConstructionArgs : ObjectConstructionArgs { };

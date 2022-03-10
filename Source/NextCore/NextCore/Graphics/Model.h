@@ -49,6 +49,6 @@ namespace Next
 	private:
 		mesh_container_t m_meshes;
 
-		ReflectDeclareNoConstructors(Model, Object)
+		ReflectDeclare(Model, Object)
 	};
 }

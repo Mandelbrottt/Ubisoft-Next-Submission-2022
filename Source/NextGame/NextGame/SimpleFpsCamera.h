@@ -4,7 +4,7 @@
 
 class SimpleFpsCamera : public Next::Behaviour
 {
-	ReflectDeclare(SimpleFpsCamera, Behaviour)
+	ComponentDeclare(SimpleFpsCamera, Behaviour)
 
 public:
 	void OnCreate() override;

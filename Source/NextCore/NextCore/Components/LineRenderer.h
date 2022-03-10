@@ -25,7 +25,7 @@ namespace Next
 	{
 		friend void ::Render();
 		
-		ReflectDeclare(LineRenderer, Component)
+		ComponentDeclare(LineRenderer, Component)
 
 	public:
 		struct Point

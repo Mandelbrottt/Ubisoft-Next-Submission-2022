@@ -15,7 +15,7 @@ namespace Next
 	 */
 	class AudioSource : public Component
 	{
-		ReflectDeclare(AudioSource, Component)
+		ComponentDeclare(AudioSource, Component)
 
 	public:
 		AudioClip* audioClip = nullptr;

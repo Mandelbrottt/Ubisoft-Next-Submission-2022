@@ -403,7 +403,7 @@ namespace Next::Renderer
 				}
 				case LightType::Point:
 				{
-					// lightInfo.lightVector is interpreted as a light position here
+					// lightInfo.lightVector is interpreted as light position here
 					Vector3 lightDir = Vector::Normalize(lightInfo.lightVector - a_position);
 
 					float diff = std::max(Vector::Dot(a_normal, lightDir), 0.0f);

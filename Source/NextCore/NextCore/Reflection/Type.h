@@ -196,25 +196,7 @@ namespace Next::Reflection
 			}
 			return iter->second;
 		}
-
-		/**
-		 * \brief Get a pointer to a \link Type \endlink representing T if it has already been registered.
-		 * \tparam T The type to retrieve the \link Type \endlink for.
-		 * \return A pointer to the \link Type \endlink for T if it has been registered, otherwise nullptr.
-		 * \remarks Registering new elements can invalidate this pointer. If lazy-initializing Reflectors,
-		 *          references and pointers should not be maintained beyond function scope. Lookup is O(1) time complexity,
-		 *          so performance should not be a concern for retrieving the Reflector.
-		 */
-		template<class T>
-		static
-		Type*
-		TryGet() noexcept
-		{
-			TypeId id = Reflection::GetTypeId<T>();
-			
-			return TryGet(id);
-		}
-
+		
 		/**
 		 * \brief Get a pointer to a \link Type \endlink representing T if it has already been registered.
 		 * \param a_id The static id of the \link Type \endlink to get.
@@ -234,6 +216,23 @@ namespace Next::Reflection
 				result = &iter->second;
 			}
 
+			return result;
+		}
+
+		static
+		Type*
+		TryGet(std::string_view const& a_fullyQualifiedTypeName)
+		{
+			Type* result = nullptr;
+			auto& types = Types();
+			for (auto& [typeId, type] : types)
+			{
+				if (a_fullyQualifiedTypeName.compare(type.FullName()) == 0)
+				{
+					result = &type;
+					break;
+				}
+			}
 			return result;
 		}
 		

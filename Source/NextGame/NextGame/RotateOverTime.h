@@ -4,7 +4,7 @@
 
 class RotateOverTime : public Next::Behaviour
 {
-	ReflectDeclare(RotateOverTime, Behaviour)
+	ComponentDeclare(RotateOverTime, Behaviour)
 
 public:
 	void OnCreate() override;

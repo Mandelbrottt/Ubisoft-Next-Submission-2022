@@ -25,65 +25,67 @@
 	#define _REFLECT_CLASS_NAME _ReflectClassNameIdentifier
 
 	#define _REFLECT_DECLARE_COMMON(_class_) \
-			_MACRO_AUTO_FORMAT_INDENT \
-		private: \
-			friend class _REFLECT_NAMESPACE Type; \
-			typedef _class_ _REFLECT_TYPE_ALIAS; \
-			static constexpr char* _REFLECT_CLASS_NAME = #_class_; \
-			\
-			static \
-			void \
-			_ReflectType(_REFLECT_NAMESPACE Type& r) \
+		_MACRO_AUTO_FORMAT_INDENT \
+	private: \
+		friend class _REFLECT_NAMESPACE Type; \
+		typedef _class_ _REFLECT_TYPE_ALIAS; \
+		static constexpr char* _REFLECT_CLASS_NAME = #_class_; \
+		\
+		static \
+		void \
+		_ReflectType(_REFLECT_NAMESPACE Type& r) \
+		{ \
+			if constexpr (_REFLECT_NAMESPACE is_complete_type_v<_REFLECT_BASE_ALIAS>) \
 			{ \
-				if constexpr (_REFLECT_NAMESPACE is_complete_type_v<_REFLECT_BASE_ALIAS>) \
-				{ \
-					r.operator()<_REFLECT_BASE_ALIAS, _REFLECT_TYPE_ALIAS>(); \
-				} \
+				r.operator()<_REFLECT_BASE_ALIAS, _REFLECT_TYPE_ALIAS>(); \
 			} \
-			\
-		public: \
-			struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
-			static \
-			_REFLECT_NAMESPACE Type& \
-			GetStaticType() \
-			{ \
-				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
-			} \
-			virtual \
-			_REFLECT_NAMESPACE Type& \
-			GetType() \
-			{ \
-				return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
-			}
+		} \
+		\
+	public: \
+		struct _REFLECT_VALID_REFLECTION_TYPE_ALIAS {}; \
+		static \
+		_REFLECT_NAMESPACE Type& \
+		GetStaticType() \
+		{ \
+			return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
+		} \
+		virtual \
+		_REFLECT_NAMESPACE Type& \
+		GetType() \
+		{ \
+			return _REFLECT_NAMESPACE Type::Get<_REFLECT_TYPE_ALIAS>();\
+		}
 
-	#define _REFLECT_DECLARE_NO_CTOR_1(_class_) \
+	#define _REFLECT_DECLARE_1(_class_) \
 		_MACRO_AUTO_FORMAT_INDENT \
 	private: \
 		struct _REFLECT_BASE_ALIAS; \
 		class  _REFLECT_BASE_ALIAS; \
 		_REFLECT_DECLARE_COMMON(_class_)
 
-	#define _REFLECT_DECLARE_NO_CTOR_2(_class_, _base_) \
+	#define _REFLECT_DECLARE_2(_class_, _base_) \
 		_REFLECT_DECLARE_COMMON(_class_) \
 	private: \
 		typedef _base_ _REFLECT_BASE_ALIAS; \
 	public: \
-		static _REFLECT_NAMESPACE Type* TryGetBaseType() \
+		static \
+		_REFLECT_NAMESPACE Type& \
+		GetBaseType() \
 		{ \
-			return _REFLECT_NAMESPACE Type::TryGet<_REFLECT_BASE_ALIAS>();\
+			return _REFLECT_NAMESPACE Type::Get<_REFLECT_BASE_ALIAS>();\
 		}
 
-	#define ReflectDeclareNoConstructors(...) _MACRO_OVERLOAD(_REFLECT_DECLARE_NO_CTOR, __VA_ARGS__)
-
-	#define _REFLECT_DECLARE_1(_class_) \
-		GenerateConstructors(_class_) \
-		_REFLECT_DECLARE_NO_CTOR_1(_class_)
-
-	#define _REFLECT_DECLARE_2(_class_, _base_) \
-		GenerateConstructors(_class_) \
-		_REFLECT_DECLARE_NO_CTOR_2(_class_, _base_)
-
 	#define ReflectDeclare(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
+
+	//#define _REFLECT_DECLARE_1(_class_) \
+	//	GenerateConstructors(_class_) \
+	//	_REFLECT_DECLARE_NO_CTOR_1(_class_)
+
+	//#define _REFLECT_DECLARE_2(_class_, _base_) \
+	//	GenerateConstructors(_class_) \
+	//	_REFLECT_DECLARE_NO_CTOR_2(_class_, _base_)
+
+	//#define ReflectDeclare(...) _MACRO_OVERLOAD(_REFLECT_DECLARE, __VA_ARGS__)
 
 	#define ReflectMembers(_list_) \
 		_MACRO_AUTO_FORMAT_INDENT \

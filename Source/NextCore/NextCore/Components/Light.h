@@ -14,7 +14,7 @@ namespace Next
 	
 	class Light : public Component
 	{
-		ReflectDeclare(Light, Component)
+		ComponentDeclare(Light, Component)
 			
 	public:
 		Color ambientColor = Color(0, 0, 0);

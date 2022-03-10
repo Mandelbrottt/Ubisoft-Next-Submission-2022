@@ -22,7 +22,7 @@ namespace Next
 	 */
 	class Camera : public Component
 	{
-		ReflectDeclare(Camera, Component)
+		ComponentDeclare(Camera, Component)
 
 	public:
 		float

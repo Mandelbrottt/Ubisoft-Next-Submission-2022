@@ -9,7 +9,7 @@ namespace Next
 {
 	class Transform : public Component
 	{
-		ReflectDeclare(Transform, Component)
+		ComponentDeclare(Transform, Component)
 			
 	public:
 		Transform*
