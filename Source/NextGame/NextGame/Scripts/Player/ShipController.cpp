@@ -4,12 +4,16 @@ ReflectRegister(ShipController);
 
 using namespace Next;
 
-Vector3 ShipController::gravity = Vector3::Down() * 2.f;
+Vector3 ShipController::gravity = Vector3::Down() * 4.f;
 
 void
 ShipController::OnCreate()
 {
 	m_transform = Transform();
+
+	m_projectileSpawner = AddComponent<ProjectileSpawner>();
+	m_projectileSpawner->isEnemyOwned = false;
+	m_projectileSpawner->projectileSpeed = 60;
 }
 
 void
@@ -18,6 +22,8 @@ ShipController::OnUpdate()
 	ProcessPlayerMovement();
 
 	ProcessPlayerRotation();
+
+	ProcessPlayerAttack();
 }
 
 void
@@ -84,4 +90,22 @@ ShipController::ProcessPlayerRotation()
 	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
 	m_transform->SetLocalRotation({ m_pitch, m_yaw, 0 });
+}
+
+void
+ShipController::ProcessPlayerAttack()
+{
+	if (m_attackTimer < m_attackCooldown)
+	{
+		m_attackTimer += Time::DeltaTime();
+		return;
+	}
+	
+	bool input = Input::GetButton(GamepadButton::RightBumper);
+
+	if (input)
+	{
+		m_projectileSpawner->SpawnProjectile(m_transform->Forward());
+		m_attackTimer = 0;
+	}
 }
