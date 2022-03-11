@@ -127,7 +127,7 @@
 
 	#pragma endregion
 	#define ReflectRegister(_type_) \
-		static volatile _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
+		extern "C" volatile _REFLECT_NAMESPACE TypeId _REFLECT_REGISTER_##_type_ = []() \
 		{ \
 			_REFLECT_NAMESPACE Type::Register<_type_>();\
 			return _REFLECT_NAMESPACE GetTypeId<_type_>(); \

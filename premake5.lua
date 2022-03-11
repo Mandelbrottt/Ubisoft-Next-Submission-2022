@@ -45,7 +45,9 @@ workspace "NextSubmission"
 
         include "Source/NextBootstrap"
 
-        -- filter { "toolset:msc*", "configurations:Release*" }
+        group "Engine/PreProcessors"
+
+            include "Source/NextPreProcessors/ReflectionHelper"
 
     group "User Modules"
 
@@ -56,23 +58,3 @@ workspace "NextSubmission"
        include "Tests/NextCoreTests"
 
     group ""
-
-
--- function m.optimizeReferences(cfg)
-	-- if config.isOptimizedBuild(cfg) then
-		-- m.element("EnableCOMDATFolding", nil, "true")
-		-- m.element("OptimizeReferences", nil, "true")
-	-- end
--- end
-
-require('vstudio')
-
-premake.override(premake.vstudio.vc2010, "optimizeReferences", function(base, cfg)
-    local config = premake.config
-    local m      = premake.vstudio.vc2010
-    
-    if config.isOptimizedBuild(cfg) then
-        m.element("EnableCOMDATFolding", nil, "true")
-        m.element("OptimizeReferences", nil, "false")
-    end
-end)

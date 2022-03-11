@@ -36,6 +36,7 @@ project(project_name)
         "NextAPI", -- Eventually remove as dependency
         "NextCore",
         "NextCoreTests",
+        "ReflectionHelper",
         -- TODO: Make function to generate links to projects dynamically to
         --       allow users to have multi-module projects
         "NextGame",
@@ -55,9 +56,13 @@ project(project_name)
         "NEXT_RESOURCE_DIR=\"" .. build_cfg.resource_dir .. "\""
     }
 
+    prebuildcommands {
+        "\"" .. build_cfg.output_dir .. "/PreProcessors/ReflectionHelper.exe\"",
+    }
+
     postbuildcommands {
         -- TODO: Find a way to generate list of test executables
-        "\"" .. build_cfg.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\""
+        "\"" .. build_cfg.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\"",
     }
     
     filter "architecture:Win32"

@@ -8,3 +8,5 @@ packages/
 *.filters
 *.user
 packages.config
+
+*.gen.*
