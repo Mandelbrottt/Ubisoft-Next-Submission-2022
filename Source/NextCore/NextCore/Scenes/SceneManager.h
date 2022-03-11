@@ -4,18 +4,18 @@
 
 namespace Next::SceneManager
 {
-	template<typename TScene>
-	static
-	void
-	RegisterScene()
-	{
-		return SceneManager::RegisterScene(Reflection::Type::Get<TScene>());
-	}
+	//template<typename TScene>
+	//static
+	//void
+	//RegisterScene()
+	//{
+	//	return SceneManager::RegisterScene(Reflection::Type::Get<TScene>());
+	//}
 
-	extern
-	void
-	RegisterScene(Reflection::Type const& a_type);
-
+	//extern
+	//void
+	//RegisterScene(Reflection::Type const& a_type);
+	
 	template<typename TScene>
 	static
 	bool

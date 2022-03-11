@@ -23,10 +23,19 @@ Next::Scene* g_mainLoop_sceneToChangeTo = nullptr;
 void
 CheckForSceneChange();
 
+namespace Next::SceneManager
+{
+	extern
+	void
+	RegisterAllScenes();
+}
+
 void
 Init()
 {
-	Application_Init();
+	Next::SceneManager::RegisterAllScenes();
+	
+	//Application_Init();
 
 	if (g_mainLoop_sceneToChangeTo == nullptr)
 	{

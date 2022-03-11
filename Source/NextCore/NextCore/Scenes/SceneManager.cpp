@@ -50,6 +50,27 @@ namespace Next::SceneManager
 		}
 	}
 
+	extern
+	void
+	RegisterAllScenes()
+	{
+		auto& types = Reflection::Type::Enumerate();
+		
+		for (auto const& [typeId, type] : types)
+		{
+			puts(type.FullName().c_str());
+		
+			auto const& sceneType = Reflection::Type::Get<Scene>();
+
+			if (type == sceneType || !type.IsConvertibleTo(sceneType))
+			{
+				continue;
+			}
+
+			RegisterScene(type);
+		}
+	}
+
 	bool
 	ChangeScene(Reflection::Type const& a_type)
 	{
