@@ -28,8 +28,9 @@ namespace Next::Detail
 
 	ComponentPool::~ComponentPool()
 	{
-		for (auto const& [entityId, index] : m_indexMap)
+		while (!m_indexMap.empty())
 		{
+			auto entityId = m_indexMap.begin()->first;
 			RemoveComponent(entityId);
 		}
 	}
