@@ -53,11 +53,11 @@ ShipController::ProcessPlayerMovement()
 	m_velocity.y = std::clamp(m_velocity.y, -m_topSpeed.y, m_topSpeed.y);
 	m_velocity.z = std::clamp(m_velocity.z, -m_topSpeed.z, m_topSpeed.z);
 	
-	auto position = m_transform->GetPosition();
+	auto position = m_transform->GetLocalPosition();
 	
 	position += m_velocity * deltaTime;
 	
-	m_transform->SetPosition(position);
+	m_transform->SetLocalPosition(position);
 }
 
 void
@@ -83,5 +83,5 @@ ShipController::ProcessPlayerRotation()
 	
 	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
-	m_transform->SetRotation({ m_pitch, m_yaw, 0 });
+	m_transform->SetLocalRotation({ m_pitch, m_yaw, 0 });
 }

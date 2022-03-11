@@ -78,4 +78,9 @@ namespace Next::Matrix
 	extern
 	Matrix4
 	LookAt(Vector3 a_position, Vector3 a_target, Vector3 a_up = Vector3::Up());
+
+	NEXT_CORE_EXPORT
+	extern
+	Vector3
+	EulerAngles(Matrix4 const& a_matrix);
 }

@@ -35,4 +35,15 @@ namespace Next::Math
 		// Probably a side effect of how we calculate angles in the model matrix
 		return std::atan2(a_x, a_y) * RAD_TO_DEG;
 	}
+	
+	/** 
+	 * \return The arc-sin of the ratio a_x
+	 */
+	template<typename TScalar>
+	constexpr
+	TScalar
+	Asin(TScalar a_x)
+	{
+		return std::asin(a_x) * RAD_TO_DEG;
+	}
 }

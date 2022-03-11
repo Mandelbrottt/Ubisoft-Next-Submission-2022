@@ -2,6 +2,7 @@
 #include "Transformations.h"
 
 #include "Matrix3.h"
+#include "Scalar.h"
 #include "Vector4.h"
 
 namespace Next::Matrix
@@ -144,5 +145,29 @@ namespace Next::Matrix
 
 		return result;
 	}
-	
+
+	// https://gamedev.stackexchange.com/a/50968
+	Vector3
+	EulerAngles(Matrix4& a_matrix)
+	{
+		Vector3 result;
+
+		float& yaw   = result.y;
+		float& pitch = result.x;
+		float& roll  = result.z;
+
+		if (a_matrix[0][0] == 1.0f || a_matrix[0][0] == -1.0f)
+		{
+			yaw = Math::Atan2(a_matrix[0][2], a_matrix[2][3]);
+			pitch = 0;
+			roll = 0;
+		} else
+		{
+			yaw = Math::Atan2(-a_matrix[2][0], a_matrix[0][0]);
+			pitch = Math::Asin(1 / a_matrix[1][0]);
+			roll = Math::Atan2(-a_matrix[1][2], a_matrix[1][1]);
+		}
+
+		return result;
+	}
 }

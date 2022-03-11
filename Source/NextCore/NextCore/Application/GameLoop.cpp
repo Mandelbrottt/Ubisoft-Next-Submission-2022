@@ -112,7 +112,7 @@ Render()
 
 		auto* transform = camera->Transform();
 
-		cameraPosition = transform->GetPosition();
+		cameraPosition = transform->GetLocalPosition();
 		cameraForward  = transform->Forward();
 
 		viewMatrix = transform->GetTransformationMatrix();

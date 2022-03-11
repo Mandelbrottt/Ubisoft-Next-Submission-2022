@@ -120,7 +120,7 @@ namespace Next::Renderer
 	{
 		LightInfo info
 		{
-			a_light->type == LightType::Directional ? a_transform->Forward() : a_transform->GetPosition(),
+			a_light->type == LightType::Directional ? a_transform->Forward() : a_transform->GetLocalPosition(),
 			Vector3(a_light->ambientColor),
 			Vector3(a_light->diffuseColor),
 			//a_light->specularColor,

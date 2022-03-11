@@ -15,6 +15,6 @@ LevelSelectScene::OnSceneCreate()
 	Entity groundEntity = Entity::Create("Ground");
 	auto groundRenderer = groundEntity.AddComponent<ModelRenderer>();
 	groundRenderer->model = Model::Create("level/env/grass.obj");
-	groundEntity.Transform()->SetPosition({ 0, -3, 0 });
-	groundEntity.Transform()->SetScale({ 3, 3, 3 });
+	groundEntity.Transform()->SetLocalPosition({ 0, -3, 0 });
+	groundEntity.Transform()->SetLocalScale({ 3, 3, 3 });
 }

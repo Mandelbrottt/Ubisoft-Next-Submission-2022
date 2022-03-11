@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Math/Matrix4.h"
+#include "Math/Transformations.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 #include "Scripting/Component.h"
 
@@ -25,47 +27,103 @@ namespace Next
 		 * \brief Get the local position in this transform's object-space
 		 */
 		Vector3 const&
-		GetPosition() const
+		GetLocalPosition() const
 		{
 			return m_position;
 		}
 		
 		/**
+		 * \brief Get the world-space position in this transform's object-space
+		 */
+		Vector3
+		GetPosition() const
+		{
+			if (m_parent == nullptr)
+			{
+				return GetLocalPosition();
+			}
+
+			Vector4 multResult = Vector4(m_position, 1.0f);
+			multResult = multResult * m_parent->GetTransformationMatrix();
+			
+			return Vector3(multResult);
+		}
+		
+		/**
 		 * \brief Set the local position in this transform's object-space
 		 */
-		Vector3 const&
-		SetPosition(Vector3 const a_position)
+		void
+		SetLocalPosition(Vector3 const a_position)
 		{
 			m_isMatrixDirty |= a_position != m_position;
 			
-			return m_position = a_position;
+			m_position = a_position;
+		}
+		
+		/**
+		 * \brief Set the local position in this transform's object-space
+		 */
+		void
+		SetPosition(Vector3 const a_position)
+		{
+			m_isMatrixDirty = true;
+
+			if (m_parent == nullptr)
+			{
+				return SetPosition(a_position);
+			}
+
+			Vector4 multResult = Vector4(a_position, 1.0f);
+			multResult = multResult * Matrix::ViewInverse(m_parent->GetTransformationMatrix());
+			
+			m_position = Vector3(multResult);
 		}
 		
 		/**
 		 * \brief Get the local rotation in this transform's object-space
 		 */
 		Vector3 const&
-		GetRotation() const
+		GetLocalRotation() const
 		{
 			return m_rotation;
+		}
+		
+		/**
+		 * \brief Get the world-space rotation in this transform's object-space
+		 */
+		Vector3
+		GetRotation() const
+		{
+			return Matrix::EulerAngles(GetTransformationMatrix());
 		}
 		
 		/**
 		 * \brief Set the local rotation in this transform's object-space
 		 */
 		Vector3 const&
-		SetRotation(Vector3 const a_rotation)
+		SetLocalRotation(Vector3 const a_rotation)
 		{
 			m_isMatrixDirty |= a_rotation != m_rotation;
 			
 			return m_rotation = a_rotation;
 		}
 		
+		///**
+		// * \brief Set the world-space rotation in this transform's object-space
+		// */
+		//Vector3
+		//SetRotation(Vector3 const a_rotation)
+		//{
+		//	m_isMatrixDirty = true;
+		//	
+		//	return m_rotation = a_rotation;
+		//}
+		
 		/**
 		 * \brief Get the local scale in this transform's object-space
 		 */
 		Vector3 const&
-		GetScale() const
+		GetLocalScale() const
 		{
 			return m_scale;
 		}
@@ -74,7 +132,7 @@ namespace Next
 		 * \brief Set the local scale in this transform's object-space
 		 */
 		Vector3 const&
-		SetScale(Vector3 const a_scale)
+		SetLocalScale(Vector3 const a_scale)
 		{
 			m_isMatrixDirty |= a_scale == m_scale;
 			
@@ -107,6 +165,10 @@ namespace Next
 			auto transformationMatrix = GetTransformationMatrix();
 			return Vector3(transformationMatrix[2]);
 		}
+
+		//void
+		//LookAt(Vector3 a_target, Vector3 a_up = Vector3::Up());
+		//
 		
 		/**
 		 * \brief Get the model matrix for this transform in the given space.
