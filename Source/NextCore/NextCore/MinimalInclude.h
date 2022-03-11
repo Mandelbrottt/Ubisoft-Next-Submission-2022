@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Application/Application.h>
+#include <Application/Init.h>
 #include <Application/Time.h>
 
 #include <Components/AudioSource.h>
@@ -25,6 +26,7 @@
 
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
+
 
 #ifdef NEXT_IMPLICIT_NAMESPACE
 using namespace Next;

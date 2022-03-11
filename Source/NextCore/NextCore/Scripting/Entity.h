@@ -21,6 +21,9 @@ Update(float a_deltaTime);
 void
 Shutdown();
 
+void
+CheckForSceneChange();
+
 namespace Next
 {
 	class Transform;
@@ -57,6 +60,7 @@ namespace Next
 		friend void ::Update(float a_deltaTime);
 		friend void ::Render();
 		friend void ::Shutdown();
+		friend void ::CheckForSceneChange();
 
 		friend void Detail::SimulateEntityUpdate();
 		friend void Detail::ResetRegistryAndEntityProperties();

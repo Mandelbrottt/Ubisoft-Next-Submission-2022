@@ -13,6 +13,7 @@
 #include "Rendering/Renderer.h"
 
 #include "Scenes/Scene.h"
+#include "Scenes/SceneManager.h"
 
 #include "Scripting/Entity.h"
 
@@ -34,13 +35,13 @@ void
 Init()
 {
 	Next::SceneManager::RegisterAllScenes();
-	
-	//Application_Init();
 
-	if (g_mainLoop_sceneToChangeTo == nullptr)
-	{
-		throw "No active scene after initialization";
-	}
+	// Assuming StartingScene macro is used, _STARTING_SCENE is guaranteed to be valid
+	auto const& sceneType = Next::Reflection::Type::TryGet(_STARTING_SCENE);
+
+	Next::SceneManager::ChangeScene(*sceneType);
+
+	assert(g_mainLoop_sceneToChangeTo);
 }
 
 // Declare System Updates manually so as to not expose it unnecessarily
@@ -167,6 +168,8 @@ CheckForSceneChange()
 		g_mainLoop_activeScene->OnSceneDestroy();
 	}
 
+	Next::Entity::Registry().Reset();
+	
 	g_mainLoop_sceneToChangeTo->OnSceneCreate();
 
 	g_mainLoop_activeScene = g_mainLoop_sceneToChangeTo;

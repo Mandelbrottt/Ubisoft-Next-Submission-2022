@@ -43,11 +43,6 @@ namespace Next::SceneManager
 		auto scene = static_cast<Scene*>(a_type.GetFactory()->Construct());
 
 		g_sceneInfos.push_back(SceneInfo { typeId, scene });
-
-		if (g_mainLoop_sceneToChangeTo == nullptr)
-		{
-			g_mainLoop_sceneToChangeTo = scene;
-		}
 	}
 
 	extern
@@ -58,8 +53,6 @@ namespace Next::SceneManager
 		
 		for (auto const& [typeId, type] : types)
 		{
-			puts(type.FullName().c_str());
-		
 			auto const& sceneType = Reflection::Type::Get<Scene>();
 
 			if (type == sceneType || !type.IsConvertibleTo(sceneType))
@@ -90,12 +83,19 @@ namespace Next::SceneManager
 			}
 		);
 
+		Scene* scene;
+
 		if (iter == g_sceneInfos.end())
 		{
-			return false;
+			scene = static_cast<Scene*>(a_type.GetFactory()->Construct());
+
+			g_sceneInfos.push_back(SceneInfo { typeId, scene });
+		} else
+		{
+			scene = iter->scene;
 		}
 
-		g_mainLoop_sceneToChangeTo = iter->scene;
+		g_mainLoop_sceneToChangeTo = scene;
 		
 		return true;
 	}
