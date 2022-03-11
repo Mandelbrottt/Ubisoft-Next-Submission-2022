@@ -12,9 +12,9 @@ LevelSelectScene::OnSceneCreate()
 	Entity playerEntity = Entity::Create("Player");
 	playerEntity.AddComponent<PlayerShip>();
 
-	Entity cameraEntity = Entity::Create("Camera");
-	auto camera = cameraEntity.AddComponent<Camera>();
-	camera->SetFov(100, FovType::Horizontal);
-	cameraEntity.Transform()->SetPosition({ 0, 30, 0 });
-	cameraEntity.Transform()->SetRotation({ -90, 0, 0 });
+	Entity groundEntity = Entity::Create("Ground");
+	auto groundRenderer = groundEntity.AddComponent<ModelRenderer>();
+	groundRenderer->model = Model::Create("level/env/grass.obj");
+	groundEntity.Transform()->SetPosition({ 0, -3, 0 });
+	groundEntity.Transform()->SetScale({ 3, 3, 3 });
 }

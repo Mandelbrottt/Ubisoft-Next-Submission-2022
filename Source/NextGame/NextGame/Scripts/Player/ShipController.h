@@ -20,18 +20,20 @@ private:
 	void
 	ProcessPlayerRotation();
 
+public:
+	static Next::Vector3 gravity;
+
 private:
 	Next::Transform* m_transform;
 
 	Next::Vector3 m_velocity;
 
-	float m_topSpeed;
-	float m_accelerationForce;
-	float m_turnSpeed;
+	Next::Vector3 m_topSpeed;
+	Next::Vector3 m_accelerationForce;
+	float         m_turnSpeed;
 
 	float m_yaw;
-
-	bool m_tankControls;
+	float m_pitch;
 
 	ReflectMembers(
 		ReflectField(m_transform)
