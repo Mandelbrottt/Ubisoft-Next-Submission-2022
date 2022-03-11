@@ -3,6 +3,9 @@
 
 #include "Scene.h"
 
+// Readonly
+extern Next::Scene* g_mainLoop_activeScene;
+
 extern Next::Scene* g_mainLoop_sceneToChangeTo;
 
 namespace Next::SceneManager
@@ -15,6 +18,30 @@ namespace Next::SceneManager
 	};
 
 	static std::vector<SceneInfo> g_sceneInfos;
+	
+	Reflection::Type const&
+	CurrentSceneType()
+	{
+		return g_mainLoop_activeScene->GetType();
+	}
+
+	std::string const&
+	CurrentSceneName()
+	{
+		return CurrentSceneType().Name();
+	}
+
+	std::string const&
+	CurrentSceneFullName()
+	{
+		return CurrentSceneType().FullName();
+	}
+
+	bool
+	IsCurrentScene(Reflection::Type const& a_type)
+	{
+		return CurrentSceneType().GetTypeId() == a_type.GetTypeId();
+	}
 
 	void
 	RegisterScene(Reflection::Type const& a_type)
@@ -65,7 +92,7 @@ namespace Next::SceneManager
 	}
 
 	bool
-	ChangeScene(Reflection::Type const& a_type)
+	LoadScene(Reflection::Type const& a_type)
 	{
 		if (!a_type.IsConvertibleTo(Reflection::Type::Get<Scene>()))
 		{
@@ -101,7 +128,7 @@ namespace Next::SceneManager
 	}
 
 	bool
-	ChangeScene(std::string_view const& a_typeName)
+	LoadScene(std::string_view const& a_typeName)
 	{
 		Reflection::Type* type = Reflection::Type::TryGet(a_typeName);
 
@@ -110,6 +137,6 @@ namespace Next::SceneManager
 			return false;
 		}
 
-		return ChangeScene(*type);
+		return LoadScene(*type);
 	}
 }

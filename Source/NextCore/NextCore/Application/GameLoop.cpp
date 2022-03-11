@@ -17,7 +17,8 @@
 
 #include "Scripting/Entity.h"
 
-static Next::Scene* g_mainLoop_activeScene = nullptr;
+// Readonly outside of this file
+Next::Scene* g_mainLoop_activeScene = nullptr;
 
 Next::Scene* g_mainLoop_sceneToChangeTo = nullptr;
 
@@ -39,7 +40,7 @@ Init()
 	// Assuming StartingScene macro is used, _STARTING_SCENE is guaranteed to be valid
 	auto const& sceneType = Next::Reflection::Type::TryGet(_STARTING_SCENE);
 
-	Next::SceneManager::ChangeScene(*sceneType);
+	Next::SceneManager::LoadScene(*sceneType);
 
 	assert(g_mainLoop_sceneToChangeTo);
 }
@@ -74,6 +75,13 @@ Update(float a_deltaTime)
 	Next::Input::Update();
 
 	Next::Entity::Update();
+}
+
+namespace Next::Gui
+{
+	extern
+	void
+	Flush();
 }
 
 void
@@ -147,6 +155,8 @@ Render()
 	}
 
 	Renderer::Flush();
+
+	Gui::Flush();
 }
 
 void
@@ -173,7 +183,6 @@ CheckForSceneChange()
 	g_mainLoop_sceneToChangeTo->OnSceneCreate();
 
 	g_mainLoop_activeScene = g_mainLoop_sceneToChangeTo;
-	g_mainLoop_activeScene->OnSceneCreate();
 
 	g_mainLoop_sceneToChangeTo = nullptr;
 }

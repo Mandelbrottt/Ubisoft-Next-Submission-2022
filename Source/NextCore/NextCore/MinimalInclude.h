@@ -10,10 +10,16 @@
 #include <Components/ModelRenderer.h>
 #include <Components/Transform.h>
 
+#include <Graphics/Gui.h>
 #include <Graphics/Model.h>
 #include <Graphics/Sprite.h>
 
 #include <Input/Input.h>
+
+#include <Math/Scalar.h>
+#include <Math/Vector.h>
+#include <Math/Matrix.h>
+#include <Math/Transformations.h>
 
 #include <Reflection/Field.h>
 #include <Reflection/Reflection.h>
@@ -26,7 +32,6 @@
 
 #include <Scripting/Behaviour.h>
 #include <Scripting/Entity.h>
-
 
 #ifdef NEXT_IMPLICIT_NAMESPACE
 using namespace Next;
