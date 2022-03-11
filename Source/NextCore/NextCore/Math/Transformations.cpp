@@ -124,4 +124,25 @@ namespace Next::Matrix
 
 		return result;
 	}
+
+	// inspired by https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part3.cpp
+	Matrix4
+	LookAt(Vector3 a_position, Vector3 a_target, Vector3 a_up)
+	{
+		Vector3 newForward = Vector::Normalize(a_target - a_position);
+
+		Vector3 a = newForward * Vector::Dot(a_up, newForward);
+		Vector3 newUp = Vector::Normalize(a_up - a);
+
+		Vector3 newRight = Vector::Cross(newUp, newForward);
+
+		Matrix4 result;
+		result[0] = Vector4(newRight,   0.0f);
+		result[1] = Vector4(newUp,      0.0f);
+		result[2] = Vector4(newForward, 0.0f);
+		result[3] = Vector4(a_position, 1.0f);
+
+		return result;
+	}
+	
 }

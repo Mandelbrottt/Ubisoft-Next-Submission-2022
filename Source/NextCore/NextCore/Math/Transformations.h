@@ -73,4 +73,9 @@ namespace Next::Matrix
 	extern
 	Matrix4
 	ViewInverse(Matrix4 a_locRot);
+
+	NEXT_CORE_EXPORT
+	extern
+	Matrix4
+	LookAt(Vector3 a_position, Vector3 a_target, Vector3 a_up = Vector3::Up());
 }
