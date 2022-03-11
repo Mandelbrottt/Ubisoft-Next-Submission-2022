@@ -65,16 +65,10 @@ ShipController::ProcessPlayerRotation()
 {
 	Vector2 input;
 	input.x = Input::GetAxis(Axis::HorizontalLook);
-<<<<<<< HEAD
 	input.y = Input::GetAxis(Axis::VerticalLook);
 	
-	m_yaw += input.x * m_turnSpeed * Time::DeltaTime();
-=======
-	input.y = Input::GetAxis(Axis::VerticalLook) * 0.8f;
-
-	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
 	m_yaw   += input.x * m_turnSpeed * Time::DeltaTime();
->>>>>>> d1565ba119d8c0ceeef11cf68d3f11d37d1360bc
+	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
 
 	// Keep rotation in check
 	if (m_yaw < -360)
@@ -86,12 +80,8 @@ ShipController::ProcessPlayerRotation()
 	{
 		m_yaw -= 360;
 	}
-
-<<<<<<< HEAD
-	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
 	
-=======
->>>>>>> d1565ba119d8c0ceeef11cf68d3f11d37d1360bc
+	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
 	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
 	m_transform->SetRotation({ m_pitch, m_yaw, 0 });
