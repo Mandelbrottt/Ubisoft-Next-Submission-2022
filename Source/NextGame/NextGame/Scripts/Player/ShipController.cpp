@@ -81,7 +81,6 @@ ShipController::ProcessPlayerRotation()
 		m_yaw -= 360;
 	}
 	
-	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
 	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
 	m_transform->SetRotation({ m_pitch, m_yaw, 0 });
