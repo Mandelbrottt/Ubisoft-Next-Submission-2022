@@ -22,28 +22,7 @@ build_cfg = {
 
 build_cfg.exe_output_dir = build_cfg.output_dir .. "/" .. user_cfg.exe_dir
 
-local function mysplit (inputstr, sep)
-    if sep == nil then
-       sep = "%s"
-    end
-    local t={}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-       table.insert(t, str)
-    end
-    return t
-end
-
--- https://stackoverflow.com/a/23535333
-function script_dir()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    local path = str:match("(.*[/\\])") or "."
-    local split = mysplit(path, "/\\")
-    local last_dir
-    for _, v in ipairs(split) do
-        last_dir = v
-    end
-    return last_dir
-end
+include "util.lua"
 
 workspace "NextSubmission"
     architecture "x64"
@@ -66,6 +45,8 @@ workspace "NextSubmission"
 
         include "Source/NextBootstrap"
 
+        -- filter { "toolset:msc*", "configurations:Release*" }
+
     group "User Modules"
 
         include "Source/NextGame"
@@ -75,3 +56,23 @@ workspace "NextSubmission"
        include "Tests/NextCoreTests"
 
     group ""
+
+
+-- function m.optimizeReferences(cfg)
+	-- if config.isOptimizedBuild(cfg) then
+		-- m.element("EnableCOMDATFolding", nil, "true")
+		-- m.element("OptimizeReferences", nil, "true")
+	-- end
+-- end
+
+require('vstudio')
+
+premake.override(premake.vstudio.vc2010, "optimizeReferences", function(base, cfg)
+    local config = premake.config
+    local m      = premake.vstudio.vc2010
+    
+    if config.isOptimizedBuild(cfg) then
+        m.element("EnableCOMDATFolding", nil, "true")
+        m.element("OptimizeReferences", nil, "false")
+    end
+end)
