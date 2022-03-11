@@ -73,7 +73,17 @@ FindAllInstancesOfReflectRegister(fs::path const& a_sourceRoot)
 		{
 			std::getline(ifs, line);
 
-			line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+			line.erase(
+				std::remove_if(
+					line.begin(),
+					line.end(),
+					[](unsigned char a_char)
+					{
+						return std::isspace(a_char);
+					}
+				),
+				line.end()
+			);
 
 			std::string::size_type beginIndex = 0;
 
