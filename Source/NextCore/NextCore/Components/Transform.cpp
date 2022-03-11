@@ -26,14 +26,14 @@ namespace Next
 		m_parent = a_parent;
 	}
 
-	void
-	Transform::LookAt(Vector3 a_target, Vector3 a_up)
-	{
-		Matrix4 lookAt = Matrix::LookAt(GetPosition(), a_target, a_up);
-		Vector3 result = Matrix::EulerAngles(lookAt);
+	//void
+	//Transform::LookAt(Vector3 a_target, Vector3 a_up)
+	//{
+	//	Matrix4 lookAt = Matrix::LookAt(GetPosition(), a_target, a_up);
+	//	Vector3 result = Matrix::EulerAngles(lookAt);
 
-		SetRotation(result);
-	}
+	//	SetRotation(result);
+	//}
 
 	Matrix4
 	Transform::GetTransformationMatrix(bool a_includeParent) const

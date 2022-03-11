@@ -70,7 +70,7 @@ namespace Next
 
 			if (m_parent == nullptr)
 			{
-				return SetPosition(a_position);
+				return SetLocalPosition(a_position);
 			}
 
 			Vector4 multResult = Vector4(a_position, 1.0f);

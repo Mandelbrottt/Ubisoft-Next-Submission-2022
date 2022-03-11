@@ -11,7 +11,7 @@ namespace Next::Matrix
 	{
 		Matrix4 result { 0 };
 		
-		float fovRadians = 1.f / std::tan(a_fieldOfView * 0.5f / 180.f * PI);
+		float fovRadians = 1.f / std::tan(a_fieldOfView * 0.5f / Math::RAD_TO_DEG);
 		
 		result[0][0] = a_aspectRatio * fovRadians;
 		result[1][1] = fovRadians;
@@ -26,7 +26,7 @@ namespace Next::Matrix
 	RotateX(float a_angle)
 	{
 		// std::cos and sin expect radians
-		a_angle *= PI / 180;
+		a_angle *= Math::DEG_TO_RAD;
 		
 		Matrix4 result;
 
@@ -44,7 +44,7 @@ namespace Next::Matrix
 	RotateY(float a_angle)
 	{
 		// std::cos and sin expect radians
-		a_angle *= PI / 180;
+		a_angle *= Math::DEG_TO_RAD;
 		
 		Matrix4 result;
 
@@ -62,7 +62,7 @@ namespace Next::Matrix
 	RotateZ(float a_angle)
 	{
 		// std::cos and sin expect radians
-		a_angle *= PI / 180;
+		a_angle *= Math::DEG_TO_RAD;
 
 		Matrix4 result;
 
