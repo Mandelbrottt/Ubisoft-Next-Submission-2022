@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Constants.h"
+
 namespace Next::Math
 {
 	template<typename TScalar>
@@ -18,5 +20,19 @@ namespace Next::Math
 		}
 		
 		return 0;
+	}
+
+	/** 
+	 * \return The angle about the origin of the vector with y component a_y and x component a_x.
+	 *         Takes into account the quadrant of the vector.
+	 */
+	template<typename TScalar>
+	constexpr
+	TScalar
+	Atan2(TScalar a_y, TScalar a_x)
+	{
+		// Flip x and y for some reason
+		// Probably a side effect of how we calculate angles in the model matrix
+		return std::atan2(a_x, a_y) * RAD_TO_DEG;
 	}
 }
