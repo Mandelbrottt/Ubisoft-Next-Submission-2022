@@ -14,12 +14,10 @@ void
 PlayerShip::OnCreate()
 {
 	m_shipController = AddComponent<ShipController>();
-
+	
 	auto camera = AddComponent<Camera>();
-	camera->SetFov(90, FovType::Horizontal);
+	camera->SetFov(100, FovType::Horizontal);
 
-	//auto modelRenderer = AddComponent<ModelRenderer>();
-	//modelRenderer->model = Model::Create("complex/suzanne.obj");
 }
 
 void
