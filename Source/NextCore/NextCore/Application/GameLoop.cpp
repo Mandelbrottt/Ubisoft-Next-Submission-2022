@@ -179,10 +179,9 @@ CheckForSceneChange()
 	}
 
 	Next::Entity::Registry().Reset();
-	
-	g_mainLoop_sceneToChangeTo->OnSceneCreate();
 
 	g_mainLoop_activeScene = g_mainLoop_sceneToChangeTo;
-
 	g_mainLoop_sceneToChangeTo = nullptr;
+
+	g_mainLoop_activeScene->OnSceneCreate();
 }
