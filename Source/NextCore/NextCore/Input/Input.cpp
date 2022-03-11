@@ -189,7 +189,7 @@ namespace Next::Input
 	{
 		key_underlying_t key = g_inputMap[a_key];
 
-		return g_thisFrameKeys[key] && !g_lastFrameButtons[key];
+		return g_thisFrameKeys[key] && !g_lastFrameKeys[key];
 	}
 
 	bool
@@ -197,6 +197,6 @@ namespace Next::Input
 	{
 		key_underlying_t key = g_inputMap[a_key];
 
-		return !g_thisFrameKeys[key] && g_lastFrameButtons[key];
+		return !g_thisFrameKeys[key] && g_lastFrameKeys[key];
 	}
 }

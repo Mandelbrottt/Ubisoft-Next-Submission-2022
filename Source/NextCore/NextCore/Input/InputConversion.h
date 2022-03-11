@@ -62,7 +62,7 @@ namespace Next::Input::Detail
 		constexpr static int key_size          = 256;
 		constexpr static int button_size       = 16;
 		constexpr static int mouse_button_size = 5;
-		
+
 		constexpr
 		InputMap();
 
@@ -94,7 +94,7 @@ namespace Next::Input::Detail
 
 		EnumIndexedArray<MouseButton, mouse_button_underlying_t, mouse_button_size> m_mouseButtons;
 	};
-	
+
 	constexpr
 	InputMap::InputMap()
 	{
@@ -127,20 +127,20 @@ namespace Next::Input::Detail
 			const key_underlying_t firstLetterCode  = static_cast<key_underlying_t>(KeyCode::A);
 			const char             firstLetterValue = 'A';
 			
-			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstLetterCode + i);
+			KeyCode          convertedKeyCode   = static_cast<KeyCode>(firstLetterCode + i);
 			key_underlying_t convertedKeyValue  = firstLetterValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
 		}
-
+		
 		// Alphanumeric Keys
 		for (int i = 0; i < 10; i++)
 		{
-			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(KeyCode::A);
+			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(KeyCode::Alpha0);
 			const char             firstNumberValue = '0';
-			
-			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstNumberCode + i);
-			key_underlying_t convertedKeyValue  = firstNumberValue + i;
+
+			KeyCode          convertedKeyCode  = static_cast<KeyCode>(firstNumberCode + i);
+			key_underlying_t convertedKeyValue = firstNumberValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
 		}
@@ -150,13 +150,13 @@ namespace Next::Input::Detail
 		{
 			const key_underlying_t firstNumberCode  = static_cast<key_underlying_t>(KeyCode::Numpad0);
 			const char             firstNumberValue = VK_NUMPAD0;
-			
-			KeyCode              convertedKeyCode   = static_cast<KeyCode>(firstNumberCode + i);
-			key_underlying_t convertedKeyValue  = firstNumberValue + i;
+
+			KeyCode          convertedKeyCode  = static_cast<KeyCode>(firstNumberCode + i);
+			key_underlying_t convertedKeyValue = firstNumberValue + i;
 
 			m_keys[convertedKeyCode] = convertedKeyValue;
 		}
-
+		
 		// Special Keys
 		m_keys[KeyCode::Space]        = VK_SPACE;
 		m_keys[KeyCode::Shift]        = VK_SHIFT;
