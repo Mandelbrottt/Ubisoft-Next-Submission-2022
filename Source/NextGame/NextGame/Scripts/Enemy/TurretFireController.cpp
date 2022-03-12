@@ -28,8 +28,11 @@ TurretFireController::OnUpdate()
 
 void
 TurretFireController::AimTurret()
-{	
-	m_aimDirection = m_playerTransform->GetPosition() - Transform()->GetPosition();
+{
+	auto predictedPosition = 
+		m_playerTransform->GetPosition() + m_shipController->GetVelocity() * CalculatePredictiveFireCoefficient();
+
+	m_aimDirection = predictedPosition - Transform()->GetPosition();
 	m_aimDirection.Normalize();
 
 	float angle = Math::Atan2(m_aimDirection.z, m_aimDirection.x);
@@ -54,4 +57,12 @@ TurretFireController::TryFireTurret()
 	m_projectileSpawner->SpawnProjectile(position, m_aimDirection);
 
 	m_fireTimer = 0;
+}
+
+float
+TurretFireController::CalculatePredictiveFireCoefficient()
+{
+	Vector3 literalAimVector = m_playerTransform->GetPosition() - Transform()->GetPosition();
+	float timeToHit = literalAimVector.Magnitude() / m_projectileSpawner->projectileSpeed;
+	return timeToHit;
 }

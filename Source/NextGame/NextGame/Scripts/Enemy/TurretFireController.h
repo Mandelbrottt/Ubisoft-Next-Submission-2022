@@ -26,6 +26,9 @@ private:
 	void
 	TryFireTurret();
 
+	float
+	CalculatePredictiveFireCoefficient();
+
 private:
 	Next::Transform* m_playerTransform;
 	ProjectileSpawner* m_projectileSpawner;
