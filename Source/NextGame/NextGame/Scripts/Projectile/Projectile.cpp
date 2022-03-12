@@ -19,7 +19,7 @@ Projectile::OnFirstUpdate()
 	std::string modelName = m_isFromEnemy ? "redProjectile.obj" : "blueProjectile.obj";
 
 	auto modelRenderer   = AddComponent<ModelRenderer>();
-	modelRenderer->model = Model::Create("projectiles/" + modelName);
+	modelRenderer->model = Model::Create("objects/" + modelName);
 }
 
 void

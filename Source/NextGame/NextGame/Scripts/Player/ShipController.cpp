@@ -17,6 +17,13 @@ ShipController::OnCreate()
 }
 
 void
+ShipController::OnFirstUpdate()
+{
+	Entity camera = Entity::FindByName("Camera");
+	m_cameraTransform = camera.Transform();
+}
+
+void
 ShipController::OnUpdate()
 {
 	ProcessPlayerMovement();
@@ -59,11 +66,20 @@ ShipController::ProcessPlayerMovement()
 	m_velocity.y = std::clamp(m_velocity.y, -m_topSpeed.y, m_topSpeed.y);
 	m_velocity.z = std::clamp(m_velocity.z, -m_topSpeed.z, m_topSpeed.z);
 	
-	auto position = m_transform->GetLocalPosition();
+	auto position = m_transform->GetPosition();
 	
 	position += m_velocity * deltaTime;
+
+	if (gravity.x == 0 && gravity.z == 0)
+	{
+		if (position.y < 0)
+		{
+			position.y = 0;
+			m_velocity.y = -m_velocity.y * 0.2f;
+		}
+	}
 	
-	m_transform->SetLocalPosition(position);
+	m_transform->SetPosition(position);
 }
 
 void
@@ -89,7 +105,8 @@ ShipController::ProcessPlayerRotation()
 	
 	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
-	m_transform->SetLocalRotation({ m_pitch, m_yaw, 0 });
+	m_transform->SetLocalRotation({ 0, m_yaw, 0 });
+	m_cameraTransform->SetLocalRotation({ m_pitch, 0, 0 });
 }
 
 void
@@ -105,7 +122,10 @@ ShipController::ProcessPlayerAttack()
 
 	if (input)
 	{
-		m_projectileSpawner->SpawnProjectile(m_transform->Forward());
+		auto direction = m_cameraTransform->Forward();
+		auto position = m_cameraTransform->GetPosition();
+		
+		m_projectileSpawner->SpawnProjectile(position + direction, direction);
 		m_attackTimer = 0;
 	}
 }

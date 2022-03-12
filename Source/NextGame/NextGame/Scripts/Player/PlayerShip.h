@@ -13,10 +13,14 @@ public:
 	OnCreate() override;
 
 	void
+	OnFirstUpdate() override;
+
+	void
 	OnUpdate() override;
 
 private:
-	ShipController* m_shipController;
+	Next::Entity m_shipControllerEntity;
+	ShipController* m_shipController = nullptr;
 
 	ReflectMembers(
 		ReflectField(m_shipController)
