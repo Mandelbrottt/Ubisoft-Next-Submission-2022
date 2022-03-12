@@ -55,6 +55,8 @@ namespace Next::Time
 	void
 	Update(float a_deltaTime)
 	{
+		a_deltaTime = std::min(a_deltaTime, 1.f / 10.f);
+
 		float scaledDeltaTime = a_deltaTime * g_timeScale;
 		g_deltaTime           = scaledDeltaTime;
 
