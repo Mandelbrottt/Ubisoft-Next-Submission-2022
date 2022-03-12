@@ -7,6 +7,7 @@
 #include "Components/LineRenderer.h"
 #include "Components/ModelRenderer.h"
 #include "Components/Transform.h"
+#include "Components/Colliders/SphereCollider.h"
 
 #include "Math/Transformations.h"
 
@@ -22,6 +23,11 @@ Next::Scene* g_mainLoop_activeScene = nullptr;
 
 Next::Scene* g_mainLoop_sceneToChangeTo = nullptr;
 
+static
+void
+ProcessCollisions();
+
+static
 void
 CheckForSceneChange();
 
@@ -77,6 +83,8 @@ Update(float a_deltaTime)
 	Next::Input::Update();
 
 	Next::Entity::Update();
+
+	ProcessCollisions();
 }
 
 namespace Next::Gui
@@ -182,8 +190,160 @@ CheckForSceneChange()
 
 	Next::Entity::Registry().Reset();
 
-	g_mainLoop_activeScene = g_mainLoop_sceneToChangeTo;
+	g_mainLoop_activeScene     = g_mainLoop_sceneToChangeTo;
 	g_mainLoop_sceneToChangeTo = nullptr;
 
 	g_mainLoop_activeScene->OnSceneCreate();
+}
+
+// TODO: Refactor collision checking into separate file
+
+struct CollisionPair
+{
+	Next::EntityId lhsEntityId;
+	Next::EntityId rhsEntityId;
+};
+
+static std::vector<CollisionPair> g_thisFrameCollisions;
+static std::vector<CollisionPair> g_lastFrameCollisions;
+
+static
+bool
+FindCollisionPairPredicate(CollisionPair const& a_lhs, CollisionPair const& a_rhs)
+{
+	return (a_lhs.lhsEntityId == a_rhs.lhsEntityId && a_lhs.rhsEntityId == a_rhs.rhsEntityId);
+}
+
+static
+void
+ProcessSphereCollisions(Next::Detail::Registry& a_registry);
+
+void
+ProcessCollisions()
+{
+	ProcessSphereCollisions(Next::Entity::Registry());
+}
+
+void
+ProcessSphereCollisions(Next::Detail::Registry& a_registry)
+{
+	using namespace Next;
+
+	static std::vector<SphereCollider*> sphereColliders;
+
+	Entity::GetAllComponents(sphereColliders);
+
+	// Broadphase collision, but for spheres there really only can be broadphase collisions?
+	for (int i = 0; i < sphereColliders.size(); i++)
+	{
+		SphereCollider* lhsCollider = sphereColliders[i];
+
+		Vector3 lhsPosition = lhsCollider->Transform()->GetPosition();
+		float   lhsSize     = lhsCollider->radius;
+		for (int j = 0; j < sphereColliders.size(); j++)
+		{
+			SphereCollider* rhsCollider = sphereColliders[j];
+
+			if (lhsCollider == rhsCollider)
+			{
+				continue;
+			}
+
+			Vector3 rhsPosition = rhsCollider->Transform()->GetPosition();
+			float   rhsSize     = rhsCollider->radius;
+
+			Vector3 lhsToRhs = lhsPosition - rhsPosition;
+			float   distSq   = lhsToRhs.MagnitudeSquared();
+
+			bool colliding = distSq < (lhsSize * lhsSize + rhsSize * rhsSize);
+
+			if (colliding)
+			{
+				g_thisFrameCollisions.push_back({ lhsCollider->GetEntityId(), rhsCollider->GetEntityId() });
+			}
+		}
+	}
+
+	struct CollisionQueueElement
+	{
+		EntityId lhsEntityId;
+
+		Collider* rhsCollider;
+
+		enum
+		{
+			CollisionStart,
+			CollisionStay,
+			CollisionEnd,
+		} collisionFunc;
+	};
+
+	std::vector<CollisionQueueElement> collisionQueue;
+
+	for (auto const& collision : g_thisFrameCollisions)
+	{
+		auto iter = g_lastFrameCollisions.begin();
+		auto end  = g_lastFrameCollisions.end();
+
+		while (iter != end)
+		{
+			if (FindCollisionPairPredicate(collision, *iter))
+			{
+				break;
+			}
+
+			++iter;
+		}
+
+		if (iter == g_lastFrameCollisions.end())
+		{
+			auto rhsCollider = a_registry.GetComponent<SphereCollider>(collision.rhsEntityId);
+			collisionQueue.push_back({ collision.lhsEntityId, rhsCollider, CollisionQueueElement::CollisionStart });
+		} else
+		{
+			auto rhsCollider = a_registry.GetComponent<SphereCollider>(iter->rhsEntityId);
+			collisionQueue.push_back({ iter->lhsEntityId, rhsCollider, CollisionQueueElement::CollisionStay });
+
+			g_lastFrameCollisions.erase(iter);
+		}
+	}
+
+	for (auto const& [lhsEntityId, rhsEntityId] : g_lastFrameCollisions)
+	{
+		auto rhsCollider = a_registry.GetComponent<SphereCollider>(rhsEntityId);
+		collisionQueue.push_back({ lhsEntityId, rhsCollider, CollisionQueueElement::CollisionEnd });
+	}
+
+	for (auto& [lhsEntityId, rhsCollider, collisionFunc] : collisionQueue)
+	{
+		// static to avoid allocations
+		static std::vector<Component*> components;
+		components.clear();
+
+		a_registry.GetAllComponentsForEntity(lhsEntityId, components);
+
+		for (Component* component : components)
+		{
+			switch (collisionFunc)
+			{
+				case CollisionQueueElement::CollisionStart:
+				{
+					component->OnTriggerCollisionStart(rhsCollider);
+					break;
+				}
+				case CollisionQueueElement::CollisionStay:
+				{
+					component->OnTriggerCollision(rhsCollider);
+					break;
+				}
+				case CollisionQueueElement::CollisionEnd:
+				{
+					component->OnTriggerCollisionEnd(rhsCollider);
+					break;
+				}
+			}
+		}
+	}
+
+	g_lastFrameCollisions = std::move(g_thisFrameCollisions);
 }
