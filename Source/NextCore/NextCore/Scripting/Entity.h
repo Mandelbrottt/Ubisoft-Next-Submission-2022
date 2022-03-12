@@ -104,14 +104,14 @@ namespace Next
 		
 		static
 		void
-		Destroy(Entity& a_entity);
+		Destroy(Entity a_entity);
 
 		void
 		Destroy();
 		
 		static
 		void
-		DestroyImmediate(Entity& a_entity);
+		DestroyImmediate(Entity a_entity);
 
 		void
 		DestroyImmediate();

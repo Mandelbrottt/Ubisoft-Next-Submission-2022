@@ -81,7 +81,7 @@ namespace Next
 	}
 
 	void
-	Entity::Destroy(Entity& a_entity)
+	Entity::Destroy(Entity a_entity)
 	{
 		auto iter = s_entityIdDestroyBuffer.find(a_entity.m_entityId);
 
@@ -98,11 +98,26 @@ namespace Next
 	}
 
 	void
-	Entity::DestroyImmediate(Entity& a_entity)
+	Entity::DestroyImmediate(Entity a_entity)
 	{
 		s_entityIdDestroyBuffer.erase(a_entity.m_entityId);
 
 		Registry().OnDestroyEntity(a_entity.m_entityId);
+		
+		// TODO: Find better way to get children, keep track of it in the transform?
+		static std::vector<Next::Transform*> transforms;
+
+		// Should probably do this outside of this loop but i dont feel like checking for
+		// transforms that have been destroyed
+		GetAllComponents<Next::Transform>(transforms);
+		for (auto* transform : transforms)
+		{
+			auto parent = transform->GetParent();
+			if (parent && parent->m_entityId == a_entity.m_entityId)
+			{
+				Registry().OnDestroyEntity(parent->m_entityId);
+			}
+		}
 	}
 
 	void
@@ -229,6 +244,21 @@ namespace Next
 		for (auto id : s_entityIdDestroyBuffer)
 		{
 			Registry().OnDestroyEntity(id);
+			
+			// TODO: Find better way to get children, keep track of it in the transform?
+			static std::vector<Next::Transform*> transforms;
+
+			// Should probably do this outside of this loop but i dont feel like checking for
+			// transforms that have been destroyed
+			GetAllComponents<Next::Transform>(transforms);
+			for (auto* transform : transforms)
+			{
+				auto parent = transform->GetParent();
+				if (parent && parent->GetEntityId() == id)
+				{
+					Registry().OnDestroyEntity(parent->GetEntityId());
+				}
+			}
 		}
 
 		s_entityIdDestroyBuffer.clear();
