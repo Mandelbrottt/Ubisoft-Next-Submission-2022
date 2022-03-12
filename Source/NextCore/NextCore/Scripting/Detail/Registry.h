@@ -201,6 +201,12 @@ namespace Next::Detail
 		 */
 		Component*
 		GetComponent(EntityId a_entityId, Reflection::TypeId a_typeId) const;
+
+		std::vector<Component*>
+		GetAllComponentsForEntity(EntityId a_entityId) const;
+		
+		void
+		GetAllComponentsForEntity(EntityId a_entityId, std::vector<Component*>& a_outVector) const;
 		
 	private:
 		EntityId

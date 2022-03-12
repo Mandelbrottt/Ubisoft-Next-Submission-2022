@@ -196,6 +196,32 @@ namespace Next::Detail
 		return const_cast<Registry*>(this)->GetComponent(a_entityId, a_typeId);
 	}
 
+	std::vector<Component*>
+	Registry::GetAllComponentsForEntity(EntityId a_entityId) const
+	{
+		std::vector<Component*> result;
+		GetAllComponentsForEntity(a_entityId, result);
+		return result;
+	}
+
+	void
+	Registry::GetAllComponentsForEntity(EntityId a_entityId, std::vector<Component*>& a_outVector) const
+	{
+		a_outVector.clear();
+
+		for (auto const& poolInfos : m_componentPoolInfos)
+		{
+			auto& componentPool = poolInfos.second.pool;
+
+			// Const cast because we're not modifying the pool itself so the function can still be const
+			Component* component = const_cast<Component*>(componentPool.GetComponent(a_entityId));
+			if (component)
+			{
+				a_outVector.push_back(component);
+			}
+		}
+	}
+
 	EntityId
 	Registry::IncrementEntityCounter()
 	{
