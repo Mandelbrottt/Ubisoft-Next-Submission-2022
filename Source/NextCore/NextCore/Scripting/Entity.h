@@ -24,6 +24,9 @@ Shutdown();
 void
 CheckForSceneChange();
 
+void
+ProcessCollisions();
+
 namespace Next
 {
 	class Transform;
@@ -56,11 +59,12 @@ namespace Next
 	 */
 	class Entity
 	{
-		friend void ::Init();
+		//friend void ::Init();
 		friend void ::Update(float a_deltaTime);
-		friend void ::Render();
+		//friend void ::Render();
 		friend void ::Shutdown();
 		friend void ::CheckForSceneChange();
+		friend void ::ProcessCollisions();
 
 		friend void Detail::SimulateEntityUpdate();
 		friend void Detail::ResetRegistryAndEntityProperties();
@@ -70,17 +74,7 @@ namespace Next
 		static
 		void
 		Update();
-
-		template<typename TComponent>
-		static
-		void
-		GetAllComponents(std::vector<TComponent*>& a_vectorToPopulate);
-		
-		template<typename TComponent>
-		static
-		std::vector<TComponent*>
-		GetAllComponents();
-				
+	
 		explicit
 		Entity(EntityId a_id);
 
@@ -232,6 +226,16 @@ namespace Next
 			return const_cast<Entity*>(this)->GetComponent(a_typeId);
 		}
 		
+		template<typename TComponent>
+		static
+		void
+		GetAllComponents(std::vector<TComponent*>& a_vectorToPopulate);
+		
+		template<typename TComponent>
+		static
+		std::vector<TComponent*>
+		GetAllComponents();
+		
 	private:
 		EntityId m_entityId;
 		
@@ -279,6 +283,7 @@ namespace Next
 		static std::vector<std::pair<EntityId, Reflection::TypeId>> s_entityIdFirstUpdateBuffer;
 	};
 
+	// TODO: Make GetAllComponents get all components that derive from TComponent
 	template<typename TComponent>
 	void
 	Entity::GetAllComponents(std::vector<TComponent*>& a_vectorToPopulate)

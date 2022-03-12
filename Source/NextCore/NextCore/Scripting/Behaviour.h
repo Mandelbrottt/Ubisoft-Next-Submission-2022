@@ -12,13 +12,10 @@ namespace Next
 		ReflectDeclare(Behaviour, Component)
 
 	protected:
-		struct BehaviourConstructionArgs : ComponentConstructionArgs { };
-
-		explicit
-		Behaviour(BehaviourConstructionArgs const& a_args)
-			: Component(a_args) {}
+		Behaviour() = default;
 
 		~Behaviour() override = default;
+	
 	public:
 	};
 }

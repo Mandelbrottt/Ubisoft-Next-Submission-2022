@@ -11,9 +11,6 @@ namespace Next
 {
 	ReflectRegister(Component);
 	
-	Component::Component(ComponentConstructionArgs const& a_args)
-		: Object(a_args) {}
-
 	EntityId
 	Component::GetEntityId() const
 	{

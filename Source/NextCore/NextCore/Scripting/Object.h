@@ -14,13 +14,8 @@ namespace Next
 		ReflectDeclare(Object)
 
 	protected:
-		struct ObjectConstructionArgs { };
-
 		Object() = default;
 		
-		explicit
-		Object(ObjectConstructionArgs const& a_args) { }
-
 		virtual ~Object() = default;
 
 		// Objects should only me referenced or moved, not copied

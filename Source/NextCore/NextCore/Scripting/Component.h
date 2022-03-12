@@ -7,8 +7,7 @@
 		friend struct ::Next::Reflection::TypedFactory; \
 		friend ::Next::Reflection::Detail::typed_factory_friend_helper; \
 		\
-		_class_() \
-			: Base({ }) { } \
+		_class_() = default; \
 		~_class_() override = default;
 
 #define _COMPONENT_DECLARE_1(_class_) \
@@ -19,8 +18,8 @@
 	GenerateConstructors(_class_) \
 	_REFLECT_DECLARE_2(_class_, _base_)
 
+// TODO: Make ComponentAbstractDeclare
 #define ComponentDeclare(...) _MACRO_OVERLOAD(_COMPONENT_DECLARE, __VA_ARGS__)
-
 
 // Include after GenerateConstructors is defined because there is a #define that relies on GenerateConstructors
 #include "Reflection/Reflection.h"
@@ -42,7 +41,8 @@ namespace Next::Reflection
 namespace Next
 {
 	class Transform;
-
+	class Collider;
+	
 	/**
 	 * \brief The base class for all components in NextCore
 	 */
@@ -53,10 +53,7 @@ namespace Next
 		ReflectDeclare(Component, Object)
 
 	protected:
-		struct ComponentConstructionArgs : ObjectConstructionArgs { };
-
-		explicit
-		Component(ComponentConstructionArgs const& a_args);
+		Component() = default;
 
 		~Component() override = default;
 
@@ -89,8 +86,23 @@ namespace Next
 		virtual
 		void
 		OnDestroy() {}
+		
+		#pragma region Collision Event Functions
+		virtual
+		void
+		OnTriggerCollisionStart(Collider* a_other) {}
+
+		virtual
+		void
+		OnTriggerCollision(Collider* a_other) {}
+
+		virtual
+		void
+		OnTriggerCollisionEnd(Collider* a_other) {}
 		#pragma endregion
 
+		#pragma endregion
+		
 		#pragma region Component Access Functions
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
@@ -117,10 +129,7 @@ namespace Next
 
 		bool
 		RemoveComponent(Reflection::TypeId a_typeId);
-
-		bool
-		RemoveComponent(Component* a_component);
-
+		
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
 		GetComponent()
