@@ -4,7 +4,7 @@ ReflectRegister(ShipController);
 
 using namespace Next;
 
-Vector3 ShipController::gravity = Vector3::Down() * 4.f;
+Vector3 ShipController::gravity = Vector3::Down() * 9.81f;
 
 void
 ShipController::OnCreate()
@@ -14,6 +14,13 @@ ShipController::OnCreate()
 	m_projectileSpawner = AddComponent<ProjectileSpawner>();
 	m_projectileSpawner->isEnemyOwned = false;
 	m_projectileSpawner->projectileSpeed = 60;
+	
+	m_topSpeed          = { 15, 15, 15 };
+	m_accelerationForce = { 15, 30, 15 };
+	m_turnSpeed         = 180;
+	
+	m_attackCooldown = 0.25f;
+
 }
 
 void

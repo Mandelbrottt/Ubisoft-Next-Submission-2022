@@ -39,24 +39,28 @@ public:
 
 private:
 	Next::Transform*   m_transform         = nullptr;
-	Next::Transform*   m_cameraTransform            = nullptr;
+	Next::Transform*   m_cameraTransform   = nullptr;
 	ProjectileSpawner* m_projectileSpawner = nullptr;
 
 	Next::Vector3 m_velocity = { 0, 0, 0 };
 
-	Next::Vector3 m_topSpeed          = { 15, 15, 15 };
-	Next::Vector3 m_accelerationForce = { 15, 30, 15 };
-	float         m_turnSpeed         = 180;
+	Next::Vector3 m_topSpeed;
+	Next::Vector3 m_accelerationForce;
+	float         m_turnSpeed;
 
 	float m_yaw   = 0;
 	float m_pitch = 0;
 
 	float m_attackTimer    = 0;
-	float m_attackCooldown = 0.25f;
+	float m_attackCooldown;
 
 	ReflectMembers(
 		ReflectField(m_transform)
 		ReflectField(m_cameraTransform)
 		ReflectField(m_projectileSpawner)
+		ReflectField(m_topSpeed)
+		ReflectField(m_accelerationForce)
+		ReflectField(m_turnSpeed)
+		ReflectField(m_attackCooldown)
 	)
 };

@@ -28,7 +28,17 @@ PlayerShip::OnCreate()
 	
 	auto camera = cameraEntity.AddComponent<Camera>();
 	camera->SetFov(100, FovType::Horizontal);
+	{
+		Entity crosshair = Entity::Create("Crosshair");
+	
+		auto crosshairModel = crosshair.AddComponent<ModelRenderer>();
+		crosshairModel->model = Model::Create("objects/crosshair.obj");
 
+		crosshair.Transform()->SetLocalScale({ 2, 2, 2 });
+		crosshair.Transform()->SetLocalRotation({ 0, 180, 0 });
+		crosshair.Transform()->SetParent(camera->Transform());
+	}
+	
 	auto collider = AddComponent<SphereCollider>();
 	collider->radius = 2;
 
