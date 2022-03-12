@@ -9,6 +9,7 @@
 #include <Components/Light.h>
 #include <Components/ModelRenderer.h>
 #include <Components/Transform.h>
+#include <Components/Colliders/SphereCollider.h>
 
 #include <Graphics/Gui.h>
 #include <Graphics/Model.h>

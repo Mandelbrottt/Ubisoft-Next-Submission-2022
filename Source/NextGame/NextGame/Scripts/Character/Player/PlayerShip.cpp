@@ -8,6 +8,8 @@
 
 #include "Scenes/MenuScene.h"
 
+#include "Scripts/Character/Common/Health.h"
+
 ReflectRegister(PlayerShip);
 
 using namespace Next;
@@ -29,6 +31,10 @@ PlayerShip::OnCreate()
 
 	auto collider = AddComponent<SphereCollider>();
 	collider->radius = 2;
+
+	m_health = AddComponent<Health>();
+	m_health->SetHealth(5);
+	m_health->DestroyOnKill(false);
 }
 
 void

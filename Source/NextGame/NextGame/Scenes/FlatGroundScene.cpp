@@ -1,7 +1,7 @@
 ﻿#include "FlatGroundScene.h"
 
-#include "Scripts/Enemy/TurretFireController.h"
-#include "Scripts/Player/PlayerShip.h"
+#include "Scripts/Character/Enemy/TurretFireController.h"
+#include "Scripts/Character/Player/PlayerShip.h"
 
 ReflectRegister(FlatGroundScene);
 

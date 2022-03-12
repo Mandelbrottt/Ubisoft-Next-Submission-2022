@@ -2,7 +2,7 @@
 
 #include <MinimalInclude.h>
 
-#include "Scripts/Player/ShipController.h"
+#include "Scripts/Character/Player/ShipController.h"
 #include "Scripts/Projectile/ProjectileSpawner.h"
 
 class TurretFireController : public Next::Behaviour

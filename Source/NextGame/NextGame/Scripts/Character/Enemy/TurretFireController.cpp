@@ -1,5 +1,7 @@
 ﻿#include "TurretFireController.h"
 
+#include "Scripts/Character/Common/Health.h"
+
 ReflectRegister(TurretFireController);
 
 using namespace Next;
@@ -10,6 +12,12 @@ TurretFireController::OnCreate()
 	m_projectileSpawner = AddComponent<ProjectileSpawner>();
 	m_projectileSpawner->isEnemyOwned    = true;
 	m_projectileSpawner->projectileSpeed = 40;
+
+	auto collider = AddComponent<SphereCollider>();
+	collider->radius = 2;
+
+	auto health = AddComponent<Health>();
+	health->SetHealth(1);
 }
 
 void

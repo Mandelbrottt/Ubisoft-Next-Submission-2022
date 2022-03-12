@@ -2,6 +2,10 @@
 
 #include <Components/Colliders/SphereCollider.h>
 
+#include "Scripts/Character/Common/Health.h"
+#include "Scripts/Character/Enemy/TurretFireController.h"
+#include "Scripts/Character/Player/PlayerShip.h"
+
 ReflectRegister(Projectile);
 
 using namespace Next;
@@ -48,17 +52,28 @@ Projectile::OnUpdate()
 void
 Projectile::OnTriggerCollisionStart(Collider* a_other)
 {
-	printf("TriggerCollisionStart %d!\n", GetEntityId());
-}
+	using Reflection::TypeId;
+	TypeId typeToCheckFor;
+	
+	if (m_isFromEnemy)
+	{
+		typeToCheckFor = Reflection::GetTypeId<PlayerShip>();
+	} else
+	{
+		typeToCheckFor = Reflection::GetTypeId<TurretFireController>();
+	}
 
-void
-Projectile::OnTriggerCollision(Collider* a_other)
-{
-	printf("TriggerCollision %d!\n", GetEntityId());
-}
+	auto otherComponent = a_other->GetComponent(typeToCheckFor);
+	if (!otherComponent)
+	{
+		return;
+	}
 
-void
-Projectile::OnTriggerCollisionEnd(Collider* a_other)
-{
-	printf("TriggerCollisionEnd %d!\n", GetEntityId());
+	auto health = otherComponent->GetComponent<Health>();
+	if (!health)
+	{
+		return;
+	}
+	
+	health->SubtractHealth();
 }

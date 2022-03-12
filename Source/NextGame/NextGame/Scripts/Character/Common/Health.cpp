@@ -3,13 +3,18 @@
 ReflectRegister(Health);
 
 void
-Health::SubtractHealth()
+Health::SubtractHealth(float a_healthToSubtract)
 {
-	m_health -= 1;
+	m_health -= a_healthToSubtract;
 
 	if (m_health <= 0)
 	{
-		Kill();
+		m_health = 0;
+		
+		if (m_destroyOnKill)
+		{
+			Kill();
+		}
 	}
 }
 
