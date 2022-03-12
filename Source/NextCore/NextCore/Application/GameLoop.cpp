@@ -35,6 +35,8 @@ namespace Next::SceneManager
 void
 Init()
 {
+	srand(static_cast<uint32_t>(time(NULL)));
+
 	Next::SceneManager::RegisterAllScenes();
 
 	// Assuming StartingScene macro is used, _STARTING_SCENE is guaranteed to be valid
@@ -112,7 +114,7 @@ Render()
 
 		auto* transform = camera->Transform();
 
-		cameraPosition = transform->GetLocalPosition();
+		cameraPosition = transform->GetPosition();
 		cameraForward  = transform->Forward();
 
 		viewMatrix = transform->GetTransformationMatrix();
