@@ -18,6 +18,7 @@
 
 #include <Math/Constants.h>
 #include <Math/Matrix.h>
+#include <Math/Random.h>
 #include <Math/Scalar.h>
 #include <Math/Transformations.h>
 #include <Math/Vector.h>
