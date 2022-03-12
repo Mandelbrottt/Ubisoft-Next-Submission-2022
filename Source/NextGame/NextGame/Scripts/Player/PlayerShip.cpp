@@ -2,6 +2,8 @@
 
 #include <MinimalInclude.h>
 
+#include <Components/Colliders/SphereCollider.h>
+
 #include "ShipController.h"
 
 #include "Scenes/MenuScene.h"
@@ -24,6 +26,9 @@ PlayerShip::OnCreate()
 	
 	auto camera = cameraEntity.AddComponent<Camera>();
 	camera->SetFov(100, FovType::Horizontal);
+
+	auto collider = AddComponent<SphereCollider>();
+	collider->radius = 2;
 }
 
 void

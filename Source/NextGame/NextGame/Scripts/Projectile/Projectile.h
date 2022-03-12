@@ -19,6 +19,15 @@ public:
 	void
 	OnUpdate() override;
 
+	void
+	OnTriggerCollisionStart(Next::Collider* a_other) override;
+
+	void
+	OnTriggerCollision(Next::Collider* a_other) override;
+
+	void
+	OnTriggerCollisionEnd(Next::Collider* a_other) override;
+
 private:
 	Next::Vector3 m_direction;
 
