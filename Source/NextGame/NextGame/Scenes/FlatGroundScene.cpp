@@ -10,6 +10,13 @@ using namespace Next;
 void
 FlatGroundScene::OnSceneCreate()
 {
+	Entity dirLightEntity = Entity::Create("DirLight");
+	auto   light          = dirLightEntity.AddComponent<Light>();
+	light->type = LightType::Directional;
+	light->Transform()->SetLocalRotation({ -70, 0, 0 });
+	light->ambientColor   = { 0.5f, 0.5f, 0.5f };
+	light->diffuseColor   = { 4, 5, 4 };
+
 	Entity playerEntity = Entity::Create("Player");
 	playerEntity.AddComponent<PlayerShip>();
 	playerEntity.Transform()->SetPosition({ 0, 5, 0 });
@@ -18,18 +25,18 @@ FlatGroundScene::OnSceneCreate()
 
 	float size = 20;
 	size *= 4;
-	
+
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			Entity groundEntity = Entity::Create("Ground");
-			auto groundRenderer = groundEntity.AddComponent<ModelRenderer>();
+			Entity groundEntity   = Entity::Create("Ground");
+			auto   groundRenderer = groundEntity.AddComponent<ModelRenderer>();
 			groundRenderer->model = ground;
 
 			float x = static_cast<float>(i - 5 / 2);
 			float y = static_cast<float>(j - 5 / 2);
-			
+
 			groundEntity.Transform()->SetLocalPosition({ 20 * x, 0, 20 * y });
 		}
 	}
@@ -38,12 +45,11 @@ FlatGroundScene::OnSceneCreate()
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
-		auto turretRenderer = turretEntity.AddComponent<ModelRenderer>();
+		auto turretRenderer   = turretEntity.AddComponent<ModelRenderer>();
 		turretRenderer->model = Model::Create("objects/turret.obj");
 
 		float x = (Random::Value() * size) - (size / 2);
 		float y = (Random::Value() * size) - (size / 2);
-		turretEntity.Transform()->SetPosition({ x, 0, y });
+		turretEntity.Transform()->SetPosition({ x, 0.5f, y });
 	}
-	
 }
