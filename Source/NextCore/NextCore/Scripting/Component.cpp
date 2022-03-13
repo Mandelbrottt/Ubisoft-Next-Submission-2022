@@ -28,7 +28,19 @@ namespace Next
 	{
 		return GetComponent<Next::Transform>();
 	}
-	
+
+	bool
+	Component::IsActive() const
+	{
+		return m_isActive;
+	}
+
+	void
+	Component::SetActive(bool a_active)
+	{
+		m_isActive = a_active;
+	}
+
 	Component*
 	Component::AddComponent(Reflection::Type const& a_type)
 	{

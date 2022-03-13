@@ -68,11 +68,16 @@ namespace Next::Detail
 	{
 		for (auto entityId : m_activeEntities)
 		{
+			if (!IsActive(entityId))
+			{
+				continue;
+			}
+			
 			for (auto& [typeId, poolInfo] : m_componentPoolInfos)
 			{
 				auto* component = poolInfo.pool.GetComponent(entityId);
 
-				if (!component)
+				if (!component || !component->IsActive())
 				{
 					continue;
 				}
@@ -109,6 +114,32 @@ namespace Next::Detail
 		}
 
 		iter->second.name = std::string(a_name);
+	}
+
+	bool
+	Registry::IsActive(EntityId a_entityId) const
+	{
+		auto iter = m_entityInfos.find(a_entityId);
+
+		if (iter == m_entityInfos.end())
+		{
+			return false;
+		}
+
+		return iter->second.active;
+	}
+
+	void
+	Registry::SetActive(EntityId a_entityId, bool a_active)
+	{
+		auto iter = m_entityInfos.find(a_entityId);
+
+		if (iter == m_entityInfos.end())
+		{
+			return;
+		}
+
+		iter->second.active = a_active;
 	}
 
 	bool

@@ -56,6 +56,12 @@ namespace Next::Detail
 		
 		void
 		SetName(EntityId a_entityId, std::string_view const& a_name);
+		
+		bool
+		IsActive(EntityId a_entityId) const;
+
+		void
+		SetActive(EntityId a_entityId, bool a_active);
 
 		/**
 		 * \brief Check if a given entity is currently active.
@@ -252,6 +258,8 @@ namespace Next::Detail
 		struct EntityInfo
 		{
 			std::string name;
+
+			bool active = true;
 		};
 
 		// TODO: Find way to integrate with m_activeEntities without making it a map and without exposing entity info

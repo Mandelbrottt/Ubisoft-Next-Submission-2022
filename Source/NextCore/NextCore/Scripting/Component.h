@@ -68,6 +68,12 @@ namespace Next
 		Transform*
 		Transform();
 
+		bool
+		IsActive() const;
+
+		void
+		SetActive(bool a_active);
+
 		#pragma endregion
 
 		#pragma region Event Functions
@@ -165,5 +171,7 @@ namespace Next
 
 	private:
 		EntityId m_entityId = EntityId::Null;
+
+		bool m_isActive = true;
 	};
 }

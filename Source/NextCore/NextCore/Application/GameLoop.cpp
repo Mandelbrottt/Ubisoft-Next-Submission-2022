@@ -112,9 +112,18 @@ Render()
 	static std::vector<Camera*> cameras;
 	Entity::GetAllComponents(cameras);
 
-	if (!cameras.empty())
+	auto iter = std::find_if(
+		cameras.begin(),
+		cameras.end(),
+		[](Camera* a_camera)
+		{
+			return a_camera->IsActive();
+		}
+	);
+	
+	if (iter != cameras.end())
 	{
-		auto* camera = cameras.front();
+		auto* camera = *iter;
 
 		fov  = camera->GetFov();
 		near = camera->GetNearClippingPlane();
@@ -152,6 +161,11 @@ Render()
 
 	for (auto* light : lights)
 	{
+		if (!light->IsActive())
+		{
+			continue;
+		}
+		
 		Renderer::Submit(light, light->Transform());
 	}
 
@@ -161,6 +175,11 @@ Render()
 
 	for (auto* modelRenderer : modelRenderers)
 	{
+		if (!modelRenderer->IsActive())
+		{
+			continue;
+		}
+		
 		Renderer::Submit(modelRenderer, modelRenderer->Transform());
 	}
 

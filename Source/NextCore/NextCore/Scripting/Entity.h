@@ -153,6 +153,12 @@ namespace Next
 		void
 		SetName(std::string_view const& a_name);
 
+		bool
+		IsActive() const;
+
+		void
+		SetActive(bool a_active);
+
 		template<typename TComponent, std::enable_if_t<std::is_convertible_v<TComponent*, Component*>, bool> = true>
 		TComponent*
 		AddComponent()

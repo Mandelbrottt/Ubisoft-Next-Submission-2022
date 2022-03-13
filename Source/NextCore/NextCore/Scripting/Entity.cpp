@@ -196,6 +196,18 @@ namespace Next
 		Registry().SetName(m_entityId, a_name);
 	}
 
+	bool
+	Entity::IsActive() const
+	{
+		return Registry().IsActive(m_entityId);
+	}
+
+	void
+	Entity::SetActive(bool a_active)
+	{
+		Registry().SetActive(m_entityId, a_active);
+	}
+
 	Component*
 	Entity::AddComponent(Reflection::TypeId a_typeId)
 	{
