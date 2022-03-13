@@ -8,7 +8,7 @@ ReflectRegister(PlayerShipController);
 
 using namespace Next;
 
-Vector3 PlayerShipController::gravity = Vector3::Down() * 9.81f;
+Vector3 PlayerShipController::gravity = Vector3::Zero();
 float   PlayerShipController::min_y   = 1;
 
 void
@@ -114,17 +114,23 @@ PlayerShipController::ProcessPlayerMovement()
 
 	position += m_velocity * deltaTime;
 
-	if (gravity.x == 0 && gravity.z == 0)
+	if (gravity != Vector3::Zero())
 	{
-		if (position.y < min_y)
+		Vector3 planetToThis = position - Vector3::Zero();
+		
+		float dist = Vector::MagnitudeSquared(planetToThis);
+		
+		if (dist < min_y)
 		{
-			position.y   = min_y;
-			if (m_velocity.MagnitudeSquared() > Math::Square(10))
+			planetToThis.Normalize();
+			
+			position = planetToThis * min_y;
+			if (m_velocity.Dot(-planetToThis) > 10)
 			{
 				m_playerHealth->SubtractHealth();
 			}
 
-			m_velocity.y = -m_velocity.y * 0.2f;
+			m_velocity = -m_velocity * 0.2f;
 		}
 	}
 

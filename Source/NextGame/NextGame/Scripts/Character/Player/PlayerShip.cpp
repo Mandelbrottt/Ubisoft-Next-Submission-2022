@@ -4,12 +4,14 @@
 
 #include <Components/Colliders/SphereCollider.h>
 
+#include "PlayerPersistentData.h"
 #include "PlayerShipController.h"
 #include "TractorBeamBehaviour.h"
 
 #include "Scenes/MenuScene.h"
 
 #include "Scripts/Character/Common/Health.h"
+#include "Scripts/Menu/DeathScreen.h"
 #include "Scripts/Objects/FuelPickup.h"
 
 ReflectRegister(PlayerShip);
@@ -25,7 +27,7 @@ PlayerShip::OnCreate()
 	s_thisEntity = GetEntity();
 
 	s_shipControllerEntity = Entity::Create("ShipController");
-	auto shipController = s_shipControllerEntity.AddComponent<PlayerShipController>();
+	s_shipControllerEntity.AddComponent<PlayerShipController>();
 
 	// Become a child of the ShipController because we're just along for the ride, it controls everything
 	Transform()->SetParent(s_shipControllerEntity.Transform());
@@ -64,13 +66,15 @@ PlayerShip::OnCreate()
 	collider->radius = 2;
 
 	m_health = AddComponent<Health>();
-	m_health->SetHealth(5);
+	m_health->SetHealth(PlayerPersistentData::health);
 	m_health->DestroyOnKill(false);
 
 	m_playerFuel = AddComponent<PlayerFuelController>();
-	m_playerFuel->SetFuel(100);
+	m_playerFuel->SetFuel(PlayerPersistentData::fuel);
 
 	AddComponent<PlayerUi>();
+
+	AddComponent<DeathScreen>();
 }
 
 void
@@ -78,6 +82,9 @@ PlayerShip::OnDestroy()
 {
 	s_thisEntity           = Entity();
 	s_shipControllerEntity = Entity();
+
+	PlayerPersistentData::health = m_health->GetHealth();
+	PlayerPersistentData::fuel   = m_playerFuel->GetFuel();
 }
 
 void
@@ -92,5 +99,21 @@ PlayerShip::OnUpdate()
 	if (Input::GetButtonDown(GamepadButton::Back))
 	{
 		SceneManager::LoadScene<MenuScene>();
+	}
+
+	ProcessDebugCommands();
+}
+
+void
+PlayerShip::ProcessDebugCommands()
+{
+	if (Input::GetKeyDown(KeyCode::K))
+	{
+		m_health->SetHealth(0);
+	}
+	
+	if (Input::GetKeyDown(KeyCode::H))
+	{
+		m_health->SetHealth(999999);
 	}
 }

@@ -41,6 +41,10 @@ public:
 	}
 
 private:
+	void
+	ProcessDebugCommands();
+
+private:
 	static Next::Entity s_thisEntity;
 	static Next::Entity s_shipControllerEntity;
 

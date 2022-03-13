@@ -1,6 +1,7 @@
 ﻿#include "FlatGroundScene.h"
 
 #include "Scripts/Character/Enemy/TurretFireController.h"
+#include "Scripts/Character/Player/PlayerPersistentData.h"
 #include "Scripts/Character/Player/PlayerShip.h"
 #include "Scripts/Objects/FuelPickup.h"
 
@@ -11,6 +12,13 @@ using namespace Next;
 void
 FlatGroundScene::OnSceneCreate()
 {
+	if (PlayerPersistentData::health <= 0)
+	{
+		PlayerPersistentData::ResetData();
+	}
+
+	PlayerShipController::gravity = Vector3::Down() * -9.81f;
+
 	Entity dirLightEntity = Entity::Create("DirLight");
 	auto   light          = dirLightEntity.AddComponent<Light>();
 	light->type = LightType::Directional;
@@ -20,7 +28,8 @@ FlatGroundScene::OnSceneCreate()
 
 	Entity playerEntity = Entity::Create("Player");
 	playerEntity.AddComponent<PlayerShip>();
-	playerEntity.Transform()->SetPosition({ 0, 5, 0 });
+	PlayerShip::GetPlayerControllerEntity().Transform()->SetPosition({ 0, 20, 0 });
+	PlayerShip::GetPlayerControllerEntity().Transform()->SetLocalRotation({ -70, 0, 0 });
 
 	Model* ground = Model::Create("level/env/grass.obj");
 

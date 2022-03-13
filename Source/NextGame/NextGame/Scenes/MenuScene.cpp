@@ -2,6 +2,7 @@
 
 #include <MinimalInclude.h>
 
+#include "Scripts/Character/Player/PlayerPersistentData.h"
 #include "Scripts/Menu/MenuText.h"
 #include "Scripts/Menu/MenuLogic.h"
 
@@ -15,4 +16,6 @@ MenuScene::OnSceneCreate()
 	Entity entity = Entity::Create("Menu");
 	entity.AddComponent<MenuLogic>();
 	entity.AddComponent<MenuText>();
+
+	PlayerPersistentData::ResetData();
 }
