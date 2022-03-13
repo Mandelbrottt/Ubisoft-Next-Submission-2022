@@ -2,7 +2,7 @@
 
 #include <MinimalInclude.h>
 
-#include "Scripts/Character/Player/ShipController.h"
+#include "Scripts/Character/Player/PlayerShipController.h"
 
 class FuelPickup : public Next::Behaviour
 {

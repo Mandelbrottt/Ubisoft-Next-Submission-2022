@@ -2,7 +2,8 @@
 
 #include <HeaderInclude.h>
 
-#include "ShipController.h"
+#include "PlayerFuelController.h"
+#include "PlayerUI.h"
 
 #include "Scripts/Character/Common/Health.h"
 
@@ -17,25 +18,41 @@ public:
 	OnCreate() override;
 
 	void
+	OnDestroy() override;
+
+	void
 	OnFirstUpdate() override;
 
 	void
 	OnUpdate() override;
 
-	void
-	ConsumeFuel(FuelPickup* a_pickup);
+	static
+	Next::Entity
+	GetPlayerShipEntity()
+	{
+		return s_thisEntity;
+	}
+
+	static
+	Next::Entity
+	GetPlayerControllerEntity()
+	{
+		return s_shipControllerEntity;
+	}
 
 private:
-	Next::Entity m_shipControllerEntity;
-	ShipController* m_shipController = nullptr;
+	static Next::Entity s_thisEntity;
+	static Next::Entity s_shipControllerEntity;
 
-	Health* m_health = nullptr;
+	//Next::Entity m_shipControllerEntity;
+	//ShipController* m_shipController = nullptr;
 
-	float m_fuel;
+	Health*               m_health     = nullptr;
+	PlayerFuelController* m_playerFuel = nullptr;
 
 	ReflectMembers(
-		ReflectField(m_shipController)
+		//ReflectField(m_shipController)
 		ReflectField(m_health)
-		ReflectField(m_fuel)
+		ReflectField(m_playerFuel)
 	)
 };

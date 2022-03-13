@@ -2,7 +2,7 @@
 
 #include <MinimalInclude.h>
 
-#include "Scripts/Character/Player/ShipController.h"
+#include "Scripts/Character/Player/PlayerShipController.h"
 #include "Scripts/Objects/ProjectileSpawner.h"
 
 class TurretFireController : public Next::Behaviour
@@ -33,7 +33,7 @@ private:
 	Next::Transform* m_playerTransform;
 	ProjectileSpawner* m_projectileSpawner;
 
-	ShipController const* m_shipController;
+	PlayerShipController const* m_shipController;
 	
 	Next::Vector3 m_aimDirection;
 

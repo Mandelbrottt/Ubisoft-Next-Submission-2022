@@ -2,13 +2,14 @@
 
 #include <MinimalInclude.h>
 
+#include "PlayerShip.h"
 #include "TractorBeamBehaviour.h"
 
 #include "Scripts/Objects/ProjectileSpawner.h"
 
-class ShipController : public Next::Behaviour
+class PlayerShipController : public Next::Behaviour
 {
-	ComponentDeclare(ShipController, Behaviour)
+	ComponentDeclare(PlayerShipController, Behaviour)
 
 public:
 	void
@@ -44,9 +45,12 @@ public:
 	static float         min_y;
 
 private:
+	PlayerShip*        m_playerShip;
 	Next::Transform*   m_transform         = nullptr;
 	Next::Transform*   m_cameraTransform   = nullptr;
 
+	Health*               m_playerHealth = nullptr;
+	PlayerFuelController* m_playerFuelController     = nullptr;
 	ProjectileSpawner*    m_projectileSpawner        = nullptr;
 	TractorBeamBehaviour* m_tractorBeam              = nullptr;
 	Next::ModelRenderer*  m_tractorBeamModelRenderer = nullptr;

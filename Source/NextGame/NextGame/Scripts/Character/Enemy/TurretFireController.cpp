@@ -26,8 +26,8 @@ TurretFireController::OnCreate()
 void
 TurretFireController::OnFirstUpdate()
 {
-	m_playerTransform = Entity::FindByName("Player").Transform();
-	m_shipController = Entity::FindByName("ShipController").GetComponent<ShipController>();
+	m_playerTransform = PlayerShip::GetPlayerShipEntity().Transform();
+	m_shipController = PlayerShip::GetPlayerControllerEntity().GetComponent<PlayerShipController>();
 }
 
 void

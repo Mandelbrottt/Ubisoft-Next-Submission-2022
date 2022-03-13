@@ -1,18 +1,18 @@
-#include "ShipController.h"
+#include "PlayerShipController.h"
 
 #include "Config/Controls.h"
 
 #include "Scripts/Objects/FuelPickup.h"
 
-ReflectRegister(ShipController);
+ReflectRegister(PlayerShipController);
 
 using namespace Next;
 
-Vector3 ShipController::gravity = Vector3::Down() * 9.81f;
-float   ShipController::min_y   = 1;
+Vector3 PlayerShipController::gravity = Vector3::Down() * 9.81f;
+float   PlayerShipController::min_y   = 1;
 
 void
-ShipController::OnCreate()
+PlayerShipController::OnCreate()
 {
 	m_transform = Transform();
 
@@ -20,7 +20,7 @@ ShipController::OnCreate()
 	m_projectileSpawner->isEnemyOwned    = false;
 	m_projectileSpawner->projectileSpeed = 60;
 
-	m_topSpeed          = { 15, 15, 15 };
+	m_topSpeed          = { 30, 30, 30 };
 	m_accelerationForce = { 15, 30, 15 };
 	m_turnSpeed         = 180;
 
@@ -29,7 +29,7 @@ ShipController::OnCreate()
 }
 
 void
-ShipController::OnFirstUpdate()
+PlayerShipController::OnFirstUpdate()
 {
 	Entity camera     = Entity::FindByName("Camera");
 	m_cameraTransform = camera.Transform();
@@ -39,21 +39,29 @@ ShipController::OnFirstUpdate()
 
 	m_tractorBeamModelRenderer = m_tractorBeam->GetComponent<ModelRenderer>();
 	m_tractorBeamModelRenderer->SetActive(false);
+
+	m_playerFuelController = PlayerShip::GetPlayerShipEntity().GetComponent<PlayerFuelController>();
+
+	m_playerHealth = PlayerShip::GetPlayerShipEntity().GetComponent<Health>();
 }
 
 void
-ShipController::OnUpdate()
+PlayerShipController::OnUpdate()
 {
 	auto cachedPosition = m_transform->GetPosition();
 	auto cachedRotation = m_transform->GetLocalRotation();
 
+	// We handle non-input movement in here so dont if-guard. TODO: Move non-input movement out of this function
 	ProcessPlayerMovement();
 
-	ProcessPlayerRotation();
+	if (m_playerHealth->GetHealth() > 0)
+	{
+		ProcessPlayerRotation();
 
-	ProcessPlayerAttack();
+		ProcessPlayerAttack();
 
-	ProcessTractorBeam();
+		ProcessTractorBeam();
+	}
 
 	// Sometimes the values are nan and i don't know why, just pretend it didnt happen
 	auto right = m_transform->Right();
@@ -65,24 +73,29 @@ ShipController::OnUpdate()
 }
 
 void
-ShipController::ProcessPlayerMovement()
+PlayerShipController::ProcessPlayerMovement()
 {
 	Vector3 input;
 	input.x = Input::GetAxis(HORIZONTAL_MOVE);
 	input.z = Input::GetAxis(FORWARD_MOVE);
 
-	// Subtract left trigger because that's control to go down
+	// combine upwards and downwards move into one command
 	input.y = Input::GetAxis(UPWARDS_MOVE) - Input::GetAxis(DOWNWARDS_MOVE);
 
-	Vector3 sidewaysAcceleration = m_transform->Right() * input.x;
-	Vector3 upwardsAcceleration  = m_transform->Up() * input.y;
-	Vector3 forwardAcceleration  = m_transform->Forward() * input.z;
-
-	Vector3 acceleration = sidewaysAcceleration + upwardsAcceleration + forwardAcceleration;
-
-	if (acceleration.MagnitudeSquared() != 0)
+	Vector3 acceleration = Vector3(0);
+	
+	if (m_playerFuelController->HasFuel() && m_playerHealth->GetHealth() > 0)
 	{
-		acceleration.Normalize();
+		Vector3 sidewaysAcceleration = m_transform->Right() * input.x;
+		Vector3 upwardsAcceleration  = m_transform->Up() * input.y;
+		Vector3 forwardAcceleration  = m_transform->Forward() * input.z;
+
+		acceleration = sidewaysAcceleration + upwardsAcceleration + forwardAcceleration;
+
+		if (acceleration.MagnitudeSquared() != 0)
+		{
+			acceleration.Normalize();
+		}
 	}
 
 	acceleration *= m_accelerationForce;
@@ -103,18 +116,25 @@ ShipController::ProcessPlayerMovement()
 
 	if (gravity.x == 0 && gravity.z == 0)
 	{
-		if (position.y < 1)
+		if (position.y < min_y)
 		{
-			position.y   = 1;
+			position.y   = min_y;
+			if (m_velocity.MagnitudeSquared() > Math::Square(10))
+			{
+				m_playerHealth->SubtractHealth();
+			}
+
 			m_velocity.y = -m_velocity.y * 0.2f;
 		}
 	}
 
 	m_transform->SetPosition(position);
+
+	m_playerFuelController->ProcessFuelUsage(input);
 }
 
 void
-ShipController::ProcessPlayerRotation()
+PlayerShipController::ProcessPlayerRotation()
 {
 	Vector2 input;
 	input.x = Input::GetAxis(HORIZONTAL_LOOK);
@@ -177,7 +197,7 @@ ShipController::ProcessPlayerRotation()
 }
 
 void
-ShipController::ProcessPlayerAttack()
+PlayerShipController::ProcessPlayerAttack()
 {
 	if (m_attackTimer < m_attackCooldown)
 	{
@@ -198,7 +218,7 @@ ShipController::ProcessPlayerAttack()
 }
 
 void
-ShipController::ProcessTractorBeam()
+PlayerShipController::ProcessTractorBeam()
 {
 	static std::vector<FuelPickup*> fuelPickups;
 
@@ -223,7 +243,7 @@ ShipController::ProcessTractorBeam()
 			auto dot = Vector::Dot(Vector::Normalize(toPickupFromThis), m_transform->Forward());
 
 			if (toPickupFromThis.MagnitudeSquared() < Math::Square(m_tractorBeamRange) &&
-			    dot > std::cos(20 * Math::DEG_TO_RAD))
+			    dot > std::cos(35 * Math::DEG_TO_RAD))
 			{
 				m_tractorBeam->isPickingUp = true;
 				pickup->SetAccelerationTarget(m_transform);

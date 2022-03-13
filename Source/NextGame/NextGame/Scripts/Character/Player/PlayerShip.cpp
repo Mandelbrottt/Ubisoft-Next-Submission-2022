@@ -4,7 +4,7 @@
 
 #include <Components/Colliders/SphereCollider.h>
 
-#include "ShipController.h"
+#include "PlayerShipController.h"
 #include "TractorBeamBehaviour.h"
 
 #include "Scenes/MenuScene.h"
@@ -16,14 +16,19 @@ ReflectRegister(PlayerShip);
 
 using namespace Next;
 
+Entity PlayerShip::s_thisEntity;
+Entity PlayerShip::s_shipControllerEntity;
+
 void
 PlayerShip::OnCreate()
 {
-	m_shipControllerEntity = Entity::Create("ShipController");
-	m_shipController = m_shipControllerEntity.AddComponent<ShipController>();
+	s_thisEntity = GetEntity();
+
+	s_shipControllerEntity = Entity::Create("ShipController");
+	auto shipController = s_shipControllerEntity.AddComponent<PlayerShipController>();
 
 	// Become a child of the ShipController because we're just along for the ride, it controls everything
-	Transform()->SetParent(m_shipControllerEntity.Transform());
+	Transform()->SetParent(s_shipControllerEntity.Transform());
 
 	Entity cameraEntity = Entity::Create("Camera");
 	cameraEntity.Transform()->SetParent(Transform());
@@ -62,13 +67,23 @@ PlayerShip::OnCreate()
 	m_health->SetHealth(5);
 	m_health->DestroyOnKill(false);
 
-	m_fuel = 100;
+	m_playerFuel = AddComponent<PlayerFuelController>();
+	m_playerFuel->SetFuel(100);
+
+	AddComponent<PlayerUi>();
+}
+
+void
+PlayerShip::OnDestroy()
+{
+	s_thisEntity           = Entity();
+	s_shipControllerEntity = Entity();
 }
 
 void
 PlayerShip::OnFirstUpdate()
 {
-	Transform()->SetLocalPosition({ 0, 2.f - ShipController::min_y, 0 });
+	Transform()->SetLocalPosition({ 0, 2.f - PlayerShipController::min_y, 0 });
 }
 
 void
@@ -78,17 +93,4 @@ PlayerShip::OnUpdate()
 	{
 		SceneManager::LoadScene<MenuScene>();
 	}
-}
-
-void
-PlayerShip::ConsumeFuel(FuelPickup* a_pickup)
-{
-	if (!a_pickup)
-	{
-		return;
-	}
-	
-	m_fuel += a_pickup->GetFuelAmount();
-
-	a_pickup->GetEntity().Destroy();
 }

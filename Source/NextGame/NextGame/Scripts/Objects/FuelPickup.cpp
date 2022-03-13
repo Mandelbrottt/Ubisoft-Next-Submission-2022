@@ -1,7 +1,7 @@
 ﻿#include "FuelPickup.h"
 
 #include "Scripts/Character/Player/PlayerShip.h"
-#include "Scripts/Character/Player/ShipController.h"
+#include "Scripts/Character/Player/PlayerShipController.h"
 
 ReflectRegister(FuelPickup);
 
@@ -21,7 +21,9 @@ FuelPickup::OnCreate()
 	auto collider = modelRenderer->AddComponent<SphereCollider>();
 	collider->radius = 1;
 
-	m_localGravity = ShipController::gravity;
+	m_localGravity = PlayerShipController::gravity;
+
+	m_fuelAmount = Random::Value() * 10 + 5;
 }
 
 void
@@ -42,10 +44,10 @@ FuelPickup::OnUpdate()
 	}
 
 	position += m_velocity * Time::DeltaTime();
-	if (position.y < ShipController::min_y)
+	if (position.y < PlayerShipController::min_y)
 	{
 		m_velocity.y = 0;
-		position.y = ShipController::min_y;
+		position.y = PlayerShipController::min_y;
 	}
 	Transform()->SetPosition(position);
 }
@@ -71,13 +73,13 @@ FuelPickup::SetAccelerationTarget(Next::Transform* a_target)
 void
 FuelPickup::OnTriggerCollisionStart(Collider* a_other)
 {
-	PlayerShip* ship = a_other->GetComponent<PlayerShip>();
+	auto fuelController = a_other->GetComponent<PlayerFuelController>();
 
-	if (!ship)
+	if (!fuelController)
 	{
 		return;
 	}
 
 	// Destroys this fuel
-	ship->ConsumeFuel(this);
+	fuelController->ConsumeFuelPickup(this);
 }
