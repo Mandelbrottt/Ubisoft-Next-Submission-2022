@@ -29,6 +29,14 @@ namespace Next::Math
 	{
 		return a_value * a_value;
 	}
+	
+	template<typename TScalar, std::enable_if_t<std::is_floating_point_v<TScalar>, bool> = true>
+	constexpr
+	TScalar
+	Lerp(TScalar a_t, TScalar a_lhs, TScalar a_rhs)
+	{
+		return a_lhs * (1 - a_t) + a_rhs * a_t;
+	}
 
 	/** 
 	 * \return The angle about the origin of the vector with y component a_y and x component a_x.
