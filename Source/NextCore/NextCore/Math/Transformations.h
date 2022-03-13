@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Matrix3.h"
 #include "Matrix4.h"
 #include "Vector3.h"
 
@@ -21,34 +22,44 @@ namespace Next::Matrix
 	
 	/**
 	 * \param a_angle The angle in degrees by which to rotate
-	 * \return A 4x4 row-major matrix representing a rotation about the x axis in 3D space
+	 * \return A 3x3 row-major matrix representing a rotation about the x axis in 3D space
 	 */
 	NEXT_CORE_EXPORT
 	extern
-	Matrix4
+	Matrix3
 	RotateX(float a_angle);
 
 	/**
 	 * \param a_angle The angle in degrees by which to rotate
-	 * \return A 4x4 row-major matrix representing a rotation about the y axis in 3D space
+	 * \return A 3x3 row-major matrix representing a rotation about the y axis in 3D space
 	 */
 	NEXT_CORE_EXPORT
 	extern
-	Matrix4
+	Matrix3
 	RotateY(float a_angle);
 
 	/**
 	 * \param a_angle The angle in degrees by which to rotate
-	 * \return A 4x4 row-major matrix representing a rotation about the z axis in 3D space
+	 * \return A 3x3 row-major matrix representing a rotation about the z axis in 3D space
 	 */
 	NEXT_CORE_EXPORT
 	extern
-	Matrix4
+	Matrix3
 	RotateZ(float a_angle);
+
+	/**
+	 * \param a_angle The angle in degrees by which to rotate around the axis
+	 * \param a_axis The axis around which to rotate
+	 * \return A 3x3 row-major matrix representing a rotation about the given axis in 3D space
+	 */
+	NEXT_CORE_EXPORT
+	extern
+	Matrix3
+	Rotate(float a_angle, Vector3 a_axis);
 	
 	/**
 	 * \param a_scale The amount by which to scale
-	 * \return A 4x4 row-major matrix representing a scaling operation in 3D space
+	 * \return A 3x3 row-major matrix representing a scaling operation in 3D space
 	 */
 	NEXT_CORE_EXPORT
 	extern
@@ -82,5 +93,5 @@ namespace Next::Matrix
 	NEXT_CORE_EXPORT
 	extern
 	Vector3
-	EulerAngles(Matrix4 const& a_matrix);
+	EulerAngles(Matrix3 a_matrix);
 }

@@ -22,57 +22,82 @@ namespace Next::Matrix
 		return result;
 	}
 
-	Matrix4
+	Matrix3
 	RotateX(float a_angle)
 	{
 		// std::cos and sin expect radians
 		a_angle *= Math::DEG_TO_RAD;
 		
-		Matrix4 result;
+		Matrix3 result;
 
 		result[0][0] = 1.0f;
 		result[1][1] =  std::cos(a_angle);
 		result[1][2] =  std::sin(a_angle);
 		result[2][1] = -std::sin(a_angle);
 		result[2][2] =  std::cos(a_angle);
-		result[3][3] = 1.0f;
 
 		return result;
 	}
 
-	Matrix4
+	Matrix3
 	RotateY(float a_angle)
 	{
 		// std::cos and sin expect radians
 		a_angle *= Math::DEG_TO_RAD;
 		
-		Matrix4 result;
+		Matrix3 result;
 
 		result[0][0] =  std::cos(a_angle);
 		result[0][2] =  std::sin(a_angle);
 		result[1][1] = 1.0f;
 		result[2][0] = -std::sin(a_angle);
 		result[2][2] =  std::cos(a_angle);
-		result[3][3] = 1.0f;
 
 		return result;
 	}
 
-	Matrix4
+	Matrix3
 	RotateZ(float a_angle)
 	{
 		// std::cos and sin expect radians
 		a_angle *= Math::DEG_TO_RAD;
 
-		Matrix4 result;
+		Matrix3 result;
 
 		result[0][0] =  std::cos(a_angle);
 		result[0][1] =  std::sin(a_angle);
 		result[1][0] = -std::sin(a_angle);
 		result[1][1] =  std::cos(a_angle);
 		result[2][2] = 1.0f;
-		result[3][3] = 1.0f;
 
+		return result;
+	}
+
+	Matrix3
+	Rotate(float a_angle, Vector3 a_axis)
+	{
+		// rename the axis to make cross referencing easier
+		Vector3 u = std::move(a_axis);
+
+		float sin_theta = std::sin(a_angle * Math::DEG_TO_RAD);
+		float cos_theta = std::cos(a_angle * Math::DEG_TO_RAD);
+
+		float one_minus_cos_theta = 1 - cos_theta;
+		
+		Matrix3 result;
+		
+		result[0][0] = cos_theta + Math::Square(u.x) * one_minus_cos_theta;
+		result[0][1] = u.y * u.x * one_minus_cos_theta + u.z * sin_theta;
+		result[0][2] = u.z * u.x * one_minus_cos_theta - u.y * sin_theta;
+
+		result[1][0] = u.x * u.y * one_minus_cos_theta - u.z * sin_theta;
+		result[1][1] = cos_theta + Math::Square(u.y) * one_minus_cos_theta;
+		result[1][2] = u.z * u.y * one_minus_cos_theta + u.x * sin_theta;
+		
+		result[2][0] = u.x * u.z * one_minus_cos_theta + u.y * sin_theta;
+		result[2][1] = u.y * u.z * one_minus_cos_theta - u.x * sin_theta;
+		result[2][2] = cos_theta * Math::Square(u.z) * one_minus_cos_theta;
+		
 		return result;
 	}
 
@@ -148,7 +173,7 @@ namespace Next::Matrix
 
 	// https://gamedev.stackexchange.com/a/50968
 	Vector3
-	EulerAngles(Matrix4& a_matrix)
+	EulerAngles(Matrix3 a_matrix)
 	{
 		Vector3 result;
 

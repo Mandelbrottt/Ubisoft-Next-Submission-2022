@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Transformations.h"
 #include "Math/Vector3.h"
@@ -27,148 +28,94 @@ namespace Next
 		 * \brief Get the local position in this transform's object-space
 		 */
 		Vector3 const&
-		GetLocalPosition() const
-		{
-			return m_position;
-		}
-		
+		GetLocalPosition() const;
+
 		/**
 		 * \brief Get the world-space position in this transform's object-space
 		 */
 		Vector3
-		GetPosition() const
-		{
-			if (m_parent == nullptr)
-			{
-				return GetLocalPosition();
-			}
+		GetPosition() const;
 
-			Vector4 multResult = Vector4(m_position, 1.0f);
-			multResult = multResult * m_parent->GetTransformationMatrix();
-			
-			return Vector3(multResult);
-		}
-		
 		/**
 		 * \brief Set the local position in this transform's object-space
 		 */
 		void
-		SetLocalPosition(Vector3 const a_position)
-		{
-			m_isMatrixDirty |= a_position != m_position;
-			
-			m_position = a_position;
-		}
-		
+		SetLocalPosition(Vector3 const a_position);
+
 		/**
 		 * \brief Set the local position in this transform's object-space
 		 */
 		void
-		SetPosition(Vector3 const a_position)
-		{
-			m_isMatrixDirty = true;
+		SetPosition(Vector3 const a_position);
 
-			if (m_parent == nullptr)
-			{
-				return SetLocalPosition(a_position);
-			}
-
-			Vector4 multResult = Vector4(a_position, 1.0f);
-			multResult = multResult * Matrix::ViewInverse(m_parent->GetTransformationMatrix());
-			
-			m_position = Vector3(multResult);
-		}
-		
 		/**
 		 * \brief Get the local rotation in this transform's object-space
 		 */
-		Vector3 const&
-		GetLocalRotation() const
-		{
-			return m_rotation;
-		}
-		
+		Matrix3 const&
+		GetLocalRotation() const;
+
+		/**
+		 * \brief Get the local rotation in this transform's object-space in euler-angles
+		 */
+		Vector3
+		GetLocalRotationEulerAngles() const;
+
 		/**
 		 * \brief Get the world-space rotation in this transform's object-space
 		 */
 		Vector3
-		GetRotation() const
-		{
-			return Matrix::EulerAngles(GetTransformationMatrix());
-		}
-		
+		GetRotationEulerAngles() const;
+
 		/**
 		 * \brief Set the local rotation in this transform's object-space
 		 */
-		Vector3 const&
-		SetLocalRotation(Vector3 const a_rotation)
-		{
-			m_isMatrixDirty |= a_rotation != m_rotation;
-			
-			return m_rotation = a_rotation;
-		}
-		
-		///**
-		// * \brief Set the world-space rotation in this transform's object-space
-		// */
-		//Vector3
-		//SetRotation(Vector3 const a_rotation)
-		//{
-		//	m_isMatrixDirty = true;
-		//	
-		//	return m_rotation = a_rotation;
-		//}
-		
+		Matrix3 const&
+		SetLocalRotation(Vector3 const a_rotation);
+
+		/**
+		 * \brief Set the local rotation in this transform's object-space
+		 */
+		Matrix3 const&
+		SetLocalRotation(Matrix3 const a_rotation);
+
+		/**
+		 * \brief Set the world-space rotation in this transform's object-space
+		 */
+		Matrix3 const&
+		SetRotation(Matrix3 const a_rotation);
+
 		/**
 		 * \brief Get the local scale in this transform's object-space
 		 */
 		Vector3 const&
-		GetLocalScale() const
-		{
-			return m_scale;
-		}
-		
+		GetLocalScale() const;
+
 		/**
 		 * \brief Set the local scale in this transform's object-space
 		 */
 		Vector3 const&
-		SetLocalScale(Vector3 const a_scale)
-		{
-			m_isMatrixDirty |= a_scale == m_scale;
-			
-			return m_scale = a_scale;
-		}
-		
+		SetLocalScale(Vector3 const a_scale);
+
 		/**
 		 * \brief Get right vector in this transform's object-space
 		 */
-		Vector3 Right() const
-		{
-			auto transformationMatrix = GetTransformationMatrix();
-			return Vector3(transformationMatrix[0]);
-		}
-		
+		Vector3
+		Right() const;
+
 		/**
 		 * \brief Get up vector in this transform's object-space
 		 */
-		Vector3 Up() const
-		{
-			auto transformationMatrix = GetTransformationMatrix();
-			return Vector3(transformationMatrix[1]);
-		}
-		
+		Vector3
+		Up() const;
+
 		/**
 		 * \brief Get forward vector in this transform's object-space
 		 */
-		Vector3 Forward() const
-		{
-			auto transformationMatrix = GetTransformationMatrix();
-			return Vector3(transformationMatrix[2]);
-		}
+		Vector3
+		Forward() const;
 
-		//void
-		//LookAt(Vector3 a_target, Vector3 a_up = Vector3::Up());
-		//
+		void
+		LookAt(Vector3 a_target, Vector3 a_up = Vector3::Up());
 		
 		/**
 		 * \brief Get the model matrix for this transform in the given space.
@@ -180,7 +127,8 @@ namespace Next
 	
 	private:
 		Vector3 m_position = Vector3(0);
-		Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
+		//Vector3 m_rotation = Vector3(0); // TODO: Convert to quaternion once implemented
+		Matrix3 m_rotation = Matrix3::Identity();
 		Vector3 m_scale    = Vector3(1);
 		
 		Transform* m_parent = nullptr;
