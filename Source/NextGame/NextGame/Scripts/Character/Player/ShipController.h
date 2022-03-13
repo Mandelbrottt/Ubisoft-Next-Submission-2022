@@ -2,7 +2,7 @@
 
 #include <MinimalInclude.h>
 
-#include "Scripts/Projectile/ProjectileSpawner.h"
+#include "Scripts/Objects/ProjectileSpawner.h"
 
 class ShipController : public Next::Behaviour
 {

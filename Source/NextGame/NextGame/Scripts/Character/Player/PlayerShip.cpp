@@ -5,6 +5,7 @@
 #include <Components/Colliders/SphereCollider.h>
 
 #include "ShipController.h"
+#include "TractorBeamBehaviour.h"
 
 #include "Scenes/MenuScene.h"
 
@@ -37,6 +38,18 @@ PlayerShip::OnCreate()
 		crosshair.Transform()->SetLocalScale({ 2, 2, 2 });
 		crosshair.Transform()->SetLocalRotation({ 0, 180, 0 });
 		crosshair.Transform()->SetParent(camera->Transform());
+
+		Entity tractorBeam = Entity::Create("TractorBeam");
+
+		tractorBeam.AddComponent<TractorBeamBehaviour>();
+		
+		auto tractorBeamModel = tractorBeam.AddComponent<ModelRenderer>();
+		tractorBeamModel->model = Model::Create("objects/tractorbeam.obj");
+
+		tractorBeam.Transform()->SetLocalPosition({ 0, 0, 0.5f });
+		tractorBeam.Transform()->SetLocalScale({ 2, 2, 2 });
+		//tractorBeam.Transform()->SetLocalRotation({ 0, 180, 0 });
+		tractorBeam.Transform()->SetParent(camera->Transform());
 	}
 	
 	auto collider = AddComponent<SphereCollider>();

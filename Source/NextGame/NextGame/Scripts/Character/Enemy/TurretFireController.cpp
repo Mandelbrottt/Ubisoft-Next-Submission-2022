@@ -14,7 +14,7 @@ TurretFireController::OnCreate()
 	m_projectileSpawner->projectileSpeed = 40;
 
 	auto collider = AddComponent<SphereCollider>();
-	collider->radius = 2;
+	collider->radius = 3;
 
 	auto health = AddComponent<Health>();
 	health->SetHealth(1);
