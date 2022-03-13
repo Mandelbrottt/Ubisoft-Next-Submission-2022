@@ -23,6 +23,9 @@ project(project_name)
     defines {
         "WORKSPACE_DIR=\"../../\""
     }
+    
+    filter "system:windows"
+        systemversion "latest"
 
     filter "configurations:Debug"
         runtime  "debug"

@@ -34,12 +34,10 @@ project(project_name)
         "%{prj.location}/%{prj.name}/",
         build_cfg.source_dir .. "/NextCore/",
         build_cfg.source_dir .. "/NextCore/NextCore/",
-        build_cfg.source_dir .. "/NextGUI/",
     }
 
     links {
         "NextCore",
-        "NextGUI",
         "NextAPI",
         "dxguid",
         "dsound"
@@ -48,7 +46,6 @@ project(project_name)
     libdirs {
         build_cfg.output_dir .. "/NextAPI/",
         build_cfg.output_dir .. "/NextCore/",
-        build_cfg.output_dir .. "/NextGUI/",
     }
 
     defines {
