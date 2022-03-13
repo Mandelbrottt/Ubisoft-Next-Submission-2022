@@ -50,7 +50,7 @@ PlayerShip::OnCreate()
 void
 PlayerShip::OnFirstUpdate()
 {
-	Transform()->SetLocalPosition({ 0, 2.f, 0 });
+	Transform()->SetLocalPosition({ 0, 2.f - ShipController::min_y, 0 });
 }
 
 void

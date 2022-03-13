@@ -7,6 +7,7 @@ ReflectRegister(ShipController);
 using namespace Next;
 
 Vector3 ShipController::gravity = Vector3::Down() * 9.81f;
+float   ShipController::min_y   = 1;
 
 void
 ShipController::OnCreate()
@@ -50,7 +51,7 @@ ShipController::ProcessPlayerMovement()
 	input.z = Input::GetAxis(FORWARD_MOVE);
 
 	// Subtract left trigger because that's control to go down
-	input.y = Input::GetAxis(UPWARDS_MOVE) - 0.5f * Input::GetAxis(DOWNWARDS_MOVE);
+	input.y = Input::GetAxis(UPWARDS_MOVE) - Input::GetAxis(DOWNWARDS_MOVE);
 
 	Vector3 sidewaysAcceleration = m_transform->Right()   * input.x;
 	Vector3 upwardsAcceleration  = m_transform->Up()      * input.y;
@@ -81,9 +82,9 @@ ShipController::ProcessPlayerMovement()
 
 	if (gravity.x == 0 && gravity.z == 0)
 	{
-		if (position.y < 0)
+		if (position.y < 1)
 		{
-			position.y = 0;
+			position.y = 1;
 			m_velocity.y = -m_velocity.y * 0.2f;
 		}
 	}
@@ -98,8 +99,15 @@ ShipController::ProcessPlayerRotation()
 	input.x = Input::GetAxis(HORIZONTAL_LOOK);
 	input.y = Input::GetAxis(VERTICAL_LOOK);
 	
-	m_yaw   += input.x * m_turnSpeed * Time::DeltaTime();
 	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
+
+	if (!Input::GetButton(ROLL_MODIFIER))
+	{
+		m_yaw += input.x * m_turnSpeed * Time::DeltaTime();
+	} else
+	{
+		m_roll += input.x * m_turnSpeed * Time::DeltaTime();
+	}
 
 	// Keep rotation in check
 	if (m_yaw < -360)
@@ -112,10 +120,52 @@ ShipController::ProcessPlayerRotation()
 		m_yaw -= 360;
 	}
 	
-	m_pitch = std::clamp(m_pitch, -89.f, 89.f);
+	//m_pitch = std::clamp(m_pitch, -89.f, 89.f);
 
-	m_transform->SetLocalRotation({ 0, m_yaw, 0 });
-	m_cameraTransform->SetLocalRotation({ m_pitch, 0, 0 });
+	//m_transform->SetLocalRotation({ 0, m_yaw, 0 });
+	if (m_roll != 0)
+	{
+		auto rotation = m_transform->GetLocalRotation();
+		rotation *= Matrix::Rotate(-m_roll, m_transform->Forward());
+		m_transform->SetRotation(rotation);
+	}
+	
+	if (m_yaw != 0)
+	{
+		auto rotation = m_transform->GetLocalRotation();
+		rotation *= Matrix::Rotate(m_yaw, m_transform->Up());
+		m_transform->SetRotation(rotation);
+	}
+
+	if (m_pitch != 0)
+	{
+		auto rotation = m_transform->GetLocalRotation();
+		rotation *= Matrix::Rotate(-m_pitch, m_transform->Right());
+		m_transform->SetRotation(rotation);
+	}
+
+	Vector3 relativeUp = m_transform->Up();
+	Vector3 worldUp = Vector::Normalize(-gravity);
+
+	float angle = Vector::Angle(relativeUp, worldUp);
+
+	// Don't need to normalize result because Matrix::Rotate normalizes for us
+	Vector3 rotationAxis = Vector::Cross(relativeUp, worldUp);
+	
+	float factor = 1.f;
+
+	if (false && rotationAxis != Vector3::Zero())
+	{
+		auto rotation = m_transform->GetLocalRotation();
+		rotation *= Matrix::Rotate(angle * factor * Time::DeltaTime(), rotationAxis);
+		m_transform->SetLocalRotation(rotation);
+	}
+	
+	//m_transform->SetLocalRotation(Matrix::Rotate(m_yaw, m_cameraTransform->Up()));
+	//m_cameraTransform->SetLocalRotation(Matrix::Rotate(m_pitch, m_cameraTransform->Right()));
+	//m_cameraTransform->SetLocalRotation({ m_pitch, 0, 0 });
+
+	m_yaw = m_pitch = m_roll = 0;
 }
 
 void

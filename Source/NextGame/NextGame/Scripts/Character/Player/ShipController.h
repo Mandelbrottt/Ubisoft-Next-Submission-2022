@@ -36,6 +36,7 @@ private:
 
 public:
 	static Next::Vector3 gravity;
+	static float         min_y;
 
 private:
 	Next::Transform*   m_transform         = nullptr;
@@ -50,6 +51,7 @@ private:
 
 	float m_yaw   = 0;
 	float m_pitch = 0;
+	float m_roll  = 0;
 
 	float m_attackTimer    = 0;
 	float m_attackCooldown;
