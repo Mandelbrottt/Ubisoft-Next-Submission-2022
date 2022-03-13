@@ -32,7 +32,7 @@ namespace Next
 	bool
 	Component::IsActive() const
 	{
-		return m_isActive;
+		return m_isActive && GetEntity().IsActive();
 	}
 
 	void
