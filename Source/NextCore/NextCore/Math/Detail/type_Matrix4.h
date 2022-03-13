@@ -3,7 +3,11 @@
 #pragma once
 
 #include "type_Matrix.h"
+#include "type_Matrix3.h"
 #include "type_Vector4.h"
+
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 #pragma warning( push )
 #pragma warning( disable : 26495 ) // Possibly uninitialized member
@@ -37,7 +41,29 @@ namespace Next
 			Vector_t<MATRIX_SIZE, TUnderlying> a_z,
 			Vector_t<MATRIX_SIZE, TUnderlying> a_w
 		) : cols { a_x, a_y, a_z, a_w } {}
+		
+		constexpr
+		Matrix_t(
+			Matrix_t<3, 3, TUnderlying> a_matrix
+		) : cols {
+			Vector_t<4, TUnderlying>(a_matrix.cols[0], 0),
+			Vector_t<4, TUnderlying>(a_matrix.cols[1], 0),
+			Vector_t<4, TUnderlying>(a_matrix.cols[2], 0),
+			Vector_t<4, TUnderlying>(Vector_t<3, TUnderlying>(0), 1),
+		} {}
 
+		explicit
+		constexpr
+		operator
+		Matrix_t<3, 3, TUnderlying>()
+		{
+			return Matrix_t<3, 3, TUnderlying> {
+				Vector_t<3, TUnderlying>(cols[0]),
+				Vector_t<3, TUnderlying>(cols[1]),
+				Vector_t<3, TUnderlying>(cols[2])
+			};
+		}
+		
 		_MATRIX_GENERATE_CONSTRUCTORS();
 		
 	#pragma warning( push )

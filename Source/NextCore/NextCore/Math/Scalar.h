@@ -22,6 +22,14 @@ namespace Next::Math
 		return 0;
 	}
 
+	template<typename TScalar>
+	constexpr
+	TScalar
+	Square(TScalar a_value)
+	{
+		return a_value * a_value;
+	}
+
 	/** 
 	 * \return The angle about the origin of the vector with y component a_y and x component a_x.
 	 *         Takes into account the quadrant of the vector.
