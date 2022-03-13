@@ -158,21 +158,21 @@ namespace Next
 	Transform::Right() const
 	{
 		auto transformationMatrix = GetTransformationMatrix();
-		return Vector3(transformationMatrix[0]);
+		return Vector::Normalize(Vector3(transformationMatrix[0]));
 	}
 
 	Vector3
 	Transform::Up() const
 	{
 		auto transformationMatrix = GetTransformationMatrix();
-		return Vector3(transformationMatrix[1]);
+		return Vector::Normalize(Vector3(transformationMatrix[1]));
 	}
 
 	Vector3
 	Transform::Forward() const
 	{
 		auto transformationMatrix = GetTransformationMatrix();
-		return Vector3(transformationMatrix[2]);
+		return Vector::Normalize(Vector3(transformationMatrix[2]));
 	}
 
 	void
