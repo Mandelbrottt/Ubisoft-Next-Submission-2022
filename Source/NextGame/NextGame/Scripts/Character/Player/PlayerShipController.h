@@ -44,7 +44,6 @@ private:
 	CalculateGravity();
 
 public:
-	static Next::Vector3 gravity;
 	static bool          flatPlanet;
 	static float         min_y;
 
@@ -68,6 +67,8 @@ private:
 	float m_yaw   = 0;
 	float m_pitch = 0;
 	float m_roll  = 0;
+	
+	Next::Vector3 m_gravity;
 
 	float m_attackTimer = 0;
 	float m_attackCooldown;

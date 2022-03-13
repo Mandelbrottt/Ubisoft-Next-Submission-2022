@@ -90,7 +90,7 @@ PlayerShip::OnDestroy()
 void
 PlayerShip::OnFirstUpdate()
 {
-	Transform()->SetLocalPosition({ 0, 2.f - PlayerShipController::min_y, 0 });
+	Transform()->SetLocalPosition({ 0, 1, 0 });
 }
 
 void

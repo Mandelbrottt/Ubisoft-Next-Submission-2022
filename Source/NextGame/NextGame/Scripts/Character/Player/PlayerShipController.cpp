@@ -3,14 +3,14 @@
 #include "Config/Controls.h"
 
 #include "Scripts/Objects/FuelPickup.h"
+#include "Scripts/Objects/GravitySource.h"
 
 ReflectRegister(PlayerShipController);
 
 using namespace Next;
 
-Vector3 PlayerShipController::gravity    = Vector3::Zero();
-bool    PlayerShipController::flatPlanet = false;
-float   PlayerShipController::min_y      = 1;
+bool  PlayerShipController::flatPlanet = false;
+float PlayerShipController::min_y      = 1;
 
 void
 PlayerShipController::OnCreate()
@@ -52,13 +52,6 @@ PlayerShipController::OnUpdate()
 	auto cachedPosition = m_transform->GetPosition();
 	auto cachedRotation = m_transform->GetLocalRotation();
 
-	if (flatPlanet)
-	{
-		gravity = m_transform->GetPosition() - Vector3::Zero();
-		gravity.Normalize();
-		gravity = gravity * -9.81f;
-	}
-	
 	// We handle non-input movement in here so dont if-guard. TODO: Move non-input movement out of this function
 	ProcessPlayerMovement();
 
@@ -110,7 +103,7 @@ PlayerShipController::ProcessPlayerMovement()
 
 	acceleration *= m_accelerationForce;
 
-	acceleration += gravity;
+	acceleration += m_gravity;
 
 	float deltaTime = Time::DeltaTime();
 
@@ -124,7 +117,7 @@ PlayerShipController::ProcessPlayerMovement()
 
 	position += m_velocity * deltaTime;
 
-	if (gravity != Vector3::Zero())
+	if (m_gravity != Vector3::Zero())
 	{
 		Vector3 planetToThis = position - Vector3::Zero();
 
@@ -142,7 +135,7 @@ PlayerShipController::ProcessPlayerMovement()
 
 				m_velocity.y = -m_velocity.y * 0.2f;
 			}
-		} else if (dist < min_y)
+		} else if (dist < Math::Square(min_y))
 		{
 			planetToThis.Normalize();
 
@@ -199,26 +192,29 @@ PlayerShipController::ProcessPlayerRotation()
 		m_transform->SetRotation(rotation);
 	}
 
-	// Calculate the amount by which to rotate to stabilize the ship
-	Vector3 relativeRight = m_transform->Right();
-	Vector3 worldUp       = Vector::Normalize(-gravity);
-	Vector3 worldRight    = Vector::Cross(worldUp, m_transform->Forward());
-
-	float angle = Vector::Angle(relativeRight, worldRight);
-
-	// Don't need to normalize result because Matrix::Rotate normalizes for us
-	Vector3 rotationAxis = Vector::Cross(relativeRight, worldRight);
-
-	float factor = 2.f - (m_roll != 0 ? 1.5f : 0);
-
-	angle = std::min(angle, 30.f);
-
-	if (rotationAxis != Vector3::Zero())
+	if (Vector::MagnitudeSquared(m_gravity) > Math::Square(5))
 	{
-		auto rotation = m_transform->GetLocalRotation();
-		angle         = std::min(angle, angle * factor * Time::DeltaTime());
-		rotation *= Matrix::Rotate(angle, rotationAxis);
-		m_transform->SetLocalRotation(rotation);
+		// Calculate the amount by which to rotate to stabilize the ship
+		Vector3 relativeRight = m_transform->Right();
+		Vector3 worldUp       = Vector::Normalize(-m_gravity);
+		Vector3 worldRight    = Vector::Cross(worldUp, m_transform->Forward());
+
+		float angle = Vector::Angle(relativeRight, worldRight);
+
+		// Don't need to normalize result because Matrix::Rotate normalizes for us
+		Vector3 rotationAxis = Vector::Cross(relativeRight, worldRight);
+
+		float factor = 2.f - (m_roll != 0 ? 1.5f : 0);
+
+		angle = std::min(angle, 30.f);
+
+		if (rotationAxis != Vector3::Zero())
+		{
+			auto rotation = m_transform->GetLocalRotation();
+			angle         = std::min(angle, angle * factor * Time::DeltaTime());
+			rotation *= Matrix::Rotate(angle, rotationAxis);
+			m_transform->SetLocalRotation(rotation);
+		}
 	}
 
 	m_yaw = m_pitch = m_roll = 0;
@@ -298,8 +294,35 @@ PlayerShipController::ProcessTractorBeam()
 void
 PlayerShipController::CalculateGravity()
 {
+	static std::vector<GravitySource*> gravitySources;
+
+	m_gravity = Vector3::Zero();
+	
 	if (flatPlanet)
 	{
-		gravity = Vector3::Down() * 9.81f;
+		m_gravity = Vector3::Down() * 9.81f;
+		return;
+	}
+	
+	Entity::GetAllComponents(gravitySources);
+	if (gravitySources.empty())
+	{
+		return;
+	}
+
+	auto position = m_transform->GetPosition();
+
+	for (auto source : gravitySources)
+	{
+		Vector3 fromThisToSource = source->Transform()->GetPosition() - position;
+
+		float dist = fromThisToSource.Magnitude();
+
+		float strength = source->gravityStrength / dist;
+
+		if (strength > 0.1f)
+		{
+			m_gravity += Vector::Normalize(fromThisToSource) * strength;
+		}
 	}
 }

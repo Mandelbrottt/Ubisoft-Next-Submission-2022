@@ -5,7 +5,6 @@
 
 #include "Scripts/Character/Player/PlayerPersistentData.h"
 #include "Scripts/Character/Player/PlayerShip.h"
-#include "Scripts/Character/Player/PlayerShipController.h"
 #include "Scripts/LevelChange/PlanetLevelSelector.h"
 #include "Scripts/Objects/SpinInPlace.h"
 
@@ -20,8 +19,6 @@ LevelSelectScene::OnSceneCreate()
 	{
 		PlayerPersistentData::ResetData();
 	}
-
-	PlayerShipController::gravity = Vector3::Zero();
 	
 	//SceneManager::LoadScene<FlatGroundScene>();
 	

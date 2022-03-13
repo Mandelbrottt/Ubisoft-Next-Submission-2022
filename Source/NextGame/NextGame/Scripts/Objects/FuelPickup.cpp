@@ -21,7 +21,8 @@ FuelPickup::OnCreate()
 	auto collider = modelRenderer->AddComponent<SphereCollider>();
 	collider->radius = 1;
 
-	m_localGravity = PlayerShipController::gravity;
+	// TEMPORARY:
+	m_localGravity = Vector3::Down() * 9.81f;
 
 	m_fuelAmount = Random::Value() * 10 + 5;
 }
