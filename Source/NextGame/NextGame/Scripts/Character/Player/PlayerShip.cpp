@@ -10,6 +10,7 @@
 #include "Scenes/MenuScene.h"
 
 #include "Scripts/Character/Common/Health.h"
+#include "Scripts/Objects/FuelPickup.h"
 
 ReflectRegister(PlayerShip);
 
@@ -60,6 +61,8 @@ PlayerShip::OnCreate()
 	m_health = AddComponent<Health>();
 	m_health->SetHealth(5);
 	m_health->DestroyOnKill(false);
+
+	m_fuel = 100;
 }
 
 void
@@ -75,4 +78,17 @@ PlayerShip::OnUpdate()
 	{
 		SceneManager::LoadScene<MenuScene>();
 	}
+}
+
+void
+PlayerShip::ConsumeFuel(FuelPickup* a_pickup)
+{
+	if (!a_pickup)
+	{
+		return;
+	}
+	
+	m_fuel += a_pickup->GetFuelAmount();
+
+	a_pickup->GetEntity().Destroy();
 }
