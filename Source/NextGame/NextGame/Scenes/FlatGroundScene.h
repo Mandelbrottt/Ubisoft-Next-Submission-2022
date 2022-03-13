@@ -8,4 +8,12 @@ class FlatGroundScene : public Next::Scene
 
 public:
 	void OnSceneCreate() override;
+	void OnSceneDestroy() override;
+
+private:
+	void
+	CreateEnvironment(float a_size);
+
+	void
+	CreateObjects(float a_size);
 };

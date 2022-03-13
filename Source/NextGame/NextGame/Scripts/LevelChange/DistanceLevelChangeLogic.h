@@ -8,9 +8,18 @@ class DistanceLevelChangeLogic : public LevelChangeLogicBase
 {
 	ComponentDeclare(DistanceLevelChangeLogic, LevelChangeLogicBase)
 
-public:
+	void
+	OnFirstUpdate() override;
 	
+	bool
+	ShouldChangeLevel() override;
+
+public:
+	float distanceToLeave = 150;
+
 private:
+	Next::Transform* m_playerTransform = nullptr;
+	
 	//ReflectMembers(
 	//	ReflectField()
 	//)

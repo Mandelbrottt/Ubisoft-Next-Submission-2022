@@ -15,9 +15,12 @@ namespace Next
 
 	public:
 		Model* model = nullptr;
+
+		bool receiveLighting = true;
 		
 		ReflectMembers(
 			ReflectField(model)
+			ReflectField(receiveLighting)
 		)
 	};
 }

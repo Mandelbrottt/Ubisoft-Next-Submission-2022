@@ -1,8 +1,12 @@
 ﻿#include "FlatGroundScene.h"
 
+#include "LevelSelectScene.h"
+
 #include "Scripts/Character/Enemy/TurretFireController.h"
 #include "Scripts/Character/Player/PlayerPersistentData.h"
 #include "Scripts/Character/Player/PlayerShip.h"
+#include "Scripts/LevelChange/DistanceLevelChangeLogic.h"
+#include "Scripts/LevelChange/LevelChangeManager.h"
 #include "Scripts/Objects/FuelPickup.h"
 
 ReflectRegister(FlatGroundScene);
@@ -17,57 +21,95 @@ FlatGroundScene::OnSceneCreate()
 		PlayerPersistentData::ResetData();
 	}
 
-	PlayerShipController::gravity = Vector3::Down() * -9.81f;
-
-	Entity dirLightEntity = Entity::Create("DirLight");
-	auto   light          = dirLightEntity.AddComponent<Light>();
-	light->type = LightType::Directional;
-	light->Transform()->SetLocalRotation({ -70, 0, 0 });
-	light->ambientColor   = { 0.5f, 0.5f, 0.5f };
-	light->diffuseColor   = { 4, 5, 4 };
+	PlayerShipController::flatPlanet = true;
 
 	Entity playerEntity = Entity::Create("Player");
 	playerEntity.AddComponent<PlayerShip>();
 	PlayerShip::GetPlayerControllerEntity().Transform()->SetPosition({ 0, 20, 0 });
 	PlayerShip::GetPlayerControllerEntity().Transform()->SetLocalRotation({ -70, 0, 0 });
 
-	Model* ground = Model::Create("level/env/grass.obj");
+	Entity levelChange = Entity::Create("LevelChangeLogicManager");
+	auto logic = levelChange.AddComponent<DistanceLevelChangeLogic>();
+	logic->distanceToLeave = 150;
 
+	auto manager = levelChange.AddComponent<LevelChangeManager>();
+	manager->Init(logic, LevelSelectScene::GetStaticType());
+	
 	float size = 20;
 	size *= 4;
 
-	for (int i = 0; i < 5; i++)
+	CreateEnvironment(size);
+	CreateObjects(size);
+}
+
+void
+FlatGroundScene::OnSceneDestroy()
+{
+	PlayerShipController::flatPlanet = false;
+}
+
+void
+FlatGroundScene::CreateEnvironment(float a_size)
+{
+	Entity sky                = Entity::Create("Sky");
+	auto   skyModel           = sky.AddComponent<ModelRenderer>();
+	skyModel->model           = Model::Create("level/env/sky.obj");
+	skyModel->receiveLighting = false;
+	sky.Transform()->SetLocalScale(Vector3(150));
+
+	Entity dirLightEntity = Entity::Create("DirLight");
+	auto   light          = dirLightEntity.AddComponent<Light>();
+	light->type           = LightType::Directional;
+	light->Transform()->SetLocalRotation({ -70, 0, 0 });
+	light->ambientColor = { 0.5f, 0.5f, 0.5f };
+	light->diffuseColor = { 4, 5, 4 };
+
+	float groundHeight          = 0;
+	PlayerShipController::min_y = groundHeight + 1;
+	
+	Model* ground = Model::Create("level/env/grass.obj");
+
+	float numX = 5;
+	float numY = 5;
+	
+	for (int i = 0; i < numX; i++)
 	{
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < numY; j++)
 		{
 			Entity groundEntity   = Entity::Create("Ground");
 			auto   groundRenderer = groundEntity.AddComponent<ModelRenderer>();
 			groundRenderer->model = ground;
 
-			float x = static_cast<float>(i - 5 / 2);
-			float y = static_cast<float>(j - 5 / 2);
+			float x = static_cast<float>(i - numX / 2);
+			float y = static_cast<float>(j - numY / 2);
 
-			groundEntity.Transform()->SetLocalPosition({ 20 * x, 0, 20 * y });
+			groundEntity.Transform()->SetLocalPosition(
+				{ a_size / (numX - 1) * x, groundHeight, a_size / (numY - 1) * y }
+			);
 		}
 	}
+}
 
+void
+FlatGroundScene::CreateObjects(float a_size)
+{
 	for (int i = 0; i < 10; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
 
-		float x = (Random::Value() * size) - (size / 2);
-		float y = (Random::Value() * size) - (size / 2);
+		float x = (Random::Value() * a_size) - (a_size / 2);
+		float y = (Random::Value() * a_size) - (a_size / 2);
 		turretEntity.Transform()->SetPosition({ x, 0.5f, y });
 	}
-	
+
 	for (int i = 0; i < 10; i++)
 	{
 		Entity fuelEntity = Entity::Create("Fuel " + std::to_string(i));
 		fuelEntity.AddComponent<FuelPickup>();
-		
-		float x = (Random::Value() * size) - (size / 2);
-		float y = (Random::Value() * size) - (size / 2);
+
+		float x = (Random::Value() * a_size) - (a_size / 2);
+		float y = (Random::Value() * a_size) - (a_size / 2);
 		fuelEntity.Transform()->SetPosition({ x, 0.5f, y });
 	}
 }

@@ -30,6 +30,8 @@ namespace Next::Renderer
 
 		Vector3 normals[2];
 
+		bool receiveLighting = true;
+
 		Color color = Color::white;
 
 		float depth = 0;
@@ -148,6 +150,7 @@ namespace Next::Renderer
 			{
 				//RenderQueueElement element = { primitive, a_entity.GetEntityId() };
 				RenderQueueElement element { primitive };
+				element.receiveLighting = a_modelRenderer->receiveLighting;
 				g_primitiveRenderQueue.emplace_back(std::move(element));
 			}
 
@@ -356,7 +359,13 @@ namespace Next::Renderer
 
 			for (int j = 0; j < numVerts; j++)
 			{
-				ApplyLightsToPrimitive(&element.color, averageNormal, averagePosition);
+				if (element.receiveLighting)
+				{
+					ApplyLightsToPrimitive(&element.color, averageNormal, averagePosition);
+				} else
+				{
+					element.color = Color::white;
+				}
 				
 				auto projectedVertex = positions[j] * a_view * a_projection;
 

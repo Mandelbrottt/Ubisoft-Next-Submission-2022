@@ -40,8 +40,12 @@ private:
 	void
 	ProcessTractorBeam();
 
+	void
+	CalculateGravity();
+
 public:
 	static Next::Vector3 gravity;
+	static bool          flatPlanet;
 	static float         min_y;
 
 private:

@@ -8,8 +8,9 @@ ReflectRegister(PlayerShipController);
 
 using namespace Next;
 
-Vector3 PlayerShipController::gravity = Vector3::Zero();
-float   PlayerShipController::min_y   = 1;
+Vector3 PlayerShipController::gravity    = Vector3::Zero();
+bool    PlayerShipController::flatPlanet = false;
+float   PlayerShipController::min_y      = 1;
 
 void
 PlayerShipController::OnCreate()
@@ -51,6 +52,13 @@ PlayerShipController::OnUpdate()
 	auto cachedPosition = m_transform->GetPosition();
 	auto cachedRotation = m_transform->GetLocalRotation();
 
+	if (flatPlanet)
+	{
+		gravity = m_transform->GetPosition() - Vector3::Zero();
+		gravity.Normalize();
+		gravity = gravity * -9.81f;
+	}
+	
 	// We handle non-input movement in here so dont if-guard. TODO: Move non-input movement out of this function
 	ProcessPlayerMovement();
 
@@ -62,6 +70,8 @@ PlayerShipController::OnUpdate()
 
 		ProcessTractorBeam();
 	}
+
+	CalculateGravity();
 
 	// Sometimes the values are nan and i don't know why, just pretend it didnt happen
 	auto right = m_transform->Right();
@@ -83,7 +93,7 @@ PlayerShipController::ProcessPlayerMovement()
 	input.y = Input::GetAxis(UPWARDS_MOVE) - Input::GetAxis(DOWNWARDS_MOVE);
 
 	Vector3 acceleration = Vector3(0);
-	
+
 	if (m_playerFuelController->HasFuel() && m_playerHealth->GetHealth() > 0)
 	{
 		Vector3 sidewaysAcceleration = m_transform->Right() * input.x;
@@ -117,13 +127,25 @@ PlayerShipController::ProcessPlayerMovement()
 	if (gravity != Vector3::Zero())
 	{
 		Vector3 planetToThis = position - Vector3::Zero();
-		
+
 		float dist = Vector::MagnitudeSquared(planetToThis);
-		
-		if (dist < min_y)
+
+		if (flatPlanet)
+		{
+			if (position.y < min_y)
+			{
+				position.y = min_y;
+				if (Math::Square(m_velocity.y) > Math::Square(10))
+				{
+					m_playerHealth->SubtractHealth();
+				}
+
+				m_velocity.y = -m_velocity.y * 0.2f;
+			}
+		} else if (dist < min_y)
 		{
 			planetToThis.Normalize();
-			
+
 			position = planetToThis * min_y;
 			if (m_velocity.Dot(-planetToThis) > 10)
 			{
@@ -270,5 +292,14 @@ PlayerShipController::ProcessTractorBeam()
 		{
 			pickup->SetAccelerationTarget(nullptr);
 		}
+	}
+}
+
+void
+PlayerShipController::CalculateGravity()
+{
+	if (flatPlanet)
+	{
+		gravity = Vector3::Down() * 9.81f;
 	}
 }

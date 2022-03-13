@@ -1,6 +1,7 @@
 ﻿#include "LevelSelectScene.h"
 
 #include "FlatGroundScene.h"
+#include "SinglePlanetScene.h"
 
 #include "Scripts/Character/Player/PlayerPersistentData.h"
 #include "Scripts/Character/Player/PlayerShip.h"
@@ -37,14 +38,15 @@ LevelSelectScene::OnSceneCreate()
 	{
 		Entity copper     = Entity::Create("Copper");
 		auto copperPlanet = copper.AddComponent<PlanetLevelSelector>();
-		copperPlanet->Init("level/select/copper.obj", 15, 45, FlatGroundScene::GetStaticType());
-		copper.Transform()->SetPosition({ -30, 0, 30 });
+		copperPlanet->Init("level/select/copper.obj", 15, 45, SinglePlanetScene::GetStaticType());
+		copper.Transform()->SetPosition({ -30, 0, -40 });
 	}
 	{
+		// TODO: Easter egg??
 		Entity mars     = Entity::Create("Mars");
 		auto marsPlanet = mars.AddComponent<PlanetLevelSelector>();
 		marsPlanet->Init("level/select/mars.obj", 3, 145, FlatGroundScene::GetStaticType());
-		mars.Transform()->SetPosition({ 20, 0, 25 });
+		mars.Transform()->SetPosition({ 40, 0, -10 });
 	}
 
 	// For performance reasons
