@@ -76,4 +76,6 @@ Projectile::OnTriggerCollisionStart(Collider* a_other)
 	}
 	
 	health->SubtractHealth();
+
+	GetEntity().Destroy();
 }
