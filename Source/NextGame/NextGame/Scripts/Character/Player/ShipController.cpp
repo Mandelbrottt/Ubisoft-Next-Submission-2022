@@ -48,15 +48,15 @@ ShipController::OnUpdate()
 
 	ProcessPlayerAttack();
 
-	auto newPosition = m_transform->GetPosition();
-	if (isnan(newPosition.x) || isnan(newPosition.y) || isnan(newPosition.z))
+	ProcessTractorBeam();
+
+	// Sometimes the values are nan and i don't know why, just pretend it didnt happen
+	auto right = m_transform->Right();
+	if (isnan(right.x) || isnan(right.y) || isnan(right.z))
 	{
 		m_transform->SetPosition(cachedPosition);
 		m_transform->SetLocalRotation(cachedRotation);
 	}
-	
-	m_tractorBeam->SetActive(Input::GetButton(GamepadButton::A));
-	m_tractorBeam->isPickingUp = Input::GetButton(GamepadButton::B);
 }
 
 void
@@ -190,4 +190,11 @@ ShipController::ProcessPlayerAttack()
 		m_projectileSpawner->SpawnProjectile(position + direction, direction);
 		m_attackTimer = 0;
 	}
+}
+
+void
+ShipController::ProcessTractorBeam()
+{
+	m_tractorBeam->GetComponent<ModelRenderer>()->SetActive(Input::GetButton(GamepadButton::A));
+	m_tractorBeam->isPickingUp = Input::GetButton(GamepadButton::B);
 }

@@ -23,6 +23,11 @@ namespace Next
 	void
 	Transform::SetParent(Transform* a_parent)
 	{
+		if (this == a_parent)
+		{
+			return;
+		}
+		
 		m_parent = a_parent;
 	}
 

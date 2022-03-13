@@ -35,6 +35,9 @@ private:
 
 	void
 	ProcessPlayerAttack();
+	
+	void
+	ProcessTractorBeam();
 
 public:
 	static Next::Vector3 gravity;

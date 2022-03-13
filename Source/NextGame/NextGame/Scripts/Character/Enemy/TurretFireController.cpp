@@ -13,6 +13,9 @@ TurretFireController::OnCreate()
 	m_projectileSpawner->isEnemyOwned    = true;
 	m_projectileSpawner->projectileSpeed = 40;
 
+	auto turretRenderer   = AddComponent<ModelRenderer>();
+	turretRenderer->model = Model::Create("objects/turret.obj");
+
 	auto collider = AddComponent<SphereCollider>();
 	collider->radius = 3;
 

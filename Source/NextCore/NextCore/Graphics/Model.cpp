@@ -43,11 +43,27 @@ namespace Next
 		return new Model;
 	}
 
+	static std::unordered_map<std::string, Model*> g_models;
+	
 	Model*
 	Model::Create(std::string_view a_filename)
 	{
+		std::fs::path path = a_filename;
+		path = std::fs::canonical(path);
+		std::string pathString = path.string();
+
+		auto iter = g_models.find(pathString);
+		if (iter != g_models.end())
+		{
+			return iter->second;
+		}
+		
 		Model* result = Create();
-		result->LoadFromFile(a_filename);
+		bool success = result->LoadFromFile(a_filename);
+		if (success)
+		{
+			g_models[pathString] = result;
+		}
 		return result;
 	}
 

@@ -2,6 +2,7 @@
 
 #include "Scripts/Character/Enemy/TurretFireController.h"
 #include "Scripts/Character/Player/PlayerShip.h"
+#include "Scripts/Objects/FuelPickup.h"
 
 ReflectRegister(FlatGroundScene);
 
@@ -45,11 +46,19 @@ FlatGroundScene::OnSceneCreate()
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
-		auto turretRenderer   = turretEntity.AddComponent<ModelRenderer>();
-		turretRenderer->model = Model::Create("objects/turret.obj");
 
 		float x = (Random::Value() * size) - (size / 2);
 		float y = (Random::Value() * size) - (size / 2);
 		turretEntity.Transform()->SetPosition({ x, 0.5f, y });
+	}
+	
+	for (int i = 0; i < 10; i++)
+	{
+		Entity fuelEntity = Entity::Create("Fuel " + std::to_string(i));
+		fuelEntity.AddComponent<FuelPickup>();
+		
+		float x = (Random::Value() * size) - (size / 2);
+		float y = (Random::Value() * size) - (size / 2);
+		fuelEntity.Transform()->SetPosition({ x, 0.5f, y });
 	}
 }
