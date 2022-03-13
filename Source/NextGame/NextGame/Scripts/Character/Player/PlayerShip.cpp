@@ -29,6 +29,8 @@ PlayerShip::OnCreate()
 	
 	auto camera = cameraEntity.AddComponent<Camera>();
 	camera->SetFov(100, FovType::Horizontal);
+
+	// Create camera-relative objects
 	{
 		Entity crosshair = Entity::Create("Crosshair");
 	

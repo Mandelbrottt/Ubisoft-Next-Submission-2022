@@ -25,5 +25,13 @@ TractorBeamBehaviour::OnUpdate()
 void
 TractorBeamBehaviour::UpdatePickingUpTimer()
 {
-	
+	float valueToAdd = Time::DeltaTime() * m_pickingUpTimerMultiplier;
+	if (!isPickingUp)
+	{
+		valueToAdd = -valueToAdd;
+	}
+
+	m_pickingUpTimer += valueToAdd;
+
+	m_pickingUpTimer = std::clamp(m_pickingUpTimer, 0.f, 1.f);
 }

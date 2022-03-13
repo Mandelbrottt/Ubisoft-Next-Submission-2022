@@ -2,6 +2,8 @@
 
 #include <MinimalInclude.h>
 
+#include "TractorBeamBehaviour.h"
+
 #include "Scripts/Objects/ProjectileSpawner.h"
 
 class ShipController : public Next::Behaviour
@@ -41,7 +43,9 @@ public:
 private:
 	Next::Transform*   m_transform         = nullptr;
 	Next::Transform*   m_cameraTransform   = nullptr;
+
 	ProjectileSpawner* m_projectileSpawner = nullptr;
+	TractorBeamBehaviour* m_tractorBeam = nullptr;
 
 	Next::Vector3 m_velocity = { 0, 0, 0 };
 
@@ -60,6 +64,7 @@ private:
 		ReflectField(m_transform)
 		ReflectField(m_cameraTransform)
 		ReflectField(m_projectileSpawner)
+		ReflectField(m_tractorBeam)
 		ReflectField(m_topSpeed)
 		ReflectField(m_accelerationForce)
 		ReflectField(m_turnSpeed)

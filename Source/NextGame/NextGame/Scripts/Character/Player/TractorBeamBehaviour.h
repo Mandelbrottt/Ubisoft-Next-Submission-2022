@@ -16,6 +16,9 @@ public:
 	void
 	UpdatePickingUpTimer();
 
+public:
+	bool isPickingUp = false;
+
 private:
 	Next::Transform* m_transform;
 
@@ -23,7 +26,9 @@ private:
 
 	float m_normalTurnSpeed    = 90;
 	float m_pickingUpTurnSpeed = 270;
-	float m_pickingUpTimer     = 0;
+
+	float m_pickingUpTimerMultiplier = 2;
+	float m_pickingUpTimer           = 0;
 
 	ReflectMembers(
 		ReflectField(m_transform)

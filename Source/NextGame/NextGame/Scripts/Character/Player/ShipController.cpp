@@ -31,16 +31,32 @@ ShipController::OnFirstUpdate()
 {
 	Entity camera = Entity::FindByName("Camera");
 	m_cameraTransform = camera.Transform();
+
+	Entity tractorBeam = Entity::FindByName("TractorBeam");
+	m_tractorBeam = tractorBeam.GetComponent<TractorBeamBehaviour>();
 }
 
 void
 ShipController::OnUpdate()
 {
+	auto cachedPosition = m_transform->GetPosition();
+	auto cachedRotation = m_transform->GetLocalRotation();
+	
 	ProcessPlayerMovement();
 
 	ProcessPlayerRotation();
 
 	ProcessPlayerAttack();
+
+	auto newPosition = m_transform->GetPosition();
+	if (isnan(newPosition.x) || isnan(newPosition.y) || isnan(newPosition.z))
+	{
+		m_transform->SetPosition(cachedPosition);
+		m_transform->SetLocalRotation(cachedRotation);
+	}
+	
+	m_tractorBeam->SetActive(Input::GetButton(GamepadButton::A));
+	m_tractorBeam->isPickingUp = Input::GetButton(GamepadButton::B);
 }
 
 void
