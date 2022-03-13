@@ -1,5 +1,7 @@
 #include "ShipController.h"
 
+#include "Config/Controls.h"
+
 ReflectRegister(ShipController);
 
 using namespace Next;
@@ -44,11 +46,11 @@ void
 ShipController::ProcessPlayerMovement()
 {
 	Vector3 input;
-	input.x = Input::GetAxis(Axis::Horizontal);
-	input.z = Input::GetAxis(Axis::Vertical);
+	input.x = Input::GetAxis(HORIZONTAL_MOVE);
+	input.z = Input::GetAxis(FORWARD_MOVE);
 
 	// Subtract left trigger because that's control to go down
-	input.y = Input::GetAxis(Axis::RightTrigger) - 0.5f * Input::GetAxis(Axis::LeftTrigger);
+	input.y = Input::GetAxis(UPWARDS_MOVE) - 0.5f * Input::GetAxis(DOWNWARDS_MOVE);
 
 	Vector3 sidewaysAcceleration = m_transform->Right()   * input.x;
 	Vector3 upwardsAcceleration  = m_transform->Up()      * input.y;
@@ -93,8 +95,8 @@ void
 ShipController::ProcessPlayerRotation()
 {
 	Vector2 input;
-	input.x = Input::GetAxis(Axis::HorizontalLook);
-	input.y = Input::GetAxis(Axis::VerticalLook);
+	input.x = Input::GetAxis(HORIZONTAL_LOOK);
+	input.y = Input::GetAxis(VERTICAL_LOOK);
 	
 	m_yaw   += input.x * m_turnSpeed * Time::DeltaTime();
 	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
