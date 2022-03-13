@@ -82,6 +82,10 @@ namespace Next
 			return Vector::Cross(*this, a_other);
 		}
 
+		constexpr static Vector_t<3, TUnderlying> Zero()     { return Vector_t<3, TUnderlying>(0, 0, 0); }
+		
+		constexpr static Vector_t<3, TUnderlying> One()      { return Vector_t<3, TUnderlying>(1, 1, 1); }
+		
 		constexpr static Vector_t<3, TUnderlying> Right()    { return Vector_t<3, TUnderlying>(1, 0, 0); }
 
 		constexpr static Vector_t<3, TUnderlying> Left()     { return Vector_t<3, TUnderlying>(-1, 0, 0); }

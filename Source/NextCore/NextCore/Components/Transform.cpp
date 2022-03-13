@@ -76,6 +76,20 @@ namespace Next
 		return m_rotation;
 	}
 
+	Matrix3
+	Transform::GetRotation() const
+	{
+		if (m_parent == nullptr)
+		{
+			return GetLocalRotation();
+		}
+
+		Matrix4 multResult = Matrix4(m_rotation);
+		multResult         = multResult * m_parent->GetTransformationMatrix();
+
+		return Matrix3(multResult);
+	}
+
 	Vector3
 	Transform::GetLocalRotationEulerAngles() const
 	{
@@ -93,12 +107,12 @@ namespace Next
 	{
 		m_isMatrixDirty = true;
 
-		Matrix4 result = Matrix4::Identity();
+		Matrix3 result = Matrix3::Identity();
 		result *= Matrix::RotateX(-a_rotation.x); // Negate rotation so that +x rotates up, +y right, +z clockwise
 		result *= Matrix::RotateY(-a_rotation.y); // Not sure why these values need to be negated to get the
 		result *= Matrix::RotateZ(-a_rotation.z); // result we want
 
-		return m_rotation = Matrix3(result);
+		return m_rotation = result;
 	}
 
 	Matrix3 const&

@@ -53,6 +53,12 @@ namespace Next
 		 */
 		Matrix3 const&
 		GetLocalRotation() const;
+		
+		/**
+		 * \brief Get the local rotation in this transform's object-space
+		 */
+		Matrix3
+		GetRotation() const;
 
 		/**
 		 * \brief Get the local rotation in this transform's object-space in euler-angles

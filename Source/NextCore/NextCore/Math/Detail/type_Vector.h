@@ -2,6 +2,8 @@
 
 #include "NextCoreCommon.h"
 
+#include "Math/Constants.h"
+
 namespace Next
 {
 	/**
@@ -79,7 +81,21 @@ namespace Next
 		Normalize(Vector_t<Size, TUnderlying> const& a_value)
 		{
 			float magnitude = Magnitude(a_value);
+			if (magnitude == 0)
+			{
+				return a_value;
+			}
 			return a_value / magnitude;
+		}
+		
+		template<int Size, typename TUnderlying>
+		constexpr
+		float
+		Angle(Vector_t<Size, TUnderlying> const& a_lhs, Vector_t<Size, TUnderlying> const& a_rhs)
+		{
+			float cos_theta = Vector::Dot(Normalize(a_lhs), Normalize(a_rhs));
+			
+			return std::acos(cos_theta) * Math::RAD_TO_DEG;
 		}
 	}
 

@@ -76,8 +76,7 @@ namespace Next::Matrix
 	Matrix3
 	Rotate(float a_angle, Vector3 a_axis)
 	{
-		// rename the axis to make cross referencing easier
-		Vector3 u = std::move(a_axis);
+		Vector3 u = Vector::Normalize(a_axis);
 
 		float sin_theta = std::sin(a_angle * Math::DEG_TO_RAD);
 		float cos_theta = std::cos(a_angle * Math::DEG_TO_RAD);
@@ -96,7 +95,7 @@ namespace Next::Matrix
 		
 		result[2][0] = u.x * u.z * one_minus_cos_theta + u.y * sin_theta;
 		result[2][1] = u.y * u.z * one_minus_cos_theta - u.x * sin_theta;
-		result[2][2] = cos_theta * Math::Square(u.z) * one_minus_cos_theta;
+		result[2][2] = cos_theta + Math::Square(u.z) * one_minus_cos_theta;
 		
 		return result;
 	}
