@@ -4,5 +4,5 @@
 #include "Scenes/LevelSelectScene.h"
 #include "Scenes/MenuScene.h"
 
-StartingScene(FlatGroundScene);
-//StartingScene(MenuScene);
+//StartingScene(FlatGroundScene);
+StartingScene(MenuScene);
