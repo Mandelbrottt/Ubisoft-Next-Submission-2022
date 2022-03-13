@@ -45,5 +45,9 @@ namespace Next::SceneManager
 
 	extern
 	bool
+	LoadScene(Reflection::TypeId a_typeId);
+	
+	extern
+	bool
 	LoadScene(std::string_view const& a_typeName);
 }

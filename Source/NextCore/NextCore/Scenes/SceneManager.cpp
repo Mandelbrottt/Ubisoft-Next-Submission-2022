@@ -128,6 +128,19 @@ namespace Next::SceneManager
 	}
 
 	bool
+	LoadScene(Reflection::TypeId a_typeId)
+	{
+		Reflection::Type* type = Reflection::Type::TryGet(a_typeId);
+
+		if (type == nullptr)
+		{
+			return false;
+		}
+
+		return LoadScene(*type);
+	}
+
+	bool
 	LoadScene(std::string_view const& a_typeName)
 	{
 		Reflection::Type* type = Reflection::Type::TryGet(a_typeName);
