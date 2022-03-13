@@ -83,9 +83,6 @@ project(project_name)
             "{COPY} \"" .. build_cfg.source_dir .. "/NextAPI/glut/bin/x64/*.dll\" \"" .. build_cfg.exe_output_dir .. "\"",
         }
 
-    filter "system:windows"
-        systemversion "latest"
-
     filter "configurations:Debug"
         defines  { "NEXT_DEBUG" }
         runtime  "debug"
@@ -113,6 +110,6 @@ project(project_name)
         }
     
         -- Only copy game resources in Release because we use the resources in-place otherwise
-        prebuildcommands {
+        postbuildcommands {
             "{COPY} \"%{wks.location}Resources/\" \"" .. build_cfg.exe_output_dir .. "/Resources/\"",
         }
