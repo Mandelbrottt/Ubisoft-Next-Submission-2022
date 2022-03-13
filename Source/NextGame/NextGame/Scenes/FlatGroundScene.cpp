@@ -41,7 +41,7 @@ FlatGroundScene::OnSceneCreate()
 		}
 	}
 
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();

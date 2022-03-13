@@ -99,30 +99,16 @@ ShipController::ProcessPlayerRotation()
 	input.x = Input::GetAxis(HORIZONTAL_LOOK);
 	input.y = Input::GetAxis(VERTICAL_LOOK);
 	
-	m_pitch += input.y * m_turnSpeed * Time::DeltaTime();
+	m_pitch = input.y * m_turnSpeed * Time::DeltaTime();
 
 	if (!Input::GetButton(ROLL_MODIFIER))
 	{
-		m_yaw += input.x * m_turnSpeed * Time::DeltaTime();
+		m_yaw = input.x * m_turnSpeed * Time::DeltaTime();
 	} else
 	{
-		m_roll += input.x * m_turnSpeed * Time::DeltaTime();
-	}
-
-	// Keep rotation in check
-	if (m_yaw < -360)
-	{
-		m_yaw += 360;
-	}
-
-	if (m_yaw > 360)
-	{
-		m_yaw -= 360;
+		m_roll = input.x * m_turnSpeed * Time::DeltaTime();
 	}
 	
-	//m_pitch = std::clamp(m_pitch, -89.f, 89.f);
-
-	//m_transform->SetLocalRotation({ 0, m_yaw, 0 });
 	if (m_roll != 0)
 	{
 		auto rotation = m_transform->GetLocalRotation();
@@ -144,27 +130,28 @@ ShipController::ProcessPlayerRotation()
 		m_transform->SetRotation(rotation);
 	}
 
-	Vector3 relativeUp = m_transform->Up();
-	Vector3 worldUp = Vector::Normalize(-gravity);
+	// Calculate the amount by which to rotate to stabilize the ship
+	Vector3 relativeRight = m_transform->Right();
+	Vector3 worldUp    = Vector::Normalize(-gravity);
+	Vector3 worldRight = Vector::Cross(worldUp, m_transform->Forward());
 
-	float angle = Vector::Angle(relativeUp, worldUp);
+	float angle = Vector::Angle(relativeRight, worldRight);
 
 	// Don't need to normalize result because Matrix::Rotate normalizes for us
-	Vector3 rotationAxis = Vector::Cross(relativeUp, worldUp);
+	Vector3 rotationAxis = Vector::Cross(relativeRight, worldRight);
 	
-	float factor = 1.f;
+	float factor = 2.f - (m_roll != 0 ? 1.5f : 0);
 
-	if (false && rotationAxis != Vector3::Zero())
+	angle = std::min(angle, 30.f);
+
+	if (rotationAxis != Vector3::Zero())
 	{
 		auto rotation = m_transform->GetLocalRotation();
-		rotation *= Matrix::Rotate(angle * factor * Time::DeltaTime(), rotationAxis);
+		angle = std::min(angle, angle * factor * Time::DeltaTime());
+		rotation *= Matrix::Rotate(angle, rotationAxis);
 		m_transform->SetLocalRotation(rotation);
 	}
 	
-	//m_transform->SetLocalRotation(Matrix::Rotate(m_yaw, m_cameraTransform->Up()));
-	//m_cameraTransform->SetLocalRotation(Matrix::Rotate(m_pitch, m_cameraTransform->Right()));
-	//m_cameraTransform->SetLocalRotation({ m_pitch, 0, 0 });
-
 	m_yaw = m_pitch = m_roll = 0;
 }
 
