@@ -88,7 +88,7 @@ namespace Next::Detail
 		 * \param a_outComponents the vector to populate with component pointers
 		 */
 		void
-		GetAllComponents(std::vector<Component*>* a_outComponents);
+		GetAllComponents(std::vector<Component*>& a_outComponents);
 
 		/**
 		 * \brief Remove and destroy the component owned by the entity with id a_entityId

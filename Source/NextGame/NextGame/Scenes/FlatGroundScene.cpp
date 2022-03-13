@@ -36,10 +36,9 @@ FlatGroundScene::OnSceneCreate()
 	manager->Init(logic, LevelSelectScene::GetStaticType());
 	
 	float size = 20;
-	size *= 4;
 
-	CreateEnvironment(size);
-	CreateObjects(size);
+	CreateEnvironment(size * 10);
+	CreateObjects(size * 6);
 }
 
 void
@@ -69,8 +68,8 @@ FlatGroundScene::CreateEnvironment(float a_size)
 	
 	Model* ground = Model::Create("level/env/grass.obj");
 
-	float numX = 5;
-	float numY = 5;
+	float numX = a_size / 20;
+	float numY = a_size / 20;
 	
 	for (int i = 0; i < numX; i++)
 	{
@@ -84,7 +83,7 @@ FlatGroundScene::CreateEnvironment(float a_size)
 			float y = static_cast<float>(j - numY / 2);
 
 			groundEntity.Transform()->SetLocalPosition(
-				{ a_size / (numX - 1) * x, groundHeight, a_size / (numY - 1) * y }
+				{ a_size / (numX) * x, groundHeight, a_size / (numY) * y }
 			);
 		}
 	}

@@ -74,10 +74,10 @@ namespace Next::Detail
 	}
 
 	void
-	ComponentPool::GetAllComponents(std::vector<Component*>* a_outComponents)
+	ComponentPool::GetAllComponents(std::vector<Component*>& a_outComponents)
 	{
-		a_outComponents->clear();
-		a_outComponents->reserve(m_count);
+		a_outComponents.clear();
+		a_outComponents.reserve(m_count);
 
 		// Check if all of the bytes are zero
 		// This is a naive check, but it should work because all components have a non-zero entity id
@@ -103,7 +103,7 @@ namespace Next::Detail
 			if (!isZeroedOut(componentBytes))
 			{
 				Component* component = std::launder(reinterpret_cast<Component*>(componentBytes));
-				a_outComponents->push_back(component);
+				a_outComponents.push_back(component);
 			}
 		}
 	}

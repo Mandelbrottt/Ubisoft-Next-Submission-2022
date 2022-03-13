@@ -12,6 +12,18 @@ namespace Next::Detail
 
 		m_activeEntities = {};
 		m_entityInfos = {};
+
+		std::vector<Component*> components;
+		
+		for (auto& [typeId, poolInfo] : m_componentPoolInfos)
+		{	
+			poolInfo.pool.GetAllComponents(components);
+
+			for (auto component : components)
+			{
+				component->OnDestroy();
+			}
+		}
 		
 		m_componentPoolInfos = {};
 	}
@@ -351,7 +363,7 @@ namespace Next::Detail
 			auto containingTypeId = field->containingTypeId;
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
-			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
+			containingPoolInfo.pool.GetAllComponents(g_componentsList);
 			
 			// Iterate through all of the components and store the entityId of their references
 			for (auto* containingComponent : g_componentsList)
@@ -403,7 +415,7 @@ namespace Next::Detail
 			auto containingTypeId = field->containingTypeId;
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
-			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
+			containingPoolInfo.pool.GetAllComponents(g_componentsList);
 
 			// Iterate through all of the components and store the entityId of their references
 			for (auto* containingComponent : g_componentsList)
@@ -462,7 +474,7 @@ namespace Next::Detail
 			auto containingTypeId = field->containingTypeId;
 			auto& containingPoolInfo = m_componentPoolInfos.at(containingTypeId);
 
-			containingPoolInfo.pool.GetAllComponents(&g_componentsList);
+			containingPoolInfo.pool.GetAllComponents(g_componentsList);
 			
 			// Re-iterate through all of the components and reconstruct their references
 			for (auto* containingComponent : g_componentsList)
