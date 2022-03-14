@@ -1,11 +1,6 @@
 #include <Application/Init.h>
 
-#include "Scenes/FlatGroundScene.h"
-#include "Scenes/LevelSelectScene.h"
 #include "Scenes/MenuScene.h"
-#include "Scenes/SinglePlanetScene.h"
 
-//StartingScene(MenuScene);
-StartingScene(LevelSelectScene);
-//StartingScene(FlatGroundScene);
-//StartingScene(SinglePlanetScene);
+// Start in the menu scene
+StartingScene(MenuScene);
