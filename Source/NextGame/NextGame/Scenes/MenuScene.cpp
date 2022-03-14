@@ -17,5 +17,6 @@ MenuScene::OnSceneCreate()
 	entity.AddComponent<MenuLogic>();
 	entity.AddComponent<MenuText>();
 
+	// If the player is booted back to the main menu, reset persistent data
 	PlayerPersistentData::ResetData();
 }

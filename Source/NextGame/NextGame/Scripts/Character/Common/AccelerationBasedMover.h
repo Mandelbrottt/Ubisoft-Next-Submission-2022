@@ -19,6 +19,7 @@ public:
 	void
 	ApplyAcceleration(Next::Vector3 a_acceleration);
 
+	// Apply the velocity to this component's position
 	void
 	Move();
 

@@ -27,6 +27,8 @@ PlayerFuelController::SetFuel(float a_fuel)
 void
 PlayerFuelController::ConsumeFuelPickup(FuelPickup* a_pickup)
 {
+	// Add the pickup's fuel to our total and destroy it
+	
 	if (!a_pickup)
 	{
 		return;
@@ -40,6 +42,8 @@ PlayerFuelController::ConsumeFuelPickup(FuelPickup* a_pickup)
 void
 PlayerFuelController::ProcessFuelUsage(Vector3 a_input)
 {
+	// Reduce our own fuel based on our inputs
+	
 	float mag = a_input.Magnitude();
 
 	float fuelConsumption = mag * m_fuelUsageRate;

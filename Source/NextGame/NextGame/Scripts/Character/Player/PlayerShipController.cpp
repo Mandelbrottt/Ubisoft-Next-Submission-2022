@@ -90,6 +90,7 @@ PlayerShipController::ProcessPlayerMovement()
 
 	Vector3 acceleration = Vector3(0);
 
+	// If the player has fuel, accelerate relative to ship orientation
 	if (m_playerFuelController->HasFuel() && m_playerHealth->GetHealth() > 0)
 	{
 		Vector3 sidewaysAcceleration = m_transform->Right() * input.x;
@@ -105,7 +106,6 @@ PlayerShipController::ProcessPlayerMovement()
 	}
 	
 	acceleration *= m_accelerationForce;
-
 	acceleration += m_gravity;
 
 	m_accelMover->ApplyAcceleration(acceleration);
@@ -134,6 +134,7 @@ PlayerShipController::ProcessPlayerRotation()
 		m_roll = input.x * m_turnSpeed * Time::DeltaTime();
 	}
 
+	// Compute the ship's rotation
 	if (m_roll != 0)
 	{
 		auto rotation = m_transform->GetLocalRotation();
@@ -155,6 +156,7 @@ PlayerShipController::ProcessPlayerRotation()
 		m_transform->SetRotation(rotation);
 	}
 
+	// Reorient the ship so that it's roll is in line with the planet it's on 
 	if (Vector::MagnitudeSquared(m_gravity) > Math::Square(5))
 	{
 		// Calculate the amount by which to rotate to stabilize the ship
@@ -186,6 +188,7 @@ PlayerShipController::ProcessPlayerRotation()
 void
 PlayerShipController::ProcessPlayerAttack()
 {
+	// Only attack every so often
 	if (m_attackTimer < m_attackCooldown)
 	{
 		m_attackTimer += Time::DeltaTime();
@@ -194,11 +197,13 @@ PlayerShipController::ProcessPlayerAttack()
 
 	bool input = Input::GetButton(GamepadButton::RightBumper);
 
+	// Shoot the projectile
 	if (input)
 	{
 		auto direction = m_cameraTransform->Forward();
 		auto position  = m_cameraTransform->GetPosition();
 
+		// Spawn the projectile slightly in front of the player
 		m_projectileSpawner->SpawnProjectile(position + direction, direction);
 		m_attackTimer = 0;
 	}
@@ -222,6 +227,7 @@ PlayerShipController::ProcessTractorBeam()
 
 		auto position = m_transform->GetPosition();
 
+		// Move all pickups withing range towards the ship
 		for (auto pickup : fuelPickups)
 		{
 			auto pickupPos        = pickup->Transform()->GetPosition();
@@ -241,6 +247,7 @@ PlayerShipController::ProcessTractorBeam()
 		}
 	}
 
+	// Stop attempting to pick up all objects
 	if (Input::GetButtonUp(TRACTOR_BEAM))
 	{
 		m_tractorBeamModelRenderer->SetActive(false);

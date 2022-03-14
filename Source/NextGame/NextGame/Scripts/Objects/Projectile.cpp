@@ -47,6 +47,7 @@ Projectile::OnUpdate()
 
 	transform->SetPosition(position);
 
+	// Destroy the projectile if it's lifespan is up
 	m_timer += Time::DeltaTime();
 	if (m_timer > m_lifespan)
 	{
@@ -57,6 +58,7 @@ Projectile::OnUpdate()
 void
 Projectile::OnTriggerCollisionStart(Collider* a_other)
 {
+	// Destroy the projectile if it hits a planet
 	if (a_other->GetComponent<CollidableSphereTag>())
 	{
 		GetEntity().Destroy();
@@ -65,7 +67,8 @@ Projectile::OnTriggerCollisionStart(Collider* a_other)
 	
 	using Reflection::TypeId;
 	TypeId typeToCheckFor;
-	
+
+	// Only check for the type of the opposing team
 	if (m_isFromEnemy)
 	{
 		typeToCheckFor = Reflection::GetTypeId<PlayerShip>();
@@ -80,6 +83,7 @@ Projectile::OnTriggerCollisionStart(Collider* a_other)
 		return;
 	}
 
+	// Try to deal damage
 	auto health = otherComponent->GetComponent<Health>();
 	if (!health)
 	{

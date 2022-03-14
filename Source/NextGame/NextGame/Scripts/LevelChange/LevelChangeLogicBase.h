@@ -10,9 +10,4 @@ public:
 	virtual
 	bool
 	ShouldChangeLevel() = 0;
-	
-private:
-	//ReflectMembers(
-	//	ReflectField()
-	//)
 };

@@ -30,7 +30,8 @@ SinglePlanetScene::OnSceneCreate()
 	PlayerShip::GetPlayerControllerEntity().Transform()->SetLocalRotation({ -70, 0, 0 });
 
 	float planetRadius = 50;
-
+	
+	// Add the logic for switching back to the level select scene
 	Entity levelChange     = Entity::Create("LevelChangeLogicManager");
 	auto   logic           = levelChange.AddComponent<DistanceLevelChangeLogic>();
 	logic->distanceToLeave = planetRadius * 5;
@@ -55,6 +56,7 @@ SinglePlanetScene::CreateEnvironment(float a_radius)
 	light->ambientColor = { 0.5f, 0.5f, 0.5f };
 	light->diffuseColor = { 4, 5, 4 };
 
+	// Create the main planet the user will be interacting with
 	{
 		Entity copper = Entity::Create("Copper");
 
@@ -104,6 +106,7 @@ SinglePlanetScene::CreateObjects(float a_radius)
 {
 	float r = a_radius + 0.5f;
 
+	// Generate fuel pickups at random points on the planet
 	for (int i = 0; i < 15; i++)
 	{
 		float polar = Random::Value() * 2 * Math::PI;
@@ -119,6 +122,7 @@ SinglePlanetScene::CreateObjects(float a_radius)
 		fuelEntity.Transform()->SetPosition({ x, y, z });
 	}
 
+	// Generate turrets at random points on the planet
 	for (int i = 0; i < 16; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));

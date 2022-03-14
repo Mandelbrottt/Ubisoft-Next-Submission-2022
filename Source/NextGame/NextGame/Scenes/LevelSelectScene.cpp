@@ -21,12 +21,11 @@ LevelSelectScene::OnSceneCreate()
 		PlayerPersistentData::ResetData();
 	}
 	
-	//SceneManager::LoadScene<FlatGroundScene>();
-	
 	Entity playerEntity = Entity::Create("Player");
 	playerEntity.AddComponent<PlayerShip>();
 	playerEntity.Transform()->SetPosition({ 0, 0, 0 });
 
+	// Create the planets that transport the player to the different levels
 	{
 		Entity earth = Entity::Create("Earth");
 		auto earthPlanet = earth.AddComponent<PlanetLevelSelector>();

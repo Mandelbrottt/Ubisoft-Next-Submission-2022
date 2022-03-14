@@ -15,9 +15,4 @@ public:
 
 	void
 	CreateObjects(float a_radius);
-
-private:
-	//ReflectMembers(
-	//	ReflectField()
-	//)
 };

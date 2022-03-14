@@ -14,8 +14,7 @@ FuelPickup::OnCreate()
 	modelRenderer->model = Model::Create("objects/fuel.obj");
 
 	auto transform = Transform();
-
-	//transform->SetLocalPosition({ 0, 1, 0 });
+	
 	transform->SetLocalScale({ 0.5f, 0.5f, 0.5f });
 
 	auto collider    = modelRenderer->AddComponent<SphereCollider>();

@@ -42,6 +42,7 @@ TurretFireController::OnUpdate()
 void
 TurretFireController::AimTurret()
 {
+	// Rotate around the local y axis to face the player
 	auto predictedPosition = 
 		m_playerTransform->GetPosition() + m_shipController->GetVelocity() * CalculatePredictiveFireCoefficient();
 
@@ -62,6 +63,7 @@ TurretFireController::AimTurret()
 void
 TurretFireController::TryFireTurret()
 {
+	// Only fire every few seconds
 	if (m_fireTimer < m_fireCooldown)
 	{
 		m_fireTimer += Time::DeltaTime();

@@ -36,6 +36,7 @@ PlanetLevelSelector::Init(
 void
 PlanetLevelSelector::OnTriggerCollisionStart(Collider* a_other)
 {
+	// If the player ship collides with us, load the scene
 	if (a_other->GetEntity() != PlayerShip::GetPlayerShipEntity())
 	{
 		return;

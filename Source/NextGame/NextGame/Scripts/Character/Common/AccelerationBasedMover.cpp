@@ -23,6 +23,7 @@ AccelerationBasedMover::ApplyAcceleration(Vector3 a_acceleration)
 void
 AccelerationBasedMover::Move()
 {
+	// Clamp top speed
 	m_velocity.x = std::clamp(m_velocity.x, -m_clamp.x, m_clamp.x);
 	m_velocity.y = std::clamp(m_velocity.y, -m_clamp.y, m_clamp.y);
 	m_velocity.z = std::clamp(m_velocity.z, -m_clamp.z, m_clamp.z);
@@ -31,6 +32,7 @@ AccelerationBasedMover::Move()
 
 	position += m_velocity * Time::DeltaTime();
 
+	// Special interaction if the player is on a flat planet
 	if (PlayerShipController::flatPlanet)
 	{
 		auto min_y = PlayerShipController::min_y;

@@ -24,7 +24,8 @@ GravityCalculator::CalculateGravity(bool a_flatPlanet) const
 		gravity = Vector3::Down() * 9.81f;
 		return gravity;
 	}
-	
+
+	// If there's no planets, no gravity
 	Entity::GetAllComponents(gravitySources);
 	if (gravitySources.empty())
 	{
@@ -33,6 +34,7 @@ GravityCalculator::CalculateGravity(bool a_flatPlanet) const
 
 	auto position = m_transform->GetPosition();
 
+	// Apply gravity from all of the planets
 	for (auto source : gravitySources)
 	{
 		Vector3 fromThisToSource = source->Transform()->GetPosition() - position;

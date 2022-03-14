@@ -29,6 +29,7 @@ MultiPlanetScene::OnSceneCreate()
 	PlayerShip::GetPlayerControllerEntity().Transform()->SetPosition({ 0, 100, 0 });
 	PlayerShip::GetPlayerControllerEntity().Transform()->SetLocalRotation({ -70, 0, 0 });
 	
+	// Add the logic for switching back to the level select scene
 	Entity levelChange     = Entity::Create("LevelChangeLogicManager");
 	auto   logic           = levelChange.AddComponent<DistanceLevelChangeLogic>();
 	logic->distanceToLeave = 300;
@@ -79,6 +80,8 @@ MultiPlanetScene::CreatePlanet(
 	float a_numPickups
 )
 {
+	// Create a planet that sucks in the player and collides with them
+	
 	Entity planet = Entity::Create("Planet");
 
 	auto renderer   = planet.AddComponent<ModelRenderer>();

@@ -8,9 +8,4 @@ class LevelSelectScene : public Next::Scene
 
 public:
 	void OnSceneCreate() override;
-
-private:
-	//ReflectMembers(
-	//	ReflectField()
-	//)
 };
