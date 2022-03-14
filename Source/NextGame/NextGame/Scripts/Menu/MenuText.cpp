@@ -5,7 +5,7 @@ ReflectRegister(MenuText);
 void
 MenuText::OnCreate()
 {
-	m_titleText = "Gravitar 2: Electric Boogaloo";
+	m_titleText = "Planetar";
 	m_startText = "Press A to Start";
 }
 

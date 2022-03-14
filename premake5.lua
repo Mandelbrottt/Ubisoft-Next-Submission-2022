@@ -1,7 +1,7 @@
 -- Config
 user_cfg = {
     -- Application settings
-    app_name = "NextGame",
+    app_name = "Planetar",
     exe_dir  = "Executable/",
     
     -- Project settings
