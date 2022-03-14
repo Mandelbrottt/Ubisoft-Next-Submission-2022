@@ -31,6 +31,23 @@ AccelerationBasedMover::Move()
 
 	position += m_velocity * Time::DeltaTime();
 
+	if (PlayerShipController::flatPlanet)
+	{
+		auto min_y = PlayerShipController::min_y;
+                                                       
+		if (position.y < min_y)                               
+		{                                                     
+		    position.y = min_y;
+			auto health = GetComponent<Health>();
+			if (health && Math::Square(m_velocity.y) > Math::Square(10))
+			{
+				health->SubtractHealth();
+			}
+			
+		    m_velocity.y = -m_velocity.y * 0.2f;              
+		}                                                     
+	}
+
 	Transform()->SetPosition(position);
 }
 
@@ -48,6 +65,12 @@ AccelerationBasedMover::OnTriggerCollisionStart(Collider* a_other)
 	auto planetPosition = a_other->Transform()->GetPosition();
 
 	Vector3 planetToThis = position - planetPosition;
+
+	auto health = GetComponent<Health>();
+	if (health && m_velocity.MagnitudeSquared() > Math::Square(10))
+	{
+		health->SubtractHealth();
+	}
 	
 	planetToThis.Normalize();
 	

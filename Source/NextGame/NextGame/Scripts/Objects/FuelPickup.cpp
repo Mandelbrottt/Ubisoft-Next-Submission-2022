@@ -12,14 +12,16 @@ FuelPickup::OnCreate()
 {
 	auto modelRenderer   = AddComponent<ModelRenderer>();
 	modelRenderer->model = Model::Create("objects/fuel.obj");
-	
+
 	auto transform = Transform();
 
 	//transform->SetLocalPosition({ 0, 1, 0 });
 	transform->SetLocalScale({ 0.5f, 0.5f, 0.5f });
 
-	auto collider = modelRenderer->AddComponent<SphereCollider>();
+	auto collider    = modelRenderer->AddComponent<SphereCollider>();
 	collider->radius = 1;
+
+	AddComponent<AccelerationBasedMover>();
 
 	// TEMPORARY:
 	m_localGravity = Vector3::Down() * 9.81f;
@@ -34,27 +36,21 @@ FuelPickup::OnUpdate()
 {
 	m_localGravity = m_gravityCalculator->CalculateGravity(PlayerShipController::flatPlanet);
 
-	auto position = Transform()->GetPosition();
-	
 	if (m_accelerationTarget)
 	{
+		auto    position  = Transform()->GetPosition();
 		Vector3 direction = m_accelerationTarget->GetPosition() - position;
 		direction.Normalize();
 
 		m_velocity = direction * 15.f;
+
+		Transform()->SetPosition(position + m_velocity * Time::DeltaTime());
 	} else
 	{
-		Vector3 acceleration = m_localGravity + -m_velocity * 5.f;
-		m_velocity += acceleration * Time::DeltaTime();
+		auto mover = GetComponent<AccelerationBasedMover>();
+		mover->ApplyAcceleration(m_localGravity + -m_velocity * 5.f);
+		mover->Move();
 	}
-
-	position += m_velocity * Time::DeltaTime();
-	if (position.y < PlayerShipController::min_y)
-	{
-		m_velocity.y = 0;
-		position.y = PlayerShipController::min_y;
-	}
-	Transform()->SetPosition(position);
 }
 
 float

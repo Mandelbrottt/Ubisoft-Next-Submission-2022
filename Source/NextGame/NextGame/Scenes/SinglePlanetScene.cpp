@@ -37,7 +37,6 @@ SinglePlanetScene::OnSceneCreate()
 	manager->Init(logic, LevelSelectScene::GetStaticType());
 	
 	PlayerShipController::flatPlanet = false;
-	PlayerShipController::min_y = planetRadius + 1;
 
 	CreateEnvironment(planetRadius);
 
