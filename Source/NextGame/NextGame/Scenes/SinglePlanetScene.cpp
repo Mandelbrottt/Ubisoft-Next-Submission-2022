@@ -6,6 +6,7 @@
 #include "Scripts/Character/Player/PlayerShipController.h"
 #include "Scripts/LevelChange/DistanceLevelChangeLogic.h"
 #include "Scripts/LevelChange/LevelChangeManager.h"
+#include "Scripts/Objects/CollidableSphereTag.h"
 #include "Scripts/Objects/GravitySource.h"
 #include "Scripts/Objects/SpinInPlace.h"
 
@@ -62,6 +63,11 @@ SinglePlanetScene::CreateEnvironment(float a_radius)
 
 		auto gravitySource = copper.AddComponent<GravitySource>();
 		gravitySource->gravityStrength = 9.81f * a_radius;
+
+		auto collider = copper.AddComponent<SphereCollider>();
+		collider->radius = a_radius;
+		
+		copper.AddComponent<CollidableSphereTag>();
 	}
 	
 	// For performance reasons

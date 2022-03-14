@@ -20,7 +20,7 @@ public:
 private:
 	Next::Transform* m_playerTransform = nullptr;
 	
-	//ReflectMembers(
-	//	ReflectField()
-	//)
+	ReflectMembers(
+		ReflectField(m_playerTransform)
+	)
 };

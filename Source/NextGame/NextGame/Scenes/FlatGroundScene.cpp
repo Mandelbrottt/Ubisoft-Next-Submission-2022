@@ -37,8 +37,16 @@ FlatGroundScene::OnSceneCreate()
 	
 	float size = 20;
 
-	CreateEnvironment(size * 10);
-	CreateObjects(size * 6);
+	float envSize = size * 10;
+	float objSize = size * 6;
+
+	#if !defined(NEXT_RELEASE)
+	envSize = size * 5;
+	objSize = size * 3;
+	#endif
+	
+	CreateEnvironment(envSize);
+	CreateObjects(objSize);
 }
 
 void

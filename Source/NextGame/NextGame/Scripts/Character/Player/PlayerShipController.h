@@ -5,6 +5,8 @@
 #include "PlayerShip.h"
 #include "TractorBeamBehaviour.h"
 
+#include "Scripts/Character/Common/AccelerationBasedMover.h"
+#include "Scripts/Character/Common/GravityCalculator.h"
 #include "Scripts/Objects/ProjectileSpawner.h"
 
 class PlayerShipController : public Next::Behaviour
@@ -39,25 +41,24 @@ private:
 	
 	void
 	ProcessTractorBeam();
-
-	void
-	CalculateGravity();
-
+	
 public:
 	static bool          flatPlanet;
 	static float         min_y;
 
 private:
-	PlayerShip*        m_playerShip;
-	Next::Transform*   m_transform         = nullptr;
-	Next::Transform*   m_cameraTransform   = nullptr;
-
-	Health*               m_playerHealth = nullptr;
-	PlayerFuelController* m_playerFuelController     = nullptr;
-	ProjectileSpawner*    m_projectileSpawner        = nullptr;
-	TractorBeamBehaviour* m_tractorBeam              = nullptr;
+	PlayerShip*           m_playerShip;
+	Next::Transform*      m_transform         = nullptr;
+	Next::Transform*      m_cameraTransform   = nullptr;
 	Next::ModelRenderer*  m_tractorBeamModelRenderer = nullptr;
 
+	Health*                 m_playerHealth         = nullptr;
+	PlayerFuelController*   m_playerFuelController = nullptr;
+	ProjectileSpawner*      m_projectileSpawner    = nullptr;
+	TractorBeamBehaviour*   m_tractorBeam          = nullptr;
+	GravityCalculator*      m_gravityCalculator    = nullptr;
+	AccelerationBasedMover* m_accelMover           = nullptr;
+	
 	Next::Vector3 m_velocity = { 0, 0, 0 };
 
 	Next::Vector3 m_topSpeed;
@@ -75,12 +76,17 @@ private:
 	float m_tractorBeamRange;
 
 	ReflectMembers(
+		ReflectField(m_playerShip)
 		ReflectField(m_transform)
 		ReflectField(m_cameraTransform)
+		ReflectField(m_tractorBeamModelRenderer)
 		
+		ReflectField(m_playerHealth)
+		ReflectField(m_playerFuelController)
 		ReflectField(m_projectileSpawner)
 		ReflectField(m_tractorBeam)
-		ReflectField(m_tractorBeamModelRenderer)
+		ReflectField(m_gravityCalculator)
+		ReflectField(m_accelMover)
 
 		ReflectField(m_topSpeed)
 		ReflectField(m_accelerationForce)

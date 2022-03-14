@@ -26,14 +26,16 @@ PlayerShip::OnCreate()
 {
 	s_thisEntity = GetEntity();
 
-	s_shipControllerEntity = Entity::Create("ShipController");
+	s_shipControllerEntity = GetEntity();
+	//s_shipControllerEntity = Entity::Create("ShipController");
 	s_shipControllerEntity.AddComponent<PlayerShipController>();
-
+	
 	// Become a child of the ShipController because we're just along for the ride, it controls everything
-	Transform()->SetParent(s_shipControllerEntity.Transform());
+	//Transform()->SetParent(s_shipControllerEntity.Transform());
 
 	Entity cameraEntity = Entity::Create("Camera");
 	cameraEntity.Transform()->SetParent(Transform());
+	cameraEntity.Transform()->SetLocalPosition({ 0, 1, 0 });
 	
 	auto camera = cameraEntity.AddComponent<Camera>();
 	camera->SetFov(100, FovType::Horizontal);
@@ -90,7 +92,7 @@ PlayerShip::OnDestroy()
 void
 PlayerShip::OnFirstUpdate()
 {
-	Transform()->SetLocalPosition({ 0, 1, 0 });
+	//Transform()->SetLocalPosition({ 0, 1, 0 });
 }
 
 void

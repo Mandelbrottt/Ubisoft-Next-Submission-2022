@@ -17,6 +17,9 @@ PlayerShipController::OnCreate()
 {
 	m_transform = Transform();
 
+	m_gravityCalculator = AddComponent<GravityCalculator>();
+	m_accelMover        = AddComponent<AccelerationBasedMover>();
+
 	m_projectileSpawner                  = AddComponent<ProjectileSpawner>();
 	m_projectileSpawner->isEnemyOwned    = false;
 	m_projectileSpawner->projectileSpeed = 60;
@@ -51,7 +54,9 @@ PlayerShipController::OnUpdate()
 {
 	auto cachedPosition = m_transform->GetPosition();
 	auto cachedRotation = m_transform->GetLocalRotation();
-
+	
+	m_gravity = m_gravityCalculator->CalculateGravity(flatPlanet);
+	
 	// We handle non-input movement in here so dont if-guard. TODO: Move non-input movement out of this function
 	ProcessPlayerMovement();
 
@@ -63,9 +68,7 @@ PlayerShipController::OnUpdate()
 
 		ProcessTractorBeam();
 	}
-
-	CalculateGravity();
-
+	
 	// Sometimes the values are nan and i don't know why, just pretend it didnt happen
 	auto right = m_transform->Right();
 	if (isnan(right.x) || isnan(right.y) || isnan(right.z))
@@ -100,57 +103,17 @@ PlayerShipController::ProcessPlayerMovement()
 			acceleration.Normalize();
 		}
 	}
-
+	
 	acceleration *= m_accelerationForce;
 
 	acceleration += m_gravity;
 
-	float deltaTime = Time::DeltaTime();
+	m_accelMover->ApplyAcceleration(acceleration);
+	
+	m_accelMover->SetClamp(m_topSpeed);
 
-	m_velocity += acceleration * deltaTime;
-
-	m_velocity.x = std::clamp(m_velocity.x, -m_topSpeed.x, m_topSpeed.x);
-	m_velocity.y = std::clamp(m_velocity.y, -m_topSpeed.y, m_topSpeed.y);
-	m_velocity.z = std::clamp(m_velocity.z, -m_topSpeed.z, m_topSpeed.z);
-
-	auto position = m_transform->GetPosition();
-
-	position += m_velocity * deltaTime;
-
-	if (m_gravity != Vector3::Zero())
-	{
-		Vector3 planetToThis = position - Vector3::Zero();
-
-		float dist = Vector::MagnitudeSquared(planetToThis);
-
-		if (flatPlanet)
-		{
-			if (position.y < min_y)
-			{
-				position.y = min_y;
-				if (Math::Square(m_velocity.y) > Math::Square(10))
-				{
-					m_playerHealth->SubtractHealth();
-				}
-
-				m_velocity.y = -m_velocity.y * 0.2f;
-			}
-		} else if (dist < Math::Square(min_y))
-		{
-			planetToThis.Normalize();
-
-			position = planetToThis * min_y;
-			if (m_velocity.Dot(-planetToThis) > 10)
-			{
-				m_playerHealth->SubtractHealth();
-			}
-
-			m_velocity = -m_velocity * 0.2f;
-		}
-	}
-
-	m_transform->SetPosition(position);
-
+	m_accelMover->Move();
+	
 	m_playerFuelController->ProcessFuelUsage(input);
 }
 
@@ -287,42 +250,6 @@ PlayerShipController::ProcessTractorBeam()
 		for (auto pickup : fuelPickups)
 		{
 			pickup->SetAccelerationTarget(nullptr);
-		}
-	}
-}
-
-void
-PlayerShipController::CalculateGravity()
-{
-	static std::vector<GravitySource*> gravitySources;
-
-	m_gravity = Vector3::Zero();
-	
-	if (flatPlanet)
-	{
-		m_gravity = Vector3::Down() * 9.81f;
-		return;
-	}
-	
-	Entity::GetAllComponents(gravitySources);
-	if (gravitySources.empty())
-	{
-		return;
-	}
-
-	auto position = m_transform->GetPosition();
-
-	for (auto source : gravitySources)
-	{
-		Vector3 fromThisToSource = source->Transform()->GetPosition() - position;
-
-		float dist = fromThisToSource.Magnitude();
-
-		float strength = source->gravityStrength / dist;
-
-		if (strength > 0.1f)
-		{
-			m_gravity += Vector::Normalize(fromThisToSource) * strength;
 		}
 	}
 }

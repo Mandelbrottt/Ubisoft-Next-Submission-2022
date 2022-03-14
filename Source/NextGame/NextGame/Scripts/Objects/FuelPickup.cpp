@@ -12,7 +12,7 @@ FuelPickup::OnCreate()
 {
 	auto modelRenderer   = AddComponent<ModelRenderer>();
 	modelRenderer->model = Model::Create("objects/fuel.obj");
-
+	
 	auto transform = Transform();
 
 	//transform->SetLocalPosition({ 0, 1, 0 });
@@ -25,11 +25,15 @@ FuelPickup::OnCreate()
 	m_localGravity = Vector3::Down() * 9.81f;
 
 	m_fuelAmount = Random::Value() * 10 + 5;
+
+	m_gravityCalculator = AddComponent<GravityCalculator>();
 }
 
 void
 FuelPickup::OnUpdate()
 {
+	m_localGravity = m_gravityCalculator->CalculateGravity(PlayerShipController::flatPlanet);
+
 	auto position = Transform()->GetPosition();
 	
 	if (m_accelerationTarget)
