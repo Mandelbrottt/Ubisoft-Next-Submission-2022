@@ -33,8 +33,4 @@ private:
 	Next::Vector3 m_velocity = Next::Vector3(0);
 	
 	Next::Vector3 m_clamp   = Next::Vector3::Zero();
-
-	//ReflectMembers(
-	//	ReflectField()
-	//)
 };
