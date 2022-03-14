@@ -119,10 +119,11 @@ SinglePlanetScene::CreateObjects(float a_radius)
 		fuelEntity.Transform()->SetPosition({ x, y, z });
 	}
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 30; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
+		turretEntity.GetComponent<Health>()->SetHealth(3);
 
 		float polar = Random::Value() * 2 * Math::PI;
 		float alpha = Random::Value() * Math::PI - Math::PI / 2;

@@ -71,7 +71,7 @@ TurretFireController::TryFireTurret()
 	// Between 1 and 3 seconds
 	m_fireCooldown = Random::Value() * 2 + 1;
 
-	auto position = Transform()->GetPosition() + Vector3::Up();
+	auto position = Transform()->GetPosition() + Transform()->Up();
 
 	m_projectileSpawner->SpawnProjectile(position, m_aimDirection);
 

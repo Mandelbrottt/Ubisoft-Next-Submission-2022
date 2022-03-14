@@ -22,6 +22,9 @@ Projectile::Init(Vector3 a_direction, float a_speed, float a_lifespan, bool a_is
 
 	auto collider = AddComponent<SphereCollider>();
 	collider->radius = 1;
+
+	auto audioSource = AddComponent<AudioSource>();
+	audioSource->audioClip = AudioClip::Create("Test.wav");
 }
 
 void
@@ -86,4 +89,6 @@ Projectile::OnTriggerCollisionStart(Collider* a_other)
 	health->SubtractHealth();
 
 	GetEntity().Destroy();
+	
+	GetComponent<AudioSource>()->Play();
 }
