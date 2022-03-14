@@ -22,13 +22,12 @@ FuelPickup::OnCreate()
 	collider->radius = 1;
 
 	AddComponent<AccelerationBasedMover>();
-
-	// TEMPORARY:
-	m_localGravity = Vector3::Down() * 9.81f;
-
+	
 	m_fuelAmount = Random::Value() * 10 + 5;
 
 	m_gravityCalculator = AddComponent<GravityCalculator>();
+
+	m_transform = Transform();
 }
 
 void
@@ -50,6 +49,22 @@ FuelPickup::OnUpdate()
 		auto mover = GetComponent<AccelerationBasedMover>();
 		mover->ApplyAcceleration(m_localGravity + -m_velocity * 5.f);
 		mover->Move();
+	}
+
+	// Calculate the amount by which to rotate to stabilize the ship
+	Vector3 relativeUp    = m_transform->Up();
+	Vector3 worldUp       = Vector::Normalize(-m_localGravity);
+
+	float angle = Vector::Angle(relativeUp, worldUp);
+
+	// Don't need to normalize result because Matrix::Rotate normalizes for us
+	Vector3 rotationAxis = Vector::Cross(relativeUp, worldUp);
+	
+	if (rotationAxis != Vector3::Zero())
+	{
+		auto rotation = m_transform->GetLocalRotation();
+		rotation *= Matrix::Rotate(angle, rotationAxis);
+		m_transform->SetLocalRotation(rotation);
 	}
 }
 

@@ -30,6 +30,8 @@ private:
 	CalculatePredictiveFireCoefficient();
 
 private:
+	Next::Vector3 m_startingUp;
+
 	Next::Transform* m_playerTransform;
 	ProjectileSpawner* m_projectileSpawner;
 

@@ -28,6 +28,7 @@ public:
 	OnTriggerCollisionStart(Next::Collider* a_other) override;
 
 private:
+	Next::Transform*   m_transform          = nullptr;
 	Next::Transform*   m_accelerationTarget = nullptr;
 	GravityCalculator* m_gravityCalculator  = nullptr;
 	
@@ -37,6 +38,7 @@ private:
 	float m_fuelAmount = 0;
 	
 	ReflectMembers(
+		ReflectField(m_transform)
 		ReflectField(m_accelerationTarget)
 		ReflectField(m_gravityCalculator)
 	)

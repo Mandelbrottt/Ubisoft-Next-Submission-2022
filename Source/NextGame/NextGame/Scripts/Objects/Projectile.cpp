@@ -2,6 +2,8 @@
 
 #include <Components/Colliders/SphereCollider.h>
 
+#include "CollidableSphereTag.h"
+
 #include "Scripts/Character/Common/Health.h"
 #include "Scripts/Character/Enemy/TurretFireController.h"
 #include "Scripts/Character/Player/PlayerShip.h"
@@ -52,6 +54,12 @@ Projectile::OnUpdate()
 void
 Projectile::OnTriggerCollisionStart(Collider* a_other)
 {
+	if (a_other->GetComponent<CollidableSphereTag>())
+	{
+		GetEntity().Destroy();
+		return;
+	}
+	
 	using Reflection::TypeId;
 	TypeId typeToCheckFor;
 	

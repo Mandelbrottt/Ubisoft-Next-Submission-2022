@@ -28,6 +28,8 @@ TurretFireController::OnFirstUpdate()
 {
 	m_playerTransform = PlayerShip::GetPlayerShipEntity().Transform();
 	m_shipController = PlayerShip::GetPlayerControllerEntity().GetComponent<PlayerShipController>();
+
+	m_startingUp = Transform()->Up();
 }
 
 void
@@ -46,9 +48,15 @@ TurretFireController::AimTurret()
 	m_aimDirection = predictedPosition - Transform()->GetPosition();
 	m_aimDirection.Normalize();
 
-	float angle = Math::Atan2(m_aimDirection.z, m_aimDirection.x);
-
-	Transform()->SetLocalRotation({ 0, angle + 180, 0 });
+	auto rotation = Matrix3(Matrix::LookAt(Vector3::Zero(), m_aimDirection, m_startingUp));
+	Vector3 relativeUp = rotation[1];
+	
+	auto cross = Vector::Cross(relativeUp, m_startingUp);
+	auto angle = Vector::Angle(relativeUp, m_startingUp);
+	
+	rotation *= Matrix::Rotate(angle, cross);
+	
+	Transform()->SetLocalRotation(rotation);
 }
 
 void
