@@ -13,14 +13,20 @@ Below is the list of NextCore's major features, from user-facing features you'll
   - [3D Renderer](#3d-renderer)
   - [Reflection](#reflection)
   - [Reference Tracking](#reference-tracking)
+  - [Scene System](#scene-system)
 - [Major Backend Systems](#major-backend-systems)
   - [Entity Registry and Component Pools](#entity-registry-and-component-pools)
-  - [Renderer](#renderer)
   - [Tests](#tests)
 
 ## Major Client features
 
 ### Entity Component System
+
+#### Summary  <!-- omit in toc -->
+
+NextCore has an "Entity component system" based on composition and object oriented classes. Users author components that add behaviours, that are then attached to entities in the game world.
+
+----
 
 [Back to Top](#table-of-contents----omit-in-toc)
 While NextCore doesn't strictly feature an entity component system with true separation between data and behaviour, NextCore takes a more object-oriented approach to the ECS problem. NextCore makes heavy use of composition in its design, akin to an ECS where the components and the systems are effectively the same thing. So NextCore uses more of an EC.
@@ -45,7 +51,11 @@ Note: In this documentation, we will be referring to all "Behaviours" as "Compon
 
 class SimpleFpsCamera : public Next::Behaviour
 {
-    ReflectDeclare(SimpleFpsCamera, Next::Behaviour)
+    // Setup member functions and other things for the reflection system
+    ComponentDeclare(SimpleFpsCamera, Next::Behaviour)
+
+    // ReflectDeclare is used for all non-component classes, namely scenes
+    // ReflectDeclare(SimpleFpsCamera, Next::Behaviour)
 
 public:
     void OnCreate() override;
@@ -58,6 +68,7 @@ private:
     Next::Transform* m_transform;
 
     ReflectMembers(
+        ReflectField(m_transform) // Needed for reference tracking to work
         ReflectField(m_moveSpeed, r_name = "Move Speed")
         ReflectField(m_turnSpeed, r_description = "How fast the camera turns per second in degrees")
     )
@@ -128,10 +139,26 @@ Note: Due to how components are handled internally, function-local pointers are 
 
 ### 3D Renderer
 
+#### Summary <!-- omit in toc -->
+
+NextCore is a 3D engine, allowing users to import 3D textured models and move them around in 3D space, as well as a scene graph for relative movement between entities.
+
+----
+
 [Back to Top](#table-of-contents----omit-in-toc)
-TODO: Write
+NextCore comes with a built in software 3D renderer. This means that most of the work you'll be doing in NextCore will be in 3D! At the user level, users will create `ModelRenderers`, and populate its `model` field with a loaded in model by calling the `Model::Create("filename")` function. Currently, only .obj files are supported (Please ensure vertex positions and texture positions are exported!). Both quads and triangle based models are supported. NextCore will also automatically load in the texture file with the same name in the same directory as the file (must be .bmp and have equal width and height). The model will then be rendered based on its entity's transform (position, rotation, scale).
+
+NextCore features a scene graph, that is entities have parents that will affect their world-space position. You can modify both global and local position, rotation, and scale of any entity. At the user level, positions and scale are 3D vectors, and rotations are represented with 3x3 matrices.
+
+NextCore also features simple lighting, with directional lights and point lights. You can use these features buy creating `Light` components and modifying their values. Directional lights use their transform's forward direction to determine light direction, and point lights use their transform's position to determine light position.
 
 ### Reflection
+
+#### Summary <!-- omit in toc -->
+
+NextCore features code introspection based on C#'s api. This allows users to query a type's data members and arbitrarily construct objects at runtime, as well as support some of the engine's more interesting features, like [reference tracking](#reference-tracking).
+
+----
 
 [Back to Top](#table-of-contents----omit-in-toc)
 One of the pillars of NextCore is code introspection, or reflection ([Read more](https://en.wikipedia.org/wiki/Reflective_programming)). In practice, this allows users to:
@@ -150,6 +177,12 @@ It's upon this feature the entire entity component system of NextCore is built, 
 
 ### Reference Tracking
 
+#### Summary <!-- omit in toc -->
+
+Inside components, raw member pointers to other components, so long as they are registered with the reflection system, will automatically be changed when the component moves around in memory, meaning users only need to check if the pointer is null to check for reference invalidation.
+
+----
+
 [Back to Top](#table-of-contents----omit-in-toc)
 One of the most exciting features in NextCore is what we call reference tracking. Reference tracking is akin to using smart pointers and reference counting, but with a much simpler user API. In fact, reference tracking isn't opt-in as it's baked into the component system, and users don't need to do anything special to make use of the system.
 
@@ -157,10 +190,36 @@ Reference tracking in NextCore keeps track of all of the component-pointer membe
 
 Take the [SimpleFpsCamera](#fps-camera-example-------omit-in-toc) for example. In this case, we're taking a look at the `m_transform` field. Whenever a component is created, there's a chance that the existing pool allocator wont have enough room for the component, and so it will have to resize. Thanks for reference tracking, users can reference other components through raw pointers, and the reference tracking system will automatically update the pointer value for the user, allowing the user to focus on the high-level details.
 
+### Scene System
+
+#### Summary <!-- omit in toc -->
+
+NextCore is built on scenes. Scenes control the initialization of batches of entities that can be reused multiple times. For example, users can have a menu, gameplay, and credits scene with different sets of components that can be moved between at will.
+
+----
+
+[Back to Top](#table-of-contents----omit-in-toc)
+NextCore features a scene system that allows for construction and destruction of scenes easily at runtime. Scenes are a necessary part of using NextCore, as they are used in place of calling initialization functions. As a user, you can inherit a class from `Next::Scene` (and register it with the reflection system with `ReflectRegister`!). It has two virtual functions, one for creation and one for destruction. Generally you will only be using the creation function, as this is where you set up the scene by creating all of the entities for the scene (like a player character, camera, etc).
+
+To switch to and from scenes, use the `SceneManager::LoadScene` function. This function takes in the fully qualified name of the scene class, its reflection type or typeid, or the scene itself as a template parameter. So long as the scene is registered with the reflection system, it will have automatically be registered with the SceneManager as well.
+
+To tell NextCore what scene you want the game to start in, simply place `StartingScene(<YourSceneType>)` in **one** cpp file (We recommend a config.cpp file in the root directory of the game module). After you use this macro, NextCore does the rest.
+
 ## Major Backend Systems
 
 ### Entity Registry and Component Pools
 
-### Renderer
+#### Summary <!-- omit in toc -->
+
+NextCore uses pool allocators for memory management, and maintains type-agnostic information about all of the different component pools so that the entity registry can manage what entities own what components without knowing their types at compile time.
+
+[Back to Top](#table-of-contents----omit-in-toc)
+Under the hood, instances of the `Entity` class are just a wrapper for an opaque `EntityId` that is a uint32_t. The entity class allows users to interface with the entity registry, which contains information about every active entity and each component pool. The registry itself is uninteresting, as it is also just an interface for the component pools.
+
+NextCore stores it's components in component pools. Component pools are effectively pool allocators, in that a chunk of memory is allocated at start, and a list of indices are generated that will be used to index into the array. When a component is requested for creation, the next available index is popped from the queue, and the requested component is constructed in place at that position in the queue using its corresponding TypedFactory (Utilizes polymorphism to in-place construct objects when you know the size at runtime but not the type). The index is then stored as the value in a key value pair alongside the entity that owns the component for easy retrieval. Note: Each entity can own only one component of a given type.
+
+When a component pool is resized, of course it needs to be reallocated to keep all of the components contiguous in memory. To not break any pointers in components to other components, [reference tracking](#reference-tracking) is used. Internally, when a component pool with type T is about to be resized, the registry looks through every other component (including type T) that has a field of type pointer to T. The entity id is cached alongside the raw value of the pointer. Once the resize is completed and the arrays are (likely) no longer in the same location in memory, the registry goes back through and reconstructs the pointers using the cached value and entity id. This system is at the heart of the component pool system, and is how we got away with not using smart pointers or otherwise reference counting.
 
 ### Tests
+
+NextCore has a number of unit tests aimed at squashing bugs in key portions of the program. Currently, proper tests exist for the entity registry and components system, reference tracking, and reflection, as well as some preliminary tests for math functions. See `Tests/` for more info.

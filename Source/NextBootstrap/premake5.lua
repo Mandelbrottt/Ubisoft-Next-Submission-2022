@@ -64,7 +64,10 @@ project(project_name)
         -- TODO: Find a way to generate list of test executables
         "\"" .. build_cfg.output_dir .. "/Tests/NextCoreTests/NextCoreTests.exe\"",
     }
-    
+
+    filter "system:windows"
+        systemversion "latest"
+ 
     filter "architecture:Win32"
         libdirs {
             build_cfg.source_dir .. "/NextAPI/glut/lib/",

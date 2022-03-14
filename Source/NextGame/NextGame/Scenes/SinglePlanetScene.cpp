@@ -123,7 +123,6 @@ SinglePlanetScene::CreateObjects(float a_radius)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
-		turretEntity.GetComponent<Health>()->SetHealth(3);
 
 		float polar = Random::Value() * 2 * Math::PI;
 		float alpha = Random::Value() * Math::PI - Math::PI / 2;

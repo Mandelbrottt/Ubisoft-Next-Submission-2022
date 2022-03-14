@@ -24,6 +24,13 @@ build_cfg.exe_output_dir = build_cfg.output_dir .. "/" .. user_cfg.exe_dir
 
 include "util.lua"
 
+if _ACTION == 'clean' then
+    os.rmdir('Build')
+    os.remove('**.sln')
+    os.remove('**.vcxproj')
+    os.remove('**.vcxproj.*')
+ end
+
 workspace "NextSubmission"
     architecture "x64"
 

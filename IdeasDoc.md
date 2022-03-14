@@ -1,1 +1,0 @@
-Gravity is required, make it a set of planets / fields that can change your gravity

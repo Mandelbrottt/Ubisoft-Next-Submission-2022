@@ -85,11 +85,20 @@ namespace Next::Matrix
 	Matrix4
 	ViewInverse(Matrix4 a_locRot);
 
+	/**
+	 * \brief Construct a 4x4 look-at transformation matrix from the given arguments
+	 * \param a_position The position of the observer
+	 * \param a_target The point to look at
+	 * \param a_up The up-vector relative to the observer
+	 */
 	NEXT_CORE_EXPORT
 	extern
 	Matrix4
 	LookAt(Vector3 a_position, Vector3 a_target, Vector3 a_up = Vector3::Up());
 
+	/**
+	 * \brief Reconstruct one possible set of euler angles from the given rotation matrix
+	 */
 	NEXT_CORE_EXPORT
 	extern
 	Vector3

@@ -26,7 +26,7 @@ public:
 	Next::Vector3
 	GetVelocity() const
 	{
-		return m_velocity;
+		return m_accelMover->GetVelocity();
 	}
 
 private:

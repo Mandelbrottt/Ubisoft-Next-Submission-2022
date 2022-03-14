@@ -4,6 +4,12 @@
 
 namespace Next::Math
 {
+	/**
+	 * \brief Returns the sign of the given value
+	 * \return -1 if a_value < 0,
+	 *          0 if a_value == 0,
+	 *          1 if a_value > 0
+	 */
 	template<typename TScalar>
 	constexpr
 	TScalar

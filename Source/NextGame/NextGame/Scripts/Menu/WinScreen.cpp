@@ -28,6 +28,10 @@ WinScreen::OnUpdate()
 
 	if (!turrets.empty())
 	{
+		char enemiesRemainingText[128];
+		sprintf_s(enemiesRemainingText, "Enemies Remaining: %llu", turrets.size());
+
+		Gui::Print(enemiesRemainingText, { -0.97, 0.70 });
 		return;
 	}
 	

@@ -11,6 +11,7 @@
 #include "Scenes/MenuScene.h"
 
 #include "Scripts/Character/Common/Health.h"
+#include "Scripts/Menu/ControlsUi.h"
 #include "Scripts/Menu/DeathScreen.h"
 #include "Scripts/Menu/WinScreen.h"
 #include "Scripts/Objects/FuelPickup.h"
@@ -79,6 +80,7 @@ PlayerShip::OnCreate()
 
 	AddComponent<DeathScreen>();
 	AddComponent<WinScreen>();
+	AddComponent<ControlsUi>();
 }
 
 void
