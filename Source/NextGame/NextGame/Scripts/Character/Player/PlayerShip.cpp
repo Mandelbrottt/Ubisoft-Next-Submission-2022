@@ -12,6 +12,7 @@
 
 #include "Scripts/Character/Common/Health.h"
 #include "Scripts/Menu/DeathScreen.h"
+#include "Scripts/Menu/WinScreen.h"
 #include "Scripts/Objects/FuelPickup.h"
 
 ReflectRegister(PlayerShip);
@@ -77,6 +78,7 @@ PlayerShip::OnCreate()
 	AddComponent<PlayerUi>();
 
 	AddComponent<DeathScreen>();
+	AddComponent<WinScreen>();
 }
 
 void

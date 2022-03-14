@@ -5,6 +5,6 @@
 #include "Scenes/MenuScene.h"
 #include "Scenes/SinglePlanetScene.h"
 
-//StartingScene(MenuScene);
+StartingScene(MenuScene);
 //StartingScene(FlatGroundScene);
-StartingScene(SinglePlanetScene);
+//StartingScene(SinglePlanetScene);

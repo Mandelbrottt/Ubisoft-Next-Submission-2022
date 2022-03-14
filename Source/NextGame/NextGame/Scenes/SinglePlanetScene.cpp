@@ -119,7 +119,7 @@ SinglePlanetScene::CreateObjects(float a_radius)
 		fuelEntity.Transform()->SetPosition({ x, y, z });
 	}
 
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();

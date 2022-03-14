@@ -1,6 +1,7 @@
 ﻿#include "LevelSelectScene.h"
 
 #include "FlatGroundScene.h"
+#include "MultiPlanetScene.h"
 #include "SinglePlanetScene.h"
 
 #include "Scripts/Character/Player/PlayerPersistentData.h"
@@ -42,7 +43,7 @@ LevelSelectScene::OnSceneCreate()
 		// TODO: Easter egg??
 		Entity mars     = Entity::Create("Mars");
 		auto marsPlanet = mars.AddComponent<PlanetLevelSelector>();
-		marsPlanet->Init("level/select/mars.obj", 3, 145, FlatGroundScene::GetStaticType());
+		marsPlanet->Init("level/select/mars.obj", 3, 145, MultiPlanetScene::GetStaticType());
 		mars.Transform()->SetPosition({ 40, 0, -10 });
 	}
 

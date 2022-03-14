@@ -100,7 +100,7 @@ FlatGroundScene::CreateEnvironment(float a_size)
 void
 FlatGroundScene::CreateObjects(float a_size)
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		Entity turretEntity = Entity::Create("Turret " + std::to_string(i));
 		turretEntity.AddComponent<TurretFireController>();
