@@ -2,6 +2,8 @@
 
 **Planetar** is a game that was written as part of the Ubisoft Toronto 2022 NEXT programming challenge. The prompt was to take inspiration from the classic arcade game [Atari Gravitar](https://en.wikipedia.org/wiki/Gravitar) and add your own spin on it. In my case, the spin was that the game was moved into 3D!
 
+[Watch the gameplay demo!](https://www.youtube.com/watch?v=ua-5DCOgYWU)
+
 ## Major Engine Features
 
 - Software 3D Renderer
