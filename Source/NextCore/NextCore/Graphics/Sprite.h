@@ -21,12 +21,6 @@ namespace Next
 {
 	class NEXT_CORE_EXPORT Sprite
 	{
-		friend class RenderPrimitive;
-
-		friend
-		void
-		Renderer::Flush();
-	
 	public:
 		Sprite() = default;
 		
@@ -95,6 +89,38 @@ namespace Next
 		 */
 		void
 		SetColor(Color a_color);
+
+		/**
+		 * \brief Get the position on the screen of the given vertex
+		 * \param a_index Index of the vertex to get, starting top left moving right then down
+		 * \return The vertex position in screen space coordinates
+		 */
+		Vector2
+		GetVertex(unsigned int a_index) const;
+		
+		/**
+		 * \brief Set the position on the screen of the given vertex
+		 * \param a_index Index of the vertex to Set, starting top left moving right then down
+		 * \param a_value The vertex position in screen space coordinates
+		 */
+		void
+		SetVertex(unsigned int a_index, Vector2 a_value);
+		
+		/**
+		 * \brief Get the UV coordinates of the given vertex
+		 * \param a_index Index of the UV coordinate to get, starting top left moving right then down
+		 * \return The UV coordinate in normalized coordinates
+		 */
+		Vector2
+		GetUv(unsigned int a_index) const;
+		
+		/**
+		 * \brief Set the UV coordinates of the given vertex
+		 * \param a_index Index of the UV coordinate to set, starting top left moving right then down
+		 * \param a_value The UV coordinate in normalized coordinates
+		 */
+		void
+		SetUv(unsigned int a_index, Vector2 a_value);
 		
 		/**
 		 * \brief Create an animation reel that can be changed to later.

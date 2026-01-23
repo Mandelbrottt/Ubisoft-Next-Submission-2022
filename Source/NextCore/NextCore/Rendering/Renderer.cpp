@@ -221,21 +221,18 @@ namespace Next::Renderer
 			{
 				auto const& uv = primitive.GetVertex(i).uv;
 
-				sprite->m_simpleSprite->SetVertex(2 * i, positions[i].x);
-				sprite->m_simpleSprite->SetVertex(2 * i + 1, positions[i].y);
+				auto vertex = Vector2(positions[i].x, positions[i].y);
+				sprite->SetVertex(i, vertex);
 
-				sprite->m_simpleSprite->SetUv(2 * i, uv.u);
-				sprite->m_simpleSprite->SetUv(2 * i + 1, uv.v);
+				auto coords = Vector2(uv.u, uv.v);
+				sprite->SetUv(i, coords);
 			}
 
 			// If primitive is a triangle, fourth vertex shares values with first
 			if (primitive.GetPrimitiveType() == RenderPrimitiveType::Triangle)
 			{
-				auto* s = sprite->m_simpleSprite;
-				s->SetVertex(6, s->GetVertex(0));
-				s->SetVertex(7, s->GetVertex(1));
-				s->SetUv(6, s->GetUv(0));
-				s->SetUv(7, s->GetUv(1));
+				sprite->SetVertex(3, sprite->GetVertex(0));
+				sprite->SetUv(3, sprite->GetUv(0));
 			}
 
 			element.primitive.OnRender();

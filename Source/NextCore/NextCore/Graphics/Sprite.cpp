@@ -142,6 +142,119 @@ namespace Next
 		m_simpleSprite->SetColor(a_color.r, a_color.g, a_color.b);
 	}
 
+#ifdef NEXT_API_NO_CUSTOM_CODE
+	float*
+	GetCSimpleSpritePoints(::CSimpleSprite* a_sprite)
+	{
+		// Use pointer arithmetic to get a_sprite->m_points
+		uintptr_t spritePtr = reinterpret_cast<uintptr_t>(a_sprite);
+		spritePtr += sizeof(float) * 6;
+		spritePtr += sizeof(unsigned int) * 3;
+		return reinterpret_cast<float*>(spritePtr);
+	}
+#endif
+	
+	Vector2
+	Sprite::GetVertex(unsigned int a_index) const
+	{
+		if (!IsValid() || a_index < 0 || a_index >= 4)
+		{
+			return {};
+		}
+
+	#ifdef NEXT_API_NO_CUSTOM_CODE
+		float* points = GetCSimpleSpritePoints(m_simpleSprite);
+		
+		Vector2 result;
+		result.x = points[2 * a_index];
+		result.y = points[2 * a_index + 1];
+
+		return result;
+	#else
+		Vector2 result;
+		result.x = m_simpleSprite->GetVertex(2 * a_index);
+		result.y = m_simpleSprite->GetVertex(2 * a_index + 1);
+
+		return result;
+	#endif
+	}
+
+	void
+	Sprite::SetVertex(unsigned int a_index, Vector2 a_value)
+	{
+		if (!IsValid() || a_index < 0 || a_index >= 4)
+		{
+			return;
+		}
+
+	#ifdef NEXT_API_NO_CUSTOM_CODE
+		float* points = GetCSimpleSpritePoints(m_simpleSprite);
+		
+		points[2 * a_index] = a_value.x;
+		points[2 * a_index + 1] = a_value.y;
+	#else
+		m_simpleSprite->SetVertex(2 * a_index, a_value.x);
+		m_simpleSprite->SetVertex(2 * a_index + 1, a_value.y);
+	#endif
+	}
+
+#ifdef NEXT_API_NO_CUSTOM_CODE
+	float*
+	GetCSimpleSpriteUvCoords(::CSimpleSprite* a_sprite)
+	{
+		// Use pointer arithmetic to get a_sprite->m_uvcoords
+		uintptr_t spritePtr = reinterpret_cast<uintptr_t>(a_sprite);
+		spritePtr += sizeof(float) * 6;
+		spritePtr += sizeof(unsigned int) * 3;
+		spritePtr += sizeof(float[8]);
+		return reinterpret_cast<float*>(spritePtr);
+	}
+#endif
+	
+	Vector2
+	Sprite::GetUv(unsigned int a_index) const
+	{
+		if (!IsValid() || a_index < 0 || a_index >= 4)
+		{
+			return {};
+		}
+
+	#ifdef NEXT_API_NO_CUSTOM_CODE
+		float* uvcoords = GetCSimpleSpriteUvCoords(m_simpleSprite);
+		
+		Vector2 result;
+		result.x = uvcoords[2 * a_index];
+		result.y = uvcoords[2 * a_index + 1];
+
+		return result;
+	#else
+		Vector2 result;
+		result.x = m_simpleSprite->GetUv(2 * a_index);
+		result.y = m_simpleSprite->GetUv(2 * a_index + 1);
+
+		return result;
+	#endif
+	}
+
+	void
+	Sprite::SetUv(unsigned int a_index, Vector2 a_value)
+	{
+		if (!IsValid() || a_index < 0 || a_index >= 4)
+		{
+			return;
+		}
+
+	#ifdef NEXT_API_NO_CUSTOM_CODE
+		float* uvcoords = GetCSimpleSpriteUvCoords(m_simpleSprite);
+		
+		uvcoords[2 * a_index] = a_value.x;
+		uvcoords[2 * a_index + 1] = a_value.y;
+	#else
+		m_simpleSprite->SetUv(2 * a_index, a_value.x);
+		m_simpleSprite->SetUv(2 * a_index + 1, a_value.y);
+	#endif
+	}
+
 	void
 	Sprite::CreateAnimation(unsigned int a_id, float a_speed, const std::vector<int>& a_frames)
 	{
