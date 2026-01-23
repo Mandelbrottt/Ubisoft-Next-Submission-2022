@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Sprite.h"
 
+#include <NextAPI/SimpleSprite.h>
+
 #include "Application/Time.h"
 
 #include "Components/Transform.h"
