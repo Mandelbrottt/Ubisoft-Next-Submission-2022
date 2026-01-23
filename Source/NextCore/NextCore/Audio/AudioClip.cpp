@@ -2,6 +2,14 @@
 
 #include "AudioClip.h"
 
+// Fix compiler error from including dsound.h in NextAPI/SimpleSound.h
+#define near
+#define far
+#include <mmsystem.h>
+#include <NextAPI/SimpleSound.h>
+#undef near
+#undef far
+
 namespace Next
 {
 	AudioClip::AudioClip(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
@@ -41,7 +49,7 @@ namespace Next
 			return false;
 		}
 		
-		// See NextAPI/app.h
+		// See NextAPI/app.h App::PlaySound
 		DWORD flags = (a_loop) ? DSBPLAY_LOOPING : 0;
 
 		auto result = CSimpleSound::GetInstance().PlaySound(m_fileName.c_str(), flags);
@@ -52,7 +60,7 @@ namespace Next
 	bool
 	AudioClip::LoadFromFile(std::string_view a_fileName, bool a_playOnLoad, bool a_loop)
 	{
-		// See NextAPI/app.h
+		// See NextAPI/app.h App::PlaySound
 		DWORD flags = (a_loop) ? DSBPLAY_LOOPING : 0;
 
 	    //#define PLAY_TO_LOAD
@@ -66,9 +74,9 @@ namespace Next
 		{
 			return false;
 		}
-	#endif
 		// Stop the current audio clip
 		Stop();
+	#endif
 
 		m_fileName = a_fileName;
 
@@ -77,15 +85,14 @@ namespace Next
 			bool result =
 		#ifndef PLAY_TO_LOAD
 				CSimpleSound::GetInstance().PlaySound(a_fileName.data(), flags);
+				// Stop the new audio clip
+				Stop();
 		#else
 				true;
 		#endif
 
 			return result;
 		}
-
-		// Stop the new audio clip
-		Stop();
 
 		return true;
 	}

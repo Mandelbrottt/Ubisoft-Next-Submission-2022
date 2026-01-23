@@ -3,6 +3,8 @@
 
 #include "Application/Application.h"
 
+#include <NextAPI/app.h>
+
 namespace Next::Gui
 {
 	struct TextPrintInfo

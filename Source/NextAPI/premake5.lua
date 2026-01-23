@@ -5,11 +5,11 @@ project(project_name)
     kind          "StaticLib"
     language      "C++"
     cppdialect    "C++14"
-    staticruntime "off"
-    floatingpoint "fast"
+    staticruntime "Off"
+    floatingpoint "Fast"
 
     -- Disable warnings because this isn't our code
-    warnings "off" 
+    warnings "Off" 
     
     flags {
         "MultiProcessorCompile"
@@ -60,23 +60,31 @@ project(project_name)
         "MMNOSOUND",
     }
 
+    filter { "options:nocustomcode" }
+        defines { "NEXT_API_NO_CUSTOM_CODE" }
+    filter {}
+
+    filter { "options:nocustomcode" }
+        defines { "NEXT_API_NO_CUSTOM_CODE" }
+    filter {}
+
     filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"
         defines { "NEXT_DEBUG" }
-        runtime "debug"
-        optimize "off"
-        symbols "on"
+        runtime "Debug"
+        optimize "Off"
+        symbols "On"
     
     filter "configurations:Development"
         defines { "NEXT_DEVELOPMENT" }
-        runtime "release"
-        optimize "debug"
-        symbols "on"
+        runtime "Release"
+        optimize "Debug"
+        symbols "On"
     
     filter "configurations:Release"
         defines { "NEXT_RELEASE" }
-        runtime "release"
-        optimize "speed"
+        runtime "Release"
+        optimize "Speed"
         symbols(user_cfg.do_release_symbols)
