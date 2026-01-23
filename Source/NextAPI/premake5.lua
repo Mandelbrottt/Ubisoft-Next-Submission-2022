@@ -64,6 +64,10 @@ project(project_name)
         defines { "NEXT_API_NO_CUSTOM_CODE" }
     filter {}
 
+    filter { "options:nocustomcode" }
+        defines { "NEXT_API_NO_CUSTOM_CODE" }
+    filter {}
+
     filter "system:windows"
         systemversion "latest"
 
