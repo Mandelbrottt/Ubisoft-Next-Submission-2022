@@ -40,7 +40,7 @@ public:
         m_animations.push_back(anim);        
     };
 
-	// CUSTOM CODE
+#ifndef NEXT_API_NO_CUSTOM_CODE
 	// Added these helper functions to make getting points and uvs easier.
 	// We could technically get these fields with pointer arithmetic, but we added these
 	// helpers instead to make things cleaner. Otherwise the api is untouched.
@@ -50,8 +50,7 @@ public:
 	
 	float GetUv(unsigned int i) { if (i >= 8) i = 0; return m_uvcoords[i]; }
 	void SetUv(unsigned int i, float v) { if(i < 8) m_uvcoords[i] = v; }
-
-	// CUSTOM CODE
+#endif NEXT_API_NO_CUSTOM_CODE
 
 private:
     void CalculateUVs();

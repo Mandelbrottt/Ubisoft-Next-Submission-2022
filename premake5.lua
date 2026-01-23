@@ -29,7 +29,12 @@ if _ACTION == 'clean' then
     os.remove('**.sln')
     os.remove('**.vcxproj')
     os.remove('**.vcxproj.*')
- end
+end
+
+newoption {
+    trigger = "nocustomcode",
+    description = "Force the use of pointer arithmetic to build the project with no changes to the Next API"
+}
 
 workspace "NextSubmission"
     architecture "x64"
