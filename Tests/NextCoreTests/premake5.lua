@@ -5,16 +5,13 @@ project(project_name)
     kind          "ConsoleApp"
     language      "C++"
     cppdialect    "C++17"
-    staticruntime "off"
-    floatingpoint "fast"
-    rtti          "on"
+    staticruntime "Off"
+    floatingpoint "Fast"
+    rtti          "On"
+    multiprocessorcompile "On"
+    fatalwarnings { "all" }
 
     nuget { "Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn:1.8.1.4" }
-    
-    flags {
-        "FatalWarnings",
-        "MultiProcessorCompile"
-    }
     
     targetdir(build_cfg.output_dir .. "/Tests/%{prj.name}/")
     objdir   (build_cfg.obj_dir    .. "/Tests/%{prj.name}/")

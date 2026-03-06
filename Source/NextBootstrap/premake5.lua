@@ -5,14 +5,11 @@ project(project_name)
     kind          "WindowedApp"
     language      "C++"
     cppdialect    "C++17"
-    staticruntime "off"
-    floatingpoint "fast"
-    rtti          "on"
-    
-    flags {
-        "FatalWarnings",
-        "MultiProcessorCompile"
-    }
+    staticruntime "Off"
+    floatingpoint "Fast"
+    rtti          "On"
+    multiprocessorcompile "On"
+    fatalwarnings { "all" }
     
     -- Output to the executable directory instead of a project directory
     targetdir(build_cfg.exe_output_dir)

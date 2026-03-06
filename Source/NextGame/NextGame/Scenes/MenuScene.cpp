@@ -1,3 +1,5 @@
+#include "pch/pch.h"
+
 #include "MenuScene.h"
 
 #include <MinimalInclude.h>

@@ -102,7 +102,7 @@ namespace Next
 	bool
 	RenderPrimitive::ProcessBmp(std::string_view a_filename) const
 	{
-		std::ifstream is(a_filename, std::ios::binary);
+		std::ifstream is(a_filename.data(), std::ios::binary);
 
 		if (!is)
 		{

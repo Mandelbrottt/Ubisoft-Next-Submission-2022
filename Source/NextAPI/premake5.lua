@@ -7,14 +7,11 @@ project(project_name)
     cppdialect    "C++14"
     staticruntime "Off"
     floatingpoint "Fast"
+    multiprocessorcompile "On"
 
     -- Disable warnings because this isn't our code
-    warnings "Off" 
-    
-    flags {
-        "MultiProcessorCompile"
-    }
-    
+    warnings "Off"
+
     targetdir(build_cfg.output_dir .. "/%{prj.name}/")
     objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")
 

@@ -12,7 +12,7 @@
 namespace Next
 {
 	namespace Reflection {
-		struct GenericFactory;
+		class Factory;
 	}
 
 	class Component;
@@ -28,10 +28,10 @@ namespace Next::Detail
 		using size_type = uint32_t;
 
 		explicit
-		ComponentPool(Reflection::GenericFactory const* a_factory);
+		ComponentPool(const Reflection::Factory* a_factory);
 		
 		explicit
-		ComponentPool(Reflection::GenericFactory const* a_factory, size_type a_initialSize);
+		ComponentPool(const Reflection::Factory* a_factory, size_type a_initialSize);
 
 		~ComponentPool();
 
@@ -146,7 +146,7 @@ namespace Next::Detail
 		std::unordered_map<EntityId, size_type> m_indexMap;
 
 		// Use raw pointer here because the lifetime of factories is until program-end once constructed
-		Reflection::GenericFactory const* const m_factory;
+		const Reflection::Factory* const m_factory;
 
 		// The TypeId of the components in the pool.
 		const Reflection::TypeId m_typeId;

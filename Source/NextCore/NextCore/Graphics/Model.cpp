@@ -27,7 +27,7 @@ namespace Next
 
 		if (a_extension == a_checkExtension)
 		{
-			model_file_stream_t fileStream(a_filename);
+			model_file_stream_t fileStream(a_filename.data());
 
 			TModelLoader loader;
 			

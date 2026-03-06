@@ -144,26 +144,15 @@ namespace Next::Reflection
 			return *m_typeInfo;
 		}
 		
-		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-		// ReSharper disable once CppDeprecatedEntity
 		/**
 		 * \brief Get the instance of the \link GenericFactory \endlink associated with this type.
 		 * \return A pointer to the \link GenericFactory \endlink associated with this type.
 		 */
-		const GenericFactory* GetFactory() const
+		const Factory* GetFactory() const
 		{
-		#if defined HEAP_ALLOCATED_FACTORY
-			return m_factory;
-		#elif !defined IN_PLACE_FACTORY
-			// See https://en.cppreference.com/w/cpp/types/aligned_storage
-			auto pConstructor = std::launder(reinterpret_cast<GenericFactory const*>(m_factoryData));
-			return pConstructor;
-		#else
 			return &m_factory;
-		#endif
 		}
-		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-
+		
 		/**
 		 * \brief Register a type for reflection
 		 * \tparam T The type to register for reflection.
@@ -303,7 +292,7 @@ namespace Next::Reflection
 		{
 			static
 			void
-			Reflect(Type& a_type) { }
+			Reflect(Type* a_type) { }
 		};
 		
 		template<typename TReflected>
@@ -311,7 +300,7 @@ namespace Next::Reflection
 		{
 			static
 			void
-			Reflect(Type& a_type)
+			Reflect(Type* a_type)
 			{	
 				TReflected::_ReflectType(a_type);
 			}
@@ -322,7 +311,7 @@ namespace Next::Reflection
 		{
 			static
 			void
-			Reflect(Type& a_type) { }
+			Reflect(Type* a_type) { }
 		};
 		
 		template<typename TReflected>
@@ -330,7 +319,7 @@ namespace Next::Reflection
 		{
 			static
 			void
-			Reflect(Type& a_type)
+			Reflect(Type* a_type)
 			{	
 				TReflected::_ReflectMembers(a_type);
 			}
@@ -339,33 +328,9 @@ namespace Next::Reflection
 		template<typename TReflected>
 		static
 		void
-		PopulateFactory(Type& a_type)
+		PopulateFactory(Type* a_type)
 		{
-		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
-
-			// Heap Allocated Factory supersedes in place factory
-		#if defined HEAP_ALLOCATED_FACTORY
-			// Use pointer and new to allow free passing around of the factory without fear of
-			// Reallocation
-			a_type.m_factory = new TypedFactory<TReflected>;
-		#else
-		#if !defined IN_PLACE_FACTORY
-			// Generate the constructor/destructor and use placement new under the hood
-			// We use vtable shenanigans to make this work, so the data represented
-			// by reflector.m_constructorData is stored "on the stack" inside this type while
-			// being able to reference it like a pointer and use the vtable to call overridden
-			// versions of Construct and Destruct
-			auto pConstructor = reinterpret_cast<GenericFactory*>(a_type.m_factoryData);
-		#else
-			GenericFactory* pConstructor = &a_type.m_factory;
-		#endif
-			static_assert(sizeof(*pConstructor) == sizeof(TypedFactory<TReflected>));
-			
-			// ReSharper disable once CppDeprecatedEntity
-			new(pConstructor) TypedFactory<TReflected>;
-		#endif
-
-		#pragma warning(disable : DEPRECATED_WARNING_NUMBER)
+			a_type->m_factory = PopulateFactoryStruct<TReflected>::Call();
 		}
 		
 		// Called by Type::Register
@@ -376,9 +341,9 @@ namespace Next::Reflection
 		{
 			Type reflector(typeid(TReflected));
 				
-			reflect_type_helper<TReflected>::Reflect(reflector);
+			reflect_type_helper<TReflected>::Reflect(&reflector);
 			
-			reflect_members_helper<TReflected>::Reflect(reflector);
+			reflect_members_helper<TReflected>::Reflect(&reflector);
 
 			auto caseInsensitivePredicate = [](Field const& a_lhs, Field const& a_rhs)
 			{
@@ -392,7 +357,7 @@ namespace Next::Reflection
 			
 			std::sort(fields.begin(), fields.end(), caseInsensitivePredicate);
 			
-			PopulateFactory<TReflected>(reflector);
+			PopulateFactory<TReflected>(&reflector);
 			
 			return reflector;
 		}
@@ -489,16 +454,7 @@ namespace Next::Reflection
 
 		instance_fields_container_t m_instanceFields;
 
-	#if defined HEAP_ALLOCATED_FACTORY
-		GenericFactory* m_factory;
-	#elif !defined IN_PLACE_FACTORY
-		std::byte m_factoryData[sizeof(GenericFactory)] { std::byte() };
-	#else
-		/* TODO: Using placement new on stack-allocated type to manipulate the vtable
-		         works in test scenarios but isn't working in practice. Figure out why */
-		GenericFactory m_factory;
-	#endif	
-		//GenericConstructor m_constructor;
+		Factory m_factory;
 
 		int m_size = 0;
 	};

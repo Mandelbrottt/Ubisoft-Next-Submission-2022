@@ -67,7 +67,114 @@ namespace Next::Reflection
 		template<typename T>
 		constexpr static bool typed_factory_friend_helper_v = typed_factory_friend_helper::value<T>;
 	}
+	
+	class Factory
+	{
+	public:
+		using size_type = uint64_t;
 
+		using ConstructFn = void*(*)();
+		using PlacementConstructFn = void*(*)(void*);
+		using DestructFn = void(*)(void*, bool);
+
+		Factory() = default;
+		
+		Factory(
+			TypeId               a_typeId,
+			size_type            a_size,
+			ConstructFn          a_constructFn          = nullptr,
+			PlacementConstructFn a_placementConstructFn = nullptr,
+			DestructFn           a_destructFn           = nullptr
+		)
+			: m_typeId(a_typeId),
+			  m_size(a_size),
+			  m_constructFn(a_constructFn),
+			  m_placementConstructFn(a_placementConstructFn),
+			  m_destructFn(a_destructFn) {}
+
+		TypeId GetTypeId() const
+		{
+			return m_typeId;
+		}
+
+		size_type GetSize() const
+		{
+			return m_size;
+		}
+
+		bool IsValid() const
+		{
+			return m_constructFn && m_placementConstructFn && m_destructFn;
+		}
+
+		void* Construct() const
+		{
+			return m_constructFn();
+		}
+		
+		void* Construct(void* a_location) const
+		{
+			return m_placementConstructFn(a_location);
+		}
+		
+		void Destruct(void* a_location, bool a_deallocate = true) const
+		{
+			m_destructFn(a_location, a_deallocate);
+		}
+		
+	private:
+		TypeId m_typeId = TypeId::Null;
+		size_type m_size = 0;
+
+		ConstructFn m_constructFn = nullptr;
+		PlacementConstructFn m_placementConstructFn = nullptr;
+		DestructFn m_destructFn = nullptr;
+	};
+
+	template<typename T, bool = Detail::typed_factory_friend_helper_v<T>>
+	struct PopulateFactoryStruct {};
+
+	template<typename T>
+	struct PopulateFactoryStruct<T, false>
+	{
+		static Factory Call()
+		{
+			return Factory(GetTypeId<T>(), sizeof(T));
+		}
+	};
+
+	template<typename T>
+	struct PopulateFactoryStruct<T, true>
+	{
+		static Factory Call()
+		{
+			return Factory(GetTypeId<T>(), sizeof(T), Construct, PlacementConstruct, Destruct);
+		}
+
+	private:
+		static void* Construct()
+		{
+			return new (T);
+		}
+		
+		static void* PlacementConstruct(void* a_location)
+		{
+			return new(a_location) (T);
+		}
+		
+		static void Destruct(void* a_location, bool a_deallocate)
+		{
+			T* p = static_cast<T*>(a_location);
+			p->~T();
+			
+			if (a_deallocate)
+			{
+				::operator delete(a_location);
+			}
+		}
+	};
+	
+	
 	template<typename T, bool = Detail::typed_factory_friend_helper_v<T>>
 	struct TypedFactory;
 

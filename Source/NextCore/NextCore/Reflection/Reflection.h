@@ -33,11 +33,11 @@
 		\
 		static \
 		void \
-		_ReflectType(_REFLECT_NAMESPACE Type& r) \
+		_ReflectType(_REFLECT_NAMESPACE Type* r) \
 		{ \
 			if constexpr (_REFLECT_NAMESPACE is_complete_type_v<_REFLECT_BASE_ALIAS>) \
 			{ \
-				r.operator()<_REFLECT_BASE_ALIAS, _REFLECT_TYPE_ALIAS>(); \
+				r->operator()<_REFLECT_BASE_ALIAS, _REFLECT_TYPE_ALIAS>(); \
 			} \
 		} \
 		\
@@ -82,9 +82,9 @@
 	private:\
 		static \
 		void \
-		_ReflectMembers(_REFLECT_NAMESPACE Type& r) \
+		_ReflectMembers(_REFLECT_NAMESPACE Type* r) \
 		{ \
-			r _list_; \
+			(*r) _list_; \
 		}
 
 	#pragma region Reflect Field Overloads

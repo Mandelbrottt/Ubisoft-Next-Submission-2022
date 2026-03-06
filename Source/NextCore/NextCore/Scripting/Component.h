@@ -4,7 +4,7 @@
 		_MACRO_AUTO_FORMAT_INDENT \
 	protected: \
 		template<typename T, bool>\
-		friend struct ::Next::Reflection::TypedFactory; \
+		friend struct ::Next::Reflection::PopulateFactoryStruct; \
 		friend ::Next::Reflection::Detail::typed_factory_friend_helper; \
 		\
 		_class_() = default; \

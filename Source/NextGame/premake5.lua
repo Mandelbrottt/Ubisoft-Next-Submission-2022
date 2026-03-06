@@ -5,14 +5,11 @@ project(project_name)
     kind          "StaticLib"
     language      "C++"
     cppdialect    "C++17"
-    staticruntime "off"
-    floatingpoint "fast"
-    rtti          "on"
-
-    flags {
-        "FatalWarnings",
-        "MultiProcessorCompile"
-    }
+    staticruntime "Off"
+    floatingpoint "Fast"
+    rtti          "On"
+    multiprocessorcompile "On"
+    fatalwarnings { "all" }
 
     targetdir(build_cfg.output_dir .. "/%{prj.name}/")
     objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")

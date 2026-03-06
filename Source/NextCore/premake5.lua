@@ -8,11 +8,8 @@ project(project_name)
     staticruntime "Off"
     floatingpoint "Fast"
     rtti          "On"
-    
-    flags {
-        "FatalWarnings",
-        "MultiProcessorCompile"
-    }
+    multiprocessorcompile "On"
+    fatalwarnings { "all" }
     
     targetdir(build_cfg.output_dir .. "/%{prj.name}/")
     objdir   (build_cfg.obj_dir    .. "/%{prj.name}/")

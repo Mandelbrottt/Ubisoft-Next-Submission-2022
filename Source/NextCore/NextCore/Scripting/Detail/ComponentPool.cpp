@@ -10,15 +10,15 @@ namespace Next::Detail
 {
 	int g_componentPoolDefaultSize = 10;
 
-	using Reflection::GenericFactory;
+	using Reflection::Factory;
 
-	ComponentPool::ComponentPool(GenericFactory const* a_factory)
+	ComponentPool::ComponentPool(const Factory* a_factory)
 		: ComponentPool(a_factory, g_componentPoolDefaultSize) {}
 
-	ComponentPool::ComponentPool(GenericFactory const* a_factory, size_type a_initialSize)
+	ComponentPool::ComponentPool(const Factory* a_factory, size_type a_initialSize)
 		: m_factory(a_factory),
 		  m_typeId(a_factory->GetTypeId()),
-		  m_elementSize(a_factory->size),
+		  m_elementSize((size_type) a_factory->GetSize()),
 		  m_count(0)
 	{
 		assert(a_factory != nullptr);

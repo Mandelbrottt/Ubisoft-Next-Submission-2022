@@ -4,12 +4,9 @@ project(project_name)
     kind          "ConsoleApp"
     language      "C++"
     cppdialect    "C++17"
-    staticruntime "off"
-    
-    flags {
-        "FatalWarnings",
-        "MultiProcessorCompile"
-    }
+    staticruntime "Off"
+    multiprocessorcompile "On"
+    fatalwarnings { "all" }
     
     -- Output to the executable directory instead of a project directory
     targetdir(build_cfg.output_dir .. "/PreProcessors/")

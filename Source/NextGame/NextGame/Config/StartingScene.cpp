@@ -1,3 +1,5 @@
+#include "pch/pch.h"
+
 #include <Application/Init.h>
 
 #include "Scenes/MenuScene.h"
